@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Official-grade Bicol University (BU) GWA Calculator, Honor Evaluator, and Academic Planning Tool. Built compliant with the BU Student Handbook standards.">
+    <title>Bicol University GWA Calculator & Academic Evaluator</title>
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Top Brand Navbar -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="brand-logo">
+                <div class="logo-icon"><i class="fa-solid fa-fire-flame-curved"></i></div>
+                <div class="logo-text">
+                    <span class="university-name">BICOL UNIVERSITY</span>
+                    <span class="app-title">GWA Calculator & Academic Radar</span>
+                </div>
+            </div>
+            <div class="nav-right" style="display: flex; align-items: center; gap: 0.75rem;">
+                <nav class="nav-tabs">
+                    <button class="nav-tab active" data-tab="tab-calculator" id="nav-btn-calculator">
+                        <i class="fa-solid fa-calculator"></i> Calculator & Tracker
+                    </button>
+                    <button class="nav-tab" data-tab="tab-simulator" id="nav-btn-simulator">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> "What-If" Simulator
+                    </button>
+                    <button class="nav-tab" data-tab="tab-scholarship" id="nav-btn-scholarship">
+                        <i class="fa-solid fa-award"></i> Scholarship Monitor
+                    </button>
+                    <button class="nav-tab" data-tab="tab-guide" id="nav-btn-guide">
+                        <i class="fa-solid fa-book-bookmark"></i> Grading & Policies
+                    </button>
+                </nav>
+                <button class="theme-toggle-btn" id="btn-theme-toggle" title="Toggle Dark/Light Mode">
+                    <i class="fa-solid fa-moon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <!-- Dashboard Summary Bar -->
+        <section class="dashboard-summary">
+            <div class="summary-card gwa-card">
+                <div class="summary-icon"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="summary-data">
+                    <span class="summary-label">Cumulative GWA</span>
+                    <h2 class="summary-value" id="overall-gwa">0.0000</h2>
+                    <span class="summary-subtext" id="gwa-precision-note">Evaluated to 4 decimal places</span>
+                </div>
+            </div>
+
+            <div class="summary-card honor-card">
+                <div class="summary-icon"><i class="fa-solid fa-medal"></i></div>
+                <div class="summary-data">
+                    <span class="summary-label">Honor Qualification</span>
+                    <h3 class="summary-value honor-badge" id="honor-status">Evaluating...</h3>
+                    <span class="summary-subtext" id="honor-subtext">Based on BU Handbook Sec. III</span>
+                </div>
+            </div>
+
+            <div class="summary-card standing-card">
+                <div class="summary-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="summary-data">
+                    <span class="summary-label">Academic Standing</span>
+                    <h3 class="summary-value standing-badge" id="academic-standing">Good Standing</h3>
+                    <span class="summary-subtext" id="standing-subtext">0 Deficiencies Detected</span>
+                </div>
+            </div>
+
+            <div class="summary-card units-card">
+                <div class="summary-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                <div class="summary-data">
+                    <span class="summary-label">Total Academic Units</span>
+                    <h2 class="summary-value" id="total-units">0.0</h2>
+                    <span class="summary-subtext" id="units-subtext">0 Courses Recorded</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 1: MAIN CALCULATOR -->
+        <div class="tab-content active" id="tab-calculator">
+            <!-- Toolbar Control Bar -->
+            <div class="toolbar-card">
+                <div class="preset-section">
+                    <span class="preset-title"><i class="fa-solid fa-bolt"></i> Quick Load College Presets:</span>
+                    <div class="preset-buttons">
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCS')">BUCS (Science)</button>
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCENG')">BUCEng (Engineering)</button>
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCBEM')">BUCBEM (Business)</button>
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCE')">BUCE (Education)</button>
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCN')">BUCN (Nursing)</button>
+                        <button class="btn btn-preset" onclick="loadCollegePreset('BUCIT')">BUCIT (Tech)</button>
+                    </div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="addNewSemester()" id="btn-add-semester">
+                        <i class="fa-solid fa-folder-plus"></i> Add Semester
+                    </button>
+                    <button class="btn btn-secondary" onclick="exportAcademicSummary()" id="btn-export">
+                        <i class="fa-solid fa-file-pdf"></i> Export / Print Sheet
+                    </button>
+                    <button class="btn btn-danger" onclick="confirmResetAll()" id="btn-reset-all">
+                        <i class="fa-solid fa-trash-can"></i> Clear All Data
+                    </button>
+                </div>
+            </div>
+
+            <!-- Semesters Container -->
+            <div id="semesters-container" class="semesters-grid">
+                <!-- Semester Cards injected dynamically via JS -->
+            </div>
+        </div>
+
+        <!-- TAB 2: "WHAT-IF" SIMULATOR -->
+        <div class="tab-content" id="tab-simulator">
+            <div class="card content-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-wand-magic-sparkles"></i> "What-If" Grade Scenario Simulator</h2>
+                    <p>Simulate how future academic performance will impact your cumulative GWA and honor standing.</p>
+                </div>
+                <div class="simulator-grid">
+                    <div class="sim-panel input-panel">
+                        <h3><i class="fa-solid fa-sliders"></i> Simulation Parameters</h3>
+                        <div class="form-group">
+                            <label for="sim-current-gwa">Current Cumulative GWA:</label>
+                            <input type="number" id="sim-current-gwa" step="0.0001" readonly class="form-control readonly-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="sim-current-units">Current Completed Units:</label>
+                            <input type="number" id="sim-current-units" readonly class="form-control readonly-input">
+                        </div>
+                        <hr class="divider">
+                        <div class="form-group">
+                            <label for="sim-future-units">Remaining / Future Units to Take:</label>
+                            <input type="number" id="sim-future-units" value="18" min="1" max="150" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="sim-target-average">Anticipated Average Grade in Future Units:</label>
+                            <div class="slider-container">
+                                <input type="range" id="sim-grade-slider" min="1.00" max="3.00" step="0.05" value="1.50" class="form-slider">
+                                <span class="slider-value" id="sim-slider-val">1.50</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sim-panel result-panel">
+                        <h3><i class="fa-solid fa-chart-pie"></i> Projected Outcome</h3>
+                        <div class="projected-box">
+                            <span class="proj-label">Projected Cumulative GWA</span>
+                            <h1 class="proj-value" id="proj-gwa-result">1.5000</h1>
+                            <div class="proj-honor-badge" id="proj-honor-result">Cum Laude Eligible</div>
+                        </div>
+                        
+                        <div class="target-finder-box">
+                            <h4><i class="fa-solid fa-bullseye"></i> Target Honor Finder</h4>
+                            <p>Select a goal honor status to find the exact minimum average grade required in remaining units:</p>
+                            <div class="target-buttons">
+                                <button class="btn btn-outline" onclick="calculateTargetRequired(1.25)">Summa (1.25)</button>
+                                <button class="btn btn-outline" onclick="calculateTargetRequired(1.45)">Magna (1.45)</button>
+                                <button class="btn btn-outline" onclick="calculateTargetRequired(1.75)">Cum Laude (1.75)</button>
+                            </div>
+                            <div class="target-result-text" id="target-result-output">Select a target goal above.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 3: SCHOLARSHIP MONITOR -->
+        <div class="tab-content" id="tab-scholarship">
+            <div class="card content-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-award"></i> Scholarship Maintenance Monitor</h2>
+                    <p>Track compliance with official retention requirements for Bicol University and external scholarship grants.</p>
+                </div>
+
+                <div class="scholarship-grid">
+                    <div class="scholarship-config card-inner">
+                        <h3><i class="fa-solid fa-gears"></i> Select or Configure Grant</h3>
+                        <div class="form-group">
+                            <label for="scholarship-preset">Preset Grant Programs:</label>
+                            <select id="scholarship-preset" class="form-control" onchange="applyScholarshipPreset()">
+                                <option value="custom">-- Custom Criteria --</option>
+                                <option value="dost">DOST-SEI Merit / RA 7687 (GWA ≤ 2.50 / No Failed)</option>
+                                <option value="ched_full">CHED Full Merit Scholarship (GWA ≤ 1.75)</option>
+                                <option value="ched_half">CHED Half Merit / Tulong Dunong (GWA ≤ 2.50)</option>
+                                <option value="tes">Tertiary Education Subsidy (TES - RA 10931)</option>
+                                <option value="bu_athletic">BU University Athlete / Cultural Grant</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="sch-max-gwa">Maximum Allowed GWA:</label>
+                            <input type="number" id="sch-max-gwa" step="0.05" value="2.00" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="sch-lowest-grade">Lowest Allowed Individual Grade:</label>
+                            <input type="number" id="sch-lowest-grade" step="0.1" value="2.5" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="sch-no-inc" checked> Disallow unresolved INC grades
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="sch-no-fail" checked> Disallow failing grades (5.0)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="scholarship-status-card card-inner">
+                        <h3><i class="fa-solid fa-clipboard-check"></i> Compliance Evaluation</h3>
+                        <div class="sch-status-display" id="sch-status-container">
+                            <div class="sch-status-icon" id="sch-icon"><i class="fa-solid fa-circle-check"></i></div>
+                            <h2 id="sch-status-title">Eligible / Compliant</h2>
+                            <p id="sch-status-desc">Your current GWA of 0.0000 meets the retention requirements.</p>
+                        </div>
+
+                        <div class="sch-checklist">
+                            <h4>Compliance Checklist:</h4>
+                            <ul>
+                                <li id="chk-gwa"><i class="fa-solid fa-check text-success"></i> GWA Threshold Check</li>
+                                <li id="chk-grade"><i class="fa-solid fa-check text-success"></i> Individual Grade Cap Check</li>
+                                <li id="chk-inc"><i class="fa-solid fa-check text-success"></i> No Incomplete (INC) Check</li>
+                                <li id="chk-fail"><i class="fa-solid fa-check text-success"></i> No Failing Mark (5.0) Check</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: GRADING SCALE & POLICIES -->
+        <div class="tab-content" id="tab-guide">
+            <div class="card content-card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-book-open-reader"></i> Official Bicol University Grading System & Academic Policies</h2>
+                    <p>Excerpts and specifications directly from the Bicol University Student Handbook (2019 Revised Edition).</p>
+                </div>
+
+                <div class="policy-section">
+                    <h3><i class="fa-solid fa-table-list"></i> Academic Grading Scale (Handbook Page 28, BOR Res. 89 s. 2006)</h3>
+                    <div class="table-responsive">
+                        <table class="policy-table">
+                            <thead>
+                                <tr>
+                                    <th>Grade Rating</th>
+                                    <th>Percentage Equivalent</th>
+                                    <th>Adjectival Rating</th>
+                                    <th>Handbook Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="grade-row-top">
+                                    <td><strong>1.0 – 1.4</strong></td>
+                                    <td>95 – 100%</td>
+                                    <td><span class="badge badge-outstanding">Outstanding</span></td>
+                                    <td>Student has mastered all of the course's major instructional objectives.</td>
+                                </tr>
+                                <tr class="grade-row-superior">
+                                    <td><strong>1.5 – 1.7</strong></td>
+                                    <td>92 – 94%</td>
+                                    <td><span class="badge badge-superior">Superior</span></td>
+                                    <td>Student has mastered major objectives and almost all minor objectives.</td>
+                                </tr>
+                                <tr class="grade-row-vs">
+                                    <td><strong>1.8 – 2.5</strong></td>
+                                    <td>84 – 91%</td>
+                                    <td><span class="badge badge-vs">Very Satisfactory</span></td>
+                                    <td>Student has mastered major objectives and most minor objectives.</td>
+                                </tr>
+                                <tr class="grade-row-sat">
+                                    <td><strong>2.6 – 2.8</strong></td>
+                                    <td>78 – 83%</td>
+                                    <td><span class="badge badge-sat">Satisfactory</span></td>
+                                    <td>Student has mastered some major objectives and most minor objectives.</td>
+                                </tr>
+                                <tr class="grade-row-fair">
+                                    <td><strong>2.9 – 3.0</strong></td>
+                                    <td>75 – 77%</td>
+                                    <td><span class="badge badge-pass">Fair / Passing</span></td>
+                                    <td>Lowest passing mark (3.0 = 75%). Mastery of basic required objectives.</td>
+                                </tr>
+                                <tr class="grade-row-conditional">
+                                    <td><strong>3.1 – 4.0</strong></td>
+                                    <td>Below 75%</td>
+                                    <td><span class="badge badge-cond">Conditional</span></td>
+                                    <td>Lowest possible mid-term rating. Requires remedial work.</td>
+                                </tr>
+                                <tr class="grade-row-fail">
+                                    <td><strong>5.0</strong></td>
+                                    <td>Failure</td>
+                                    <td><span class="badge badge-fail">Failure</span></td>
+                                    <td>Lowest possible final rating. Unearned course credit.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>INC</strong></td>
+                                    <td>Incomplete</td>
+                                    <td><span class="badge badge-inc">Incomplete</span></td>
+                                    <td>Incomplete course work. Excluded from GWA computation until completed. Given 1 school year to remove (Page 30).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>DRP</strong></td>
+                                    <td>Dropped</td>
+                                    <td><span class="badge badge-drp">Dropped</span></td>
+                                    <td>Officially dropped course within prescribed class hours. Excluded from GWA.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="policy-cards-grid">
+                    <div class="policy-box">
+                        <h4><i class="fa-solid fa-trophy text-gold"></i> Graduation with Honors Criteria (Page 30)</h4>
+                        <ul>
+                            <li><strong>Summa Cum Laude:</strong> GWA &le; 1.2500</li>
+                            <li><strong>Magna Cum Laude:</strong> 1.2500 &lt; GWA &le; 1.4500</li>
+                            <li><strong>Cum Laude:</strong> 1.4500 &lt; GWA &le; 1.7500</li>
+                            <li><strong>Residence & Load:</strong> Evaluated to 4 decimal places. Must carry regular prescribed semestral load (no underload) and have no grade lower than 3.0 in any subject.</li>
+                        </ul>
+                    </div>
+
+                    <div class="policy-box">
+                        <h4><i class="fa-solid fa-triangle-exclamation text-danger"></i> Scholastic Deficiency & Probation (Page 25)</h4>
+                        <ul>
+                            <li><strong>1 Failed Subject:</strong> Load in succeeding term reduced by 1 subject.</li>
+                            <li><strong>2 Failed Subjects:</strong> Placed on <strong>Academic Probation</strong>. Load restricted to maximum 75% of regular load.</li>
+                            <li><strong>Academic Dismissal:</strong> Student under probation who obtains a failing grade, OR any student obtaining 3 or more failing grades in one term is dropped from college rolls.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p>Bicol University GWA Calculator & Academic Evaluator &bull; Designed based on BU Student Handbook Code</p>
+            <p class="footer-sub">Character &bull; Leadership &bull; Scholarship &bull; Service</p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>
