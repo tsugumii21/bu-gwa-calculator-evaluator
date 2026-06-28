@@ -1,0 +1,980 @@
+/* ============================================================
+   mobile.css — BU GWA Calculator Mobile Responsiveness Fix
+   Breakpoints: 1024px / 768px / 480px
+   Allen Del Valle — BU GWA Calculator & Academic Evaluator
+   ============================================================ */
+
+/* --- Global: Prevent horizontal overflow at all breakpoints --- */
+html, body {
+    overflow-x: hidden;
+    max-width: 100vw;
+}
+
+/* ============================================================
+   Tablet (≤1024px)
+   ============================================================ */
+@media (max-width: 1024px) {
+
+    /* Navbar: tighten spacing */
+    .navbar-inner {
+        padding: var(--space-sm) var(--space-sm);
+        gap: var(--space-sm);
+    }
+
+    .app-name {
+        font-size: 1rem;
+    }
+
+    .nav-tab {
+        padding: 7px 12px;
+        font-size: 0.82rem;
+    }
+
+    /* Dashboard summary: 2x2 grid */
+    .dashboard-summary {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+    }
+
+    /* Simulator & Scholarship: keep 2-col but reduce gap */
+    .sim-grid, .sch-grid {
+        gap: var(--space-md);
+    }
+
+    /* Toolbar: ensure wrapping */
+    .toolbar-card {
+        padding: var(--space-sm);
+    }
+
+    .toolbar-section {
+        gap: 6px;
+    }
+
+    /* Policy tables: scrollable */
+    .guide-section {
+        padding: var(--space-md);
+    }
+
+    .policy-table {
+        display: block;
+    }
+
+    .guide-section .table-responsive,
+    .guide-section > div:has(> table) {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Modals: cap width */
+    .modal-content {
+        max-width: calc(100vw - 32px) !important;
+    }
+
+    /* Welcome card */
+    .welcome-card {
+        max-width: 560px;
+        padding: var(--space-xl) var(--space-lg);
+    }
+}
+
+
+/* ============================================================
+   Small Tablet (≤768px)
+   ============================================================ */
+@media (max-width: 768px) {
+
+    /* --- Navbar --- */
+    .navbar-inner {
+        flex-wrap: wrap;
+        padding: var(--space-sm);
+        gap: var(--space-xs);
+    }
+
+    .brand-section {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .app-title .app-subtitle {
+        display: none;
+    }
+
+    .app-name {
+        font-size: 0.95rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Tab bar: full width, scrollable row */
+    .nav-tabs-container {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+        padding: 4px;
+        gap: 2px;
+    }
+
+    .nav-tabs-container::-webkit-scrollbar {
+        display: none;
+    }
+
+    .nav-tab {
+        padding: 7px 10px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Theme toggle: stays top-right */
+    .theme-toggle-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+    }
+
+    /* --- Main container spacing --- */
+    .main-container {
+        padding: var(--space-md) var(--space-sm);
+    }
+
+    /* --- Dashboard summary: 2x2 grid --- */
+    .dashboard-summary {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-sm);
+    }
+
+    .summary-card {
+        padding: var(--space-md);
+        gap: var(--space-sm);
+    }
+
+    .icon-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+    }
+
+    .summary-value {
+        font-size: 1.4rem;
+    }
+
+    .summary-value.honor-badge,
+    .summary-value.standing-badge {
+        font-size: 1rem;
+    }
+
+    .summary-subtext {
+        font-size: 0.78rem;
+    }
+
+    /* --- Toolbar: wrap buttons --- */
+    .toolbar-card {
+        padding: var(--space-sm);
+    }
+
+    .toolbar-section.toolbar-actions {
+        gap: 6px !important;
+        justify-content: flex-start !important;
+    }
+
+    .toolbar-actions .btn-sm {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
+    /* --- Simulator & Scholarship: stack vertically --- */
+    .sim-grid, .sch-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- Semester cards --- */
+    .sem-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        padding: var(--space-sm);
+    }
+
+    .sem-title-group {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: var(--space-sm);
+    }
+
+    .sem-title-select {
+        min-width: 0;
+        max-width: 100%;
+        width: 100%;
+        font-size: 0.95rem;
+    }
+
+    .sem-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    /* Subject table: scrollable container */
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .subject-table th {
+        font-size: 0.72rem;
+        padding: 8px 6px;
+        white-space: nowrap;
+    }
+
+    .subject-table td {
+        padding: 6px;
+    }
+
+    .form-control-sm {
+        padding: 5px 8px;
+        font-size: 0.84rem;
+    }
+
+    .sem-footer {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    /* --- Section headers --- */
+    .section-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .section-desc {
+        font-size: 0.82rem;
+    }
+
+    /* --- Guide sections & Policy tables --- */
+    .guide-section {
+        padding: var(--space-md);
+        margin-bottom: var(--space-md);
+    }
+
+    .guide-section-title {
+        font-size: 1.05rem;
+    }
+
+    .policy-table th,
+    .policy-table td {
+        padding: 8px 10px;
+        font-size: 0.82rem;
+    }
+
+    /* Honors & Recognition grids */
+    .honors-grid, .recognition-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- About page --- */
+    .subtab-bar {
+        gap: 2px;
+        padding: 4px;
+    }
+
+    .subtab-btn {
+        padding: 6px 12px;
+        font-size: 0.82rem;
+    }
+
+    .about-features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    /* --- Modals --- */
+    .modal-overlay {
+        padding: var(--space-sm);
+        align-items: flex-start;
+        padding-top: 10vh;
+    }
+
+    .modal-content {
+        max-width: calc(100vw - 24px) !important;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    .modal-header h3 {
+        font-size: 1rem;
+    }
+
+    .modal-body {
+        padding: var(--space-md);
+    }
+
+    /* --- Welcome screen --- */
+    .welcome-card {
+        max-width: 480px;
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .welcome-title {
+        font-size: 1.6rem;
+    }
+
+    .welcome-logo {
+        width: 56px;
+        height: 56px;
+        font-size: 1.8rem;
+    }
+
+    .feat-chip {
+        padding: 5px 10px;
+        font-size: 0.76rem;
+    }
+
+    /* --- Footer --- */
+    .footer {
+        padding: var(--space-md) var(--space-sm);
+        font-size: 0.78rem;
+    }
+
+    .footer p {
+        margin-bottom: 4px;
+    }
+
+    /* Projected result box */
+    .projected-result-box {
+        padding: var(--space-lg);
+    }
+
+    .proj-gwa {
+        font-size: 2.2rem;
+    }
+
+    /* Scholarship status */
+    .sch-status-container {
+        flex-wrap: wrap;
+        padding: var(--space-md);
+    }
+
+    /* Achievement cards in modal */
+    .achieve-card {
+        padding: 14px;
+        gap: 12px;
+    }
+
+    .achieve-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 1.8rem;
+    }
+
+    .achieve-title {
+        font-size: 1.05rem;
+    }
+
+    /* Badges grid */
+    .badges-grid {
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    }
+
+    /* Print transcript: hidden on screen */
+    .print-transcript-header {
+        display: none;
+    }
+}
+
+
+/* ============================================================
+   Mobile (≤480px)
+   ============================================================ */
+@media (max-width: 480px) {
+
+    /* --- Navbar: compact --- */
+    .navbar-inner {
+        padding: 6px 8px;
+    }
+
+    .brand-logo {
+        width: 32px;
+        height: 32px;
+        font-size: 1rem;
+        border-radius: var(--radius-sm);
+    }
+
+    .app-name {
+        font-size: 0.85rem;
+        letter-spacing: 0;
+    }
+
+    /* Tab bar: icon-only with smaller labels */
+    .nav-tabs-container {
+        padding: 3px;
+        gap: 2px;
+        border-radius: 20px;
+    }
+
+    .nav-tab {
+        padding: 6px 8px;
+        font-size: 0.75rem;
+        gap: 4px;
+        border-radius: 16px;
+    }
+
+    .nav-tab .tab-label {
+        display: none;
+    }
+
+    .nav-tab i {
+        font-size: 1rem;
+    }
+
+    .theme-toggle-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.9rem;
+    }
+
+    /* --- Main container --- */
+    .main-container {
+        padding: var(--space-sm) var(--space-xs);
+    }
+
+    /* --- Dashboard: stacked single column --- */
+    .dashboard-summary {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .summary-card {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .summary-value {
+        font-size: 1.35rem;
+    }
+
+    .summary-label {
+        font-size: 0.72rem;
+    }
+
+    .info-help-btn {
+        width: 20px;
+        height: 20px;
+        font-size: 0.72rem;
+        top: 6px;
+        left: 6px;
+    }
+
+    /* --- Toolbar: full width stacked --- */
+    .toolbar-card {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .toolbar-section.toolbar-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
+    .toolbar-actions .btn-sm {
+        padding: 8px 6px;
+        font-size: 0.75rem;
+        justify-content: center;
+        width: 100%;
+        min-height: 40px;
+    }
+
+    /* --- Semester cards --- */
+    .sem-header {
+        padding: var(--space-xs) var(--space-sm);
+    }
+
+    .sem-title-select {
+        font-size: 0.88rem;
+        padding: 6px 8px;
+    }
+
+    .sem-title-group .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.78rem;
+    }
+
+    .sem-result-pill {
+        font-size: 0.75rem;
+        padding: 3px 8px;
+    }
+
+    .sem-actions {
+        gap: var(--space-xs);
+    }
+
+    .underload-toggle {
+        font-size: 0.75rem;
+    }
+
+    /* Subject table: mobile-optimized */
+    .subject-table th {
+        font-size: 0.68rem;
+        padding: 6px 4px;
+        letter-spacing: 0;
+    }
+
+    .subject-table td {
+        padding: 4px;
+    }
+
+    .form-control-sm {
+        padding: 5px 6px;
+        font-size: 16px;
+    }
+
+    .subject-table .btn-danger.btn-sm {
+        padding: 4px 8px;
+        min-width: 32px;
+        min-height: 32px;
+    }
+
+    .sem-footer {
+        padding: var(--space-xs) var(--space-sm);
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+
+    .sem-footer .btn-sm {
+        font-size: 0.78rem;
+        padding: 5px 10px;
+    }
+
+    /* --- Simulator --- */
+    .sim-panel {
+        padding: var(--space-md);
+    }
+
+    .panel-title {
+        font-size: 0.98rem;
+    }
+
+    .projected-result-box {
+        padding: var(--space-md);
+    }
+
+    .proj-label {
+        font-size: 0.75rem;
+    }
+
+    .proj-gwa {
+        font-size: 1.8rem;
+    }
+
+    .proj-honor {
+        font-size: 0.82rem;
+    }
+
+    .target-buttons {
+        gap: 4px;
+    }
+
+    .target-buttons .btn {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+    }
+
+    .target-result {
+        font-size: 0.82rem;
+        padding: var(--space-sm);
+    }
+
+    /* --- Scholarship --- */
+    .sch-status-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+        padding: var(--space-md);
+    }
+
+    .sch-status-icon {
+        font-size: 1.5rem;
+    }
+
+    .sch-status-text h3 {
+        font-size: 1rem;
+    }
+
+    .sch-checklist li {
+        font-size: 0.82rem;
+        padding: 6px 10px;
+    }
+
+    /* --- Policies / Guide section --- */
+    .guide-section {
+        padding: var(--space-sm);
+        margin-bottom: var(--space-sm);
+        border-radius: var(--radius-md);
+    }
+
+    .guide-section-title {
+        font-size: 0.95rem;
+        gap: 6px;
+    }
+
+    .guide-note {
+        font-size: 0.78rem;
+    }
+
+    .policy-table th,
+    .policy-table td {
+        padding: 6px 8px;
+        font-size: 0.78rem;
+    }
+
+    .adjectival-badge {
+        font-size: 0.68rem;
+        padding: 2px 6px;
+    }
+
+    /* Honors cards */
+    .honors-grid, .recognition-grid {
+        grid-template-columns: 1fr;
+        gap: var(--space-sm);
+    }
+
+    .honor-card, .recognition-card {
+        padding: var(--space-sm);
+    }
+
+    .honor-title {
+        font-size: 0.95rem;
+    }
+
+    .honor-desc, .recognition-card p {
+        font-size: 0.78rem;
+    }
+
+    /* --- About page --- */
+    .section-header h2 {
+        font-size: 1.05rem;
+        gap: 6px;
+    }
+
+    .section-desc {
+        font-size: 0.78rem;
+    }
+
+    .subtab-bar {
+        padding: 3px;
+        gap: 2px;
+    }
+
+    .subtab-btn {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        gap: 4px;
+    }
+
+    /* About hero */
+    .about-hero-box {
+        padding: var(--space-md) !important;
+    }
+
+    .about-hero-box h3 {
+        font-size: 1.2rem !important;
+    }
+
+    .about-hero-box p {
+        font-size: 0.85rem !important;
+    }
+
+    .about-hero-box .btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.82rem !important;
+    }
+
+    /* About feature cards */
+    .about-features-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-sm) !important;
+    }
+
+    .about-feat-card {
+        padding: var(--space-sm) !important;
+    }
+
+    /* Citation cards grid */
+    .about-subtab-content [style*="grid-template-columns: repeat(auto-fit, minmax(280px"] {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-sm) !important;
+    }
+
+    /* Developer box */
+    .developer-box {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .dev-links {
+        flex-direction: column;
+    }
+
+    .dev-links .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Feedback / Suggestion form */
+    #suggestion-form [style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Disclaimer box */
+    .welcome-disclaimer-box {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .disclaimer-header {
+        font-size: 0.9rem !important;
+    }
+
+    .disclaimer-text {
+        font-size: 0.82rem;
+    }
+
+    .copyright-notice {
+        font-size: 0.76rem !important;
+    }
+
+    /* --- Modals --- */
+    .modal-overlay {
+        padding: var(--space-xs);
+        align-items: flex-start;
+        padding-top: 5vh;
+    }
+
+    .modal-content {
+        max-width: calc(100vw - 16px) !important;
+        max-height: 85vh;
+        overflow-y: auto;
+        border-radius: var(--radius-md);
+    }
+
+    .modal-header {
+        padding: 12px 14px;
+    }
+
+    .modal-header h3 {
+        font-size: 0.92rem;
+        gap: 6px;
+    }
+
+    .modal-body {
+        padding: var(--space-sm) var(--space-md);
+    }
+
+    .modal-footer {
+        padding: 10px 14px;
+        flex-wrap: wrap;
+    }
+
+    .modal-footer .btn {
+        flex: 1;
+        min-width: 0;
+        justify-content: center;
+        min-height: 40px;
+    }
+
+    /* Modal inner cards */
+    .achieve-card {
+        padding: 10px;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .achieve-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+    }
+
+    .achieve-title {
+        font-size: 0.95rem;
+    }
+
+    .achieve-subtext {
+        font-size: 0.82rem;
+    }
+
+    .quote-box {
+        padding: 12px 14px;
+        gap: 8px;
+    }
+
+    .quote-text {
+        font-size: 0.82rem;
+    }
+
+    .gap-pill {
+        font-size: 0.78rem;
+        padding: 3px 10px;
+    }
+
+    .badges-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 6px;
+    }
+
+    .badge-box {
+        padding: 8px;
+    }
+
+    .badge-icon {
+        font-size: 1.2rem;
+    }
+
+    .badge-title {
+        font-size: 0.72rem;
+    }
+
+    .badge-desc {
+        font-size: 0.65rem;
+    }
+
+    /* Term recognition items in modal */
+    .term-recog-item {
+        padding: 8px 10px;
+        font-size: 0.82rem;
+    }
+
+    .recog-pill {
+        font-size: 0.72rem;
+        padding: 2px 8px;
+    }
+
+    /* Bulk paste modal */
+    .bulk-textarea {
+        font-size: 0.82rem;
+    }
+
+    .modal-instruction {
+        font-size: 0.82rem;
+    }
+
+    .modal-format-list {
+        font-size: 0.75rem;
+    }
+
+    /* --- Welcome screen --- */
+    .welcome-screen {
+        padding: var(--space-md);
+    }
+
+    .welcome-card {
+        max-width: 100%;
+        padding: var(--space-lg) var(--space-md);
+    }
+
+    .welcome-logo {
+        width: 52px;
+        height: 52px;
+        font-size: 1.6rem;
+        margin-bottom: var(--space-sm);
+    }
+
+    .welcome-title {
+        font-size: 1.35rem;
+    }
+
+    .welcome-subtitle {
+        font-size: 0.82rem;
+    }
+
+    .welcome-features {
+        gap: 6px;
+        margin-bottom: var(--space-lg);
+    }
+
+    .feat-chip {
+        padding: 4px 8px;
+        font-size: 0.72rem;
+        gap: 5px;
+    }
+
+    .welcome-btn {
+        padding: 12px 16px;
+        font-size: 0.95rem;
+    }
+
+    /* --- Footer --- */
+    .footer {
+        padding: var(--space-md) var(--space-sm);
+        font-size: 0.74rem;
+    }
+
+    .footer p {
+        line-height: 1.5;
+    }
+
+    /* --- Empty state --- */
+    .empty-state {
+        padding: var(--space-xl) var(--space-sm);
+    }
+
+    .empty-state-icon {
+        font-size: 2.2rem;
+    }
+
+    /* --- Form elements: prevent iOS auto-zoom --- */
+    input, select, textarea {
+        font-size: 16px !important;
+    }
+
+    /* Touch targets */
+    .btn {
+        min-height: 40px;
+    }
+
+    .btn-sm {
+        min-height: 36px;
+    }
+
+    /* Preset chips */
+    .toolbar-section:not(.toolbar-actions) {
+        width: 100%;
+    }
+
+    .preset-chip {
+        padding: 5px 8px;
+        font-size: 0.72rem;
+    }
+
+    .toolbar-label {
+        font-size: 0.78rem;
+    }
+
+    /* Checkbox / underload */
+    .checkbox-label {
+        font-size: 0.82rem;
+    }
+
+    /* Citation cards in handbook policy governance */
+    .citation-category {
+        font-size: 0.78rem !important;
+    }
+}
+
+
+/* ============================================================
+   Print: ensure mobile overrides don't affect print
+   ============================================================ */
+@media print {
+    .nav-tabs-container,
+    .toolbar-card,
+    .modal-overlay,
+    .welcome-screen,
+    .footer,
+    .theme-toggle-btn {
+        /* Let print.css handle these */
+    }
+
+    .print-transcript-header {
+        display: block !important;
+    }
+}
