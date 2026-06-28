@@ -747,14 +747,25 @@ html, body {
     }
 
     .subtab-bar {
-        padding: 3px;
-        gap: 2px;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none;
+        padding: 4px !important;
+        gap: 6px !important;
+    }
+
+    .subtab-bar::-webkit-scrollbar {
+        display: none;
     }
 
     .subtab-btn {
-        padding: 6px 10px;
-        font-size: 0.78rem;
-        gap: 4px;
+        flex-shrink: 0 !important;
+        padding: 8px 14px !important;
+        font-size: 0.82rem !important;
+        border-radius: var(--radius-sm) !important;
     }
 
     /* About hero */
@@ -809,6 +820,16 @@ html, body {
     /* Feedback / Suggestion form */
     #suggestion-form [style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
+    }
+
+    #sug-message, .form-control {
+        font-family: var(--font-body) !important;
+    }
+
+    #suggestion-form button[type="submit"] {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 44px !important;
     }
 
     /* Disclaimer box */
