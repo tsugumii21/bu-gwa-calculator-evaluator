@@ -409,11 +409,7 @@ function renderSemesters() {
                             <tr>
                                 <td><input type="text" list="subject-suggestions" class="form-control-sm" value="${escapeHtml(sub.code)}" placeholder="e.g. CS 111" onchange="updateSubject(${semIndex}, ${subIndex}, 'code', this.value)" aria-label="Course Code"></td>
                                 <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.name)}" placeholder="e.g. Computer Programming" onchange="updateSubject(${semIndex}, ${subIndex}, 'name', this.value)" aria-label="Course Description"></td>
-                                <td>
-                                    <select class="form-control-sm" onchange="updateSubject(${semIndex}, ${subIndex}, 'grade', this.value)" aria-label="Grade Rating">
-                                        ${generateGradeOptions(sub.grade)}
-                                    </select>
-                                </td>
+                                <td><input type="number" class="form-control-sm" value="${sub.grade}" min="1.0" max="5.0" step="0.1" inputmode="decimal" placeholder="1.0" onchange="updateSubject(${semIndex}, ${subIndex}, 'grade', this.value)" aria-label="Grade Rating"></td>
                                 <td><input type="number" class="form-control-sm" value="${sub.units}" min="0" max="12" step="0.5" inputmode="decimal" onchange="updateSubject(${semIndex}, ${subIndex}, 'units', parseFloat(this.value) || 0)" aria-label="Credit Units"></td>
                                 <td style="text-align: center;">
                                     <button class="btn btn-danger btn-sm" onclick="removeSubject(${semIndex}, ${subIndex})" title="Remove Subject"><i class="fa-solid fa-xmark"></i></button>
