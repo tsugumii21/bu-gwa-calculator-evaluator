@@ -492,6 +492,3 @@ function evaluateAcademicAchievements() {
 
     container.innerHTML = html;
 }
-
-    container.innerHTML = html;
-}
