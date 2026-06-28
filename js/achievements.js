@@ -420,7 +420,7 @@ function evaluateAcademicAchievements() {
         semesters.forEach((sem, idx) => {
             if (!sem.computed) {
                 html += `<div class="term-recog-item">`;
-                html += `<div><strong>${escapeHtml(sem.title)}</strong> <span class="term-gpa-tag" style="background:var(--card-header-bg); color:var(--text-secondary);">Awaiting Computation</span></div>`;
+                html += `<div class="term-recog-info"><strong>${escapeHtml(sem.title)}</strong> <span class="term-gpa-tag" style="background:var(--card-header-bg); color:var(--text-secondary);">Awaiting Computation</span></div>`;
                 html += `<button class="btn btn-gold btn-sm" style="padding:3px 10px; font-size:0.78rem;" onclick="openSemesterComputeModal(${idx})"><i class="fa-solid fa-calculator"></i> Compute GPA</button>`;
                 html += `</div>`;
                 return;
@@ -467,7 +467,7 @@ function evaluateAcademicAchievements() {
             }
 
             html += `<div class="term-recog-item">`;
-            html += `<div><strong>${escapeHtml(sem.title)}</strong> <span class="term-gpa-tag">GPA: ${semGWA.toFixed(4)}</span></div>`;
+            html += `<div class="term-recog-info"><strong>${escapeHtml(sem.title)}</strong> <span class="term-gpa-tag">GPA: ${semGWA.toFixed(4)}</span></div>`;
             html += `<span class="recog-pill ${statusBadge}"><i class="fa-solid ${icon}"></i> ${statusTitle}</span>`;
             html += `</div>`;
         });

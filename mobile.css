@@ -1049,6 +1049,19 @@ html, body {
         font-size: 0.82rem;
     }
 
+    .term-recog-info {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 2px !important;
+    }
+
+    .term-gpa-tag {
+        display: inline-block !important;
+        margin-left: 0 !important;
+        margin-top: 2px !important;
+    }
+
     .recog-pill {
         font-size: 0.72rem;
         padding: 2px 8px;
