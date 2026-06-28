@@ -1,6 +1,18 @@
-# 🎓 BU GWA Calculator & Academic Evaluator — Bicol University
+<p align="center">
+  <img src="assets/logo.png" alt="BU GWA Calculator Logo" width="120" />
+</p>
+
+# 🎓 BU GWA Calculator & Academic Evaluator
 
 An unofficial, modern web application designed for Bicol University students to compute General Weighted Average (GWA), monitor semester GPAs, evaluate honor qualification standings, simulate future academic performance, and track scholarship retention per official BU Student Handbook guidelines.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/font%20awesome-%23528DD7.svg?style=for-the-badge&logo=fontawesome&logoColor=white" alt="FontAwesome" />
+  <img src="https://img.shields.io/badge/pdf.js-%23FF0000.svg?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF.js" />
+</p>
 
 👉 **Live Repository**: [https://github.com/tsugumii21/bu-gwa-calculator-evaluator](https://github.com/tsugumii21/bu-gwa-calculator-evaluator)
 
@@ -27,6 +39,14 @@ An unofficial, modern web application designed for Bicol University students to 
 ---
 
 ## 🛠️ Tech Stack
+
+<p align="left">
+  <img src="https://img.shields.io/badge/html5-%23E34F26.svg?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/css3-%231572B6.svg?style=for-the-badge&logo=css3&logoColor=white" alt="CSS3" />
+  <img src="https://img.shields.io/badge/javascript-%23F7DF1E.svg?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript" />
+  <img src="https://img.shields.io/badge/font%20awesome-%23528DD7.svg?style=for-the-badge&logo=fontawesome&logoColor=white" alt="FontAwesome" />
+  <img src="https://img.shields.io/badge/pdf.js-%23FF0000.svg?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF.js" />
+</p>
 
 - **Frontend**: HTML5, Vanilla CSS3 (Custom Tokens, Flexbox, Grid), JavaScript ES6+
 - **Document Processing**: `PDF.js` (client-side worker PDF text parser)
