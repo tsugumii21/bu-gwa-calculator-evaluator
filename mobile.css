@@ -711,10 +711,22 @@ html, body {
     /* --- Simulator --- */
     .sim-panel {
         padding: var(--space-md);
+        gap: var(--space-md);
+    }
+
+    .sim-section-group {
+        padding: 12px;
+    }
+
+    .sim-form-row {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
     }
 
     .panel-title {
-        font-size: 0.98rem;
+        font-size: 0.92rem;
+        flex-wrap: wrap;
+        gap: 4px;
     }
 
     .projected-result-box {
@@ -742,7 +754,7 @@ html, body {
 
     .target-buttons .btn {
         padding: 8px 4px !important;
-        font-size: 0.75rem !important;
+        font-size: 0.72rem !important;
         white-space: nowrap !important;
         justify-content: center !important;
         width: 100% !important;

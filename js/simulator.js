@@ -5,8 +5,10 @@ function initSimulator() {
     const futureUnits = document.getElementById("sim-future-units");
 
     if (slider) {
+        const valElem = document.getElementById("sim-slider-val");
+        if (valElem) valElem.innerText = parseFloat(slider.value).toFixed(2);
+
         slider.addEventListener("input", () => {
-            const valElem = document.getElementById("sim-slider-val");
             if (valElem) valElem.innerText = parseFloat(slider.value).toFixed(2);
             updateSimulator();
         });
