@@ -1138,6 +1138,11 @@ html, body {
         max-width: 290px !important;
         width: 90% !important;
         aspect-ratio: 1 / 1 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        box-sizing: border-box !important;
     }
 
     .empty-state h3 {
