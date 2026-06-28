@@ -599,11 +599,12 @@ html, body {
     .subject-table tbody tr {
         display: flex !important;
         flex-wrap: wrap !important;
-        gap: 8px !important;
-        padding: 10px !important;
-        margin: 8px 6px !important;
+        gap: 10px 8px !important;
+        padding: 12px 10px !important;
+        margin: 8px 4px !important;
         background: var(--card-bg) !important;
         border: 1px solid var(--border-color) !important;
+        border-left: 4px solid var(--bu-blue) !important;
         border-radius: var(--radius-md) !important;
         box-shadow: var(--shadow-sm) !important;
     }
@@ -611,16 +612,51 @@ html, body {
     .subject-table td {
         padding: 0 !important;
         border: none !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 3px !important;
     }
 
-    /* Row 1: Course Code (32%) & Course Description (60%) */
+    .subject-table td:nth-child(1)::before {
+        content: "CODE (OPTIONAL)";
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
+    }
+
+    .subject-table td:nth-child(2)::before {
+        content: "COURSE DESCRIPTION";
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
+    }
+
+    .subject-table td:nth-child(3)::before {
+        content: "GRADE RATING";
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
+    }
+
+    .subject-table td:nth-child(4)::before {
+        content: "CREDIT UNITS";
+        font-size: 0.62rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        letter-spacing: 0.3px;
+    }
+
+    /* Row 1: Course Code (30%) & Course Description (66%) */
     .subject-table td:nth-child(1) {
-        flex: 1 1 32% !important;
-        min-width: 90px !important;
+        flex: 1 1 30% !important;
+        min-width: 85px !important;
     }
 
     .subject-table td:nth-child(2) {
-        flex: 2 1 60% !important;
+        flex: 2 1 66% !important;
         min-width: 150px !important;
     }
 
@@ -637,17 +673,20 @@ html, body {
         flex: 0 0 auto !important;
         margin-left: auto !important;
         display: flex !important;
-        align-items: center !important;
+        align-items: flex-end !important;
+        justify-content: flex-end !important;
     }
 
     .subject-table td:nth-child(5) .btn {
-        width: 38px !important;
-        height: 38px !important;
-        min-width: 38px !important;
-        min-height: 38px !important;
+        width: 36px !important;
+        height: 36px !important;
+        min-width: 36px !important;
+        min-height: 36px !important;
         padding: 0 !important;
         display: flex !important;
         align-items: center !important;
+        justify-content: center !important;
+    }
         justify-content: center !important;
     }
 
@@ -982,12 +1021,12 @@ html, body {
     }
 
     .badges-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 6px;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 8px !important;
     }
 
     .badge-box {
-        padding: 8px;
+        padding: 10px 8px !important;
     }
 
     .badge-icon {
