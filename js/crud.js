@@ -97,11 +97,11 @@ function addSubject(semIndex) {
 }
 
 function removeSubject(semIndex, subIndex) {
-    showDeleteModal("Are you sure you want to remove this course from your schedule?", () => {
+    if (semesters[semIndex] && semesters[semIndex].subjects) {
         semesters[semIndex].subjects.splice(subIndex, 1);
         renderSemesters();
         saveData();
-    });
+    }
 }
 
 function updateSubject(semIndex, subIndex, field, val) {

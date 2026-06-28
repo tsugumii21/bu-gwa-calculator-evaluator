@@ -2,10 +2,28 @@
 
 function initTabs() {
     const tabs = document.querySelectorAll(".nav-tab");
+    const menuBtn = document.getElementById("btn-mobile-menu");
+    const navbarInner = document.querySelector(".navbar-inner");
+
+    if (menuBtn && navbarInner) {
+        menuBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            navbarInner.classList.toggle("mobile-menu-open");
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener("click", (e) => {
+            if (!navbarInner.contains(e.target)) {
+                navbarInner.classList.remove("mobile-menu-open");
+            }
+        });
+    }
+
     tabs.forEach(tab => {
         tab.addEventListener("click", () => {
             const target = tab.getAttribute("data-tab");
             activateTab(target);
+            if (navbarInner) navbarInner.classList.remove("mobile-menu-open");
         });
     });
 

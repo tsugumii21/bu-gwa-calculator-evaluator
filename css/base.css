@@ -26,6 +26,15 @@ body {
 .text-primary { color: var(--bu-blue) !important; }
 .text-muted { color: var(--text-muted) !important; }
 
+/* Hide Datalist Picker Indicator Arrow */
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+}
+
 /* Animations */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }

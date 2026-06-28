@@ -3,12 +3,7 @@
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     if (!welcomeScreen) return;
-    const seen = sessionStorage.getItem("bu_gwa_welcome_seen");
-    if (seen === "true") {
-        welcomeScreen.style.display = "none";
-    } else {
-        welcomeScreen.style.display = "flex";
-    }
+    welcomeScreen.style.display = "flex";
 }
 
 function dismissWelcomeScreen() {
@@ -29,7 +24,6 @@ function dismissWelcomeScreen() {
             }
         }, 400);
     }
-    sessionStorage.setItem("bu_gwa_welcome_seen", "true");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
