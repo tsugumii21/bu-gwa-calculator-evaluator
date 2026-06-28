@@ -1,0 +1,220 @@
+/* ==========================================================================
+   BU GWA Calculator — Dark Theme Overrides
+   ========================================================================== */
+
+[data-theme="dark"] {
+    --bg-main: #0f172a;
+    --card-bg: #1e293b;
+    --card-header-bg: #334155;
+
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+
+    --border-color: #334155;
+    --input-bg: #0f172a;
+
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+}
+
+/* ==========================================================================
+   Smooth Theme Transition
+   ========================================================================== */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+    transition: background-color 300ms ease,
+                color 300ms ease,
+                border-color 300ms ease,
+                box-shadow 300ms ease,
+                fill 300ms ease !important;
+}
+
+/* ==========================================================================
+   Summary Dashboard Cards
+   ========================================================================== */
+[data-theme="dark"] .summary-label {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .summary-value {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .summary-value.honor-badge,
+[data-theme="dark"] .summary-value.standing-badge {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .summary-subtext {
+    color: #94a3b8;
+}
+
+/* ==========================================================================
+   Summary Card Icon Circles
+   ========================================================================== */
+[data-theme="dark"] .icon-gold { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+[data-theme="dark"] .icon-green { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+[data-theme="dark"] .icon-purple { background: rgba(124, 58, 237, 0.2); color: #a78bfa; }
+[data-theme="dark"] .icon-orange { background: rgba(234, 88, 12, 0.2); color: #fb923c; }
+
+/* ==========================================================================
+   Text Color Utility Overrides
+   ========================================================================== */
+[data-theme="dark"] .text-primary { color: #60a5fa !important; }
+[data-theme="dark"] .text-gold { color: #fbbf24 !important; }
+[data-theme="dark"] .text-danger { color: #f87171 !important; }
+[data-theme="dark"] .text-success { color: #34d399 !important; }
+[data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+
+/* ==========================================================================
+   Policy Tab: Section Headers, Notes & Tables
+   ========================================================================== */
+[data-theme="dark"] .section-header h2 {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .section-desc {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .guide-section-title {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .guide-note {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .policy-table th {
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="dark"] .policy-table td {
+    color: #e2e8f0;
+    border-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .policy-table td strong {
+    color: #f1f5f9;
+}
+
+/* ==========================================================================
+   About Page: Hero Box, Feature Cards & Developer Section
+   ========================================================================== */
+[data-theme="dark"] .about-hero-box h3,
+[data-theme="dark"] .developer-box h4 {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .about-hero-box p,
+[data-theme="dark"] .developer-box .dev-info p {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .about-feat-card h4 {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .about-feat-card p {
+    color: #94a3b8;
+}
+
+/* ==========================================================================
+   About Page: Disclaimer Box & Copyright
+   ========================================================================== */
+[data-theme="dark"] .welcome-disclaimer-box {
+    background: rgba(234, 88, 12, 0.08);
+    border-color: rgba(234, 88, 12, 0.2);
+}
+
+[data-theme="dark"] .disclaimer-header {
+    color: #fb923c;
+}
+
+[data-theme="dark"] .disclaimer-text p {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .disclaimer-text p strong {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .copyright-notice {
+    color: #94a3b8;
+    border-color: rgba(234, 88, 12, 0.15);
+}
+
+/* ==========================================================================
+   About Page: Handbook Citation Category Labels
+   ========================================================================== */
+.citation-category {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.citation-cat-blue   { color: var(--bu-blue); }
+.citation-cat-gold   { color: #b45309; }
+.citation-cat-orange { color: #c2410c; }
+.citation-cat-danger { color: var(--color-danger); }
+.citation-cat-green  { color: var(--color-success); }
+.citation-cat-azure  { color: var(--bu-azure); }
+
+[data-theme="dark"] .citation-cat-blue   { color: #60a5fa; }
+[data-theme="dark"] .citation-cat-gold   { color: #fbbf24; }
+[data-theme="dark"] .citation-cat-orange { color: #fb923c; }
+[data-theme="dark"] .citation-cat-danger { color: #f87171; }
+[data-theme="dark"] .citation-cat-green  { color: #34d399; }
+[data-theme="dark"] .citation-cat-azure  { color: #38bdf8; }
+
+/* ==========================================================================
+   Scholarship Tab
+   ========================================================================== */
+[data-theme="dark"] .panel-title {
+    color: #e2e8f0;
+}
+
+[data-theme="dark"] .sch-checklist li {
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .sch-status-text h3 {
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .sch-status-text p {
+    color: #94a3b8;
+}
+
+/* ==========================================================================
+   Semester Cards: Footer & Labels
+   ========================================================================== */
+[data-theme="dark"] .sem-footer label {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .sem-footer .total-units {
+    color: #cbd5e1;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+[data-theme="dark"] .footer {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .footer a {
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .footer a:hover {
+    color: #93c5fd;
+}

@@ -1,12 +1,41 @@
 // Bicol University GWA Calculator & Academic Evaluator JavaScript Core
 
-// Global State
-let semesters = [];
+/* ==========================================================================
+   SECTION 1: CONSTANTS
+   ========================================================================== */
 
-// College Curriculum Presets
+const VALID_GRADES = [
+    { val: "1.00", label: "1.00 — Outstanding (99-100%)" },
+    { val: "1.25", label: "1.25 — (96-98%)" },
+    { val: "1.50", label: "1.50 — Superior (93-95%)" },
+    { val: "1.75", label: "1.75 — (91-92%)" },
+    { val: "2.00", label: "2.00 — Very Satisfactory (89-90%)" },
+    { val: "2.25", label: "2.25 — (87-88%)" },
+    { val: "2.50", label: "2.50 — (84-86%)" },
+    { val: "2.75", label: "2.75 — Satisfactory (82-83%)" },
+    { val: "3.00", label: "3.00 — Passing (75-81%)" },
+    { val: "5.00", label: "5.00 — Failure (Below 75%)" },
+    { val: "INC", label: "INC — Incomplete (Excluded)" },
+    { val: "DRP", label: "DRP — Dropped (Excluded)" }
+];
+
+const HONOR_THRESHOLDS = {
+    SUMMA: { maxGWA: 1.2500, label: "Summa Cum Laude" },
+    MAGNA: { maxGWA: 1.4500, label: "Magna Cum Laude" },
+    CUM:   { maxGWA: 1.7500, label: "Cum Laude" }
+};
+
+const SCHOLARSHIP_PRESETS = {
+    dost:        { name: "DOST-SEI Merit",      maxGWA: 2.50, lowestGrade: 3.0, noInc: true,  noFail: true  },
+    ched_full:   { name: "CHED Full Merit",      maxGWA: 1.75, lowestGrade: 2.5, noInc: true,  noFail: true  },
+    ched_half:   { name: "CHED Half Merit",      maxGWA: 2.50, lowestGrade: 3.0, noInc: true,  noFail: true  },
+    tes:         { name: "TES (Tertiary Ed)",    maxGWA: 3.00, lowestGrade: 3.0, noInc: false, noFail: false },
+    bu_athletic: { name: "BU Athletic Scholar",  maxGWA: 3.00, lowestGrade: 3.0, noInc: true,  noFail: true  }
+};
+
 const COLLEGE_PRESETS = {
     BUCS: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "GEC 11", name: "Understanding the Self", grade: "1.25", units: 3 },
             { code: "GEC 12", name: "Readings in Philippine History", grade: "1.50", units: 3 },
             { code: "CS 111", name: "Introduction to Computing", grade: "1.25", units: 3 },
@@ -14,7 +43,7 @@ const COLLEGE_PRESETS = {
             { code: "MATH 111", name: "Calculus 1", grade: "1.75", units: 4 },
             { code: "NSTP 1", name: "National Service Training Program 1", grade: "1.25", units: 3 }
         ]},
-        { title: "1st Year - 2nd Semester", subjects: [
+        { title: "1st Year - 2nd Semester", underload: false, subjects: [
             { code: "GEC 13", name: "The Contemporary World", grade: "1.50", units: 3 },
             { code: "GEC 14", name: "Mathematics in the Modern World", grade: "1.25", units: 3 },
             { code: "CS 121", name: "Computer Programming 2", grade: "1.50", units: 3 },
@@ -23,7 +52,7 @@ const COLLEGE_PRESETS = {
         ]}
     ],
     BUCENG: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "MATH 101", name: "Calculus for Engineers 1", grade: "1.75", units: 4 },
             { code: "CHEM 101", name: "Chemistry for Engineers", grade: "1.50", units: 4 },
             { code: "ENG 101", name: "Engineering Graphics", grade: "1.50", units: 3 },
@@ -32,7 +61,7 @@ const COLLEGE_PRESETS = {
         ]}
     ],
     BUCBEM: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "BM 101", name: "Principles of Management", grade: "1.50", units: 3 },
             { code: "ECON 101", name: "Basic Microeconomics", grade: "1.25", units: 3 },
             { code: "ACT 101", name: "Financial Accounting 1", grade: "1.75", units: 3 },
@@ -40,21 +69,21 @@ const COLLEGE_PRESETS = {
         ]}
     ],
     BUCE: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "EDUC 101", name: "The Child and Adolescent Learners", grade: "1.25", units: 3 },
             { code: "EDUC 102", name: "The Teaching Profession", grade: "1.50", units: 3 },
             { code: "GEC 11", name: "Understanding the Self", grade: "1.25", units: 3 }
         ]}
     ],
     BUCN: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "NURS 101", name: "Anatomy and Physiology", grade: "1.50", units: 5 },
             { code: "NURS 102", name: "Theoretical Foundations in Nursing", grade: "1.25", units: 3 },
             { code: "GEC 11", name: "Understanding the Self", grade: "1.25", units: 3 }
         ]}
     ],
     BUCIT: [
-        { title: "1st Year - 1st Semester", subjects: [
+        { title: "1st Year - 1st Semester", underload: false, subjects: [
             { code: "IT 101", name: "Introduction to IT", grade: "1.25", units: 3 },
             { code: "IT 102", name: "Computer Hardware Fundamentals", grade: "1.50", units: 3 },
             { code: "GEC 11", name: "Understanding the Self", grade: "1.25", units: 3 }
@@ -62,7 +91,41 @@ const COLLEGE_PRESETS = {
     ]
 };
 
-// Initialize App
+/* ==========================================================================
+   SECTION 2: STATE
+   ========================================================================== */
+
+let semesters = [];
+const STORAGE_KEY = "bu_gwa_semesters";
+const THEME_KEY = "bu_gwa_theme";
+
+function saveData() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(semesters));
+    updateGlobalSummary();
+}
+
+function loadSavedData() {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+        try {
+            semesters = JSON.parse(saved);
+        } catch (e) {
+            semesters = [];
+        }
+    }
+    
+    if (!semesters || !Array.isArray(semesters) || semesters.length === 0) {
+        loadCollegePreset('BUCS', false);
+    } else {
+        renderSemesters();
+        updateGlobalSummary();
+    }
+}
+
+/* ==========================================================================
+   SECTION 3: INITIALIZATION
+   ========================================================================== */
+
 document.addEventListener("DOMContentLoaded", () => {
     initTheme();
     initTabs();
@@ -71,18 +134,17 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSavedData();
 });
 
-// Theme Management (Light / Dark Mode)
+/* ==========================================================================
+   SECTION 4: THEME MANAGEMENT
+   ========================================================================== */
+
 function initTheme() {
-    const savedTheme = localStorage.getItem("bu_gwa_theme");
+    const savedTheme = localStorage.getItem(THEME_KEY);
     const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     
-    if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
-        document.documentElement.setAttribute("data-theme", "dark");
-        updateThemeIcon("dark");
-    } else {
-        document.documentElement.setAttribute("data-theme", "light");
-        updateThemeIcon("light");
-    }
+    const activeTheme = savedTheme ? savedTheme : (prefersDark ? "dark" : "light");
+    document.documentElement.setAttribute("data-theme", activeTheme);
+    updateThemeIcon(activeTheme);
 
     const toggleBtn = document.getElementById("btn-theme-toggle");
     if (toggleBtn) {
@@ -95,7 +157,7 @@ function toggleTheme() {
     const newTheme = currentTheme === "dark" ? "light" : "dark";
     
     document.documentElement.setAttribute("data-theme", newTheme);
-    localStorage.setItem("bu_gwa_theme", newTheme);
+    localStorage.setItem(THEME_KEY, newTheme);
     updateThemeIcon(newTheme);
 }
 
@@ -112,7 +174,10 @@ function updateThemeIcon(theme) {
     }
 }
 
-// Tab Navigation
+/* ==========================================================================
+   SECTION 5: TAB CONTROLLER
+   ========================================================================== */
+
 function initTabs() {
     const tabs = document.querySelectorAll(".nav-tab");
     tabs.forEach(tab => {
@@ -122,54 +187,201 @@ function initTabs() {
             
             tab.classList.add("active");
             const target = tab.getAttribute("data-tab");
-            document.getElementById(target).classList.add("active");
+            const targetElem = document.getElementById(target);
+            if (targetElem) targetElem.classList.add("active");
 
-            // Refresh simulations when switching tabs
             if (target === "tab-simulator") updateSimulator();
             if (target === "tab-scholarship") evaluateScholarship();
         });
     });
 }
 
-// Load Saved Data or Initial Defaults
-function loadSavedData() {
-    const saved = localStorage.getItem("bu_gwa_semesters");
-    if (saved) {
-        try {
-            semesters = JSON.parse(saved);
-        } catch (e) {
-            semesters = [];
+/* ==========================================================================
+   SECTION 6: MATH ENGINE
+   ========================================================================== */
+
+function calculateSemesterGWA(sem) {
+    let totalGradePoints = 0;
+    let totalUnits = 0;
+
+    if (!sem || !sem.subjects) return 0;
+
+    sem.subjects.forEach(sub => {
+        const numGrade = parseFloat(sub.grade);
+        const units = parseFloat(sub.units) || 0;
+        if (!isNaN(numGrade) && units > 0) {
+            totalGradePoints += numGrade * units;
+            totalUnits += units;
         }
-    }
-    
-    if (!semesters || semesters.length === 0) {
-        loadCollegePreset('BUCS');
+    });
+
+    return totalUnits > 0 ? (totalGradePoints / totalUnits) : 0;
+}
+
+function calculateSemesterUnits(sem) {
+    if (!sem || !sem.subjects) return 0;
+    return sem.subjects.reduce((sum, sub) => sum + (parseFloat(sub.units) || 0), 0);
+}
+
+function calculateCumulativeStats() {
+    let totalPoints = 0;
+    let totalUnits = 0;
+    let totalCourses = 0;
+    let hasUnderload = false;
+    let hasFailingGrade = false;
+    let hasInc = false;
+    let failingCount = 0;
+
+    semesters.forEach(sem => {
+        if (sem.underload) hasUnderload = true;
+
+        if (sem.subjects) {
+            sem.subjects.forEach(sub => {
+                totalCourses++;
+                const numGrade = parseFloat(sub.grade);
+                const units = parseFloat(sub.units) || 0;
+
+                if (sub.grade === "5.00") {
+                    hasFailingGrade = true;
+                    failingCount++;
+                }
+                if (sub.grade === "INC") {
+                    hasInc = true;
+                }
+
+                if (!isNaN(numGrade) && units > 0) {
+                    totalPoints += numGrade * units;
+                    totalUnits += units;
+                }
+            });
+        }
+    });
+
+    const cumulativeGWA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
+
+    return {
+        totalPoints,
+        totalUnits,
+        totalCourses,
+        hasUnderload,
+        hasFailingGrade,
+        hasInc,
+        failingCount,
+        cumulativeGWA
+    };
+}
+
+/* ==========================================================================
+   SECTION 7: EVALUATORS & DASHBOARD UPDATER
+   ========================================================================== */
+
+function updateGlobalSummary() {
+    const stats = calculateCumulativeStats();
+
+    const gwaElem = document.getElementById("overall-gwa");
+    const unitsElem = document.getElementById("total-units");
+    const unitsSubtextElem = document.getElementById("units-subtext");
+
+    if (gwaElem) gwaElem.innerText = stats.cumulativeGWA.toFixed(4);
+    if (unitsElem) unitsElem.innerText = stats.totalUnits.toFixed(1);
+    if (unitsSubtextElem) unitsSubtextElem.innerText = `${stats.totalCourses} Courses Recorded`;
+
+    evaluateHonorStanding(stats);
+    evaluateAcademicStanding(stats);
+}
+
+function evaluateHonorStanding(stats) {
+    const honorElem = document.getElementById("honor-status");
+    const honorSubtext = document.getElementById("honor-subtext");
+
+    if (!honorElem || !honorSubtext) return;
+
+    if (stats.totalUnits === 0) {
+        honorElem.innerText = "No Courses Added";
+        honorElem.className = "summary-value honor-badge text-muted";
+        honorSubtext.innerText = "Add subjects to evaluate honor status";
+    } else if (stats.hasFailingGrade || stats.hasInc) {
+        honorElem.innerText = "Not Eligible";
+        honorElem.className = "summary-value honor-badge text-danger";
+        honorSubtext.innerText = "Disqualified: Has failing grade (5.0) or unresolved INC";
+    } else if (stats.hasUnderload) {
+        honorElem.innerText = "Not Eligible";
+        honorElem.className = "summary-value honor-badge text-danger";
+        honorSubtext.innerText = "Disqualified: Student carried underloaded term(s)";
+    } else if (stats.cumulativeGWA > 0 && stats.cumulativeGWA <= 1.2500) {
+        honorElem.innerText = "Summa Cum Laude";
+        honorElem.className = "summary-value honor-badge text-gold";
+        honorSubtext.innerText = "Complies with GWA ≤ 1.2500 & Full Load";
+    } else if (stats.cumulativeGWA > 1.2500 && stats.cumulativeGWA <= 1.4500) {
+        honorElem.innerText = "Magna Cum Laude";
+        honorElem.className = "summary-value honor-badge text-gold";
+        honorSubtext.innerText = "Complies with 1.2500 < GWA ≤ 1.4500";
+    } else if (stats.cumulativeGWA > 1.4500 && stats.cumulativeGWA <= 1.7500) {
+        honorElem.innerText = "Cum Laude";
+        honorElem.className = "summary-value honor-badge text-gold";
+        honorSubtext.innerText = "Complies with 1.4500 < GWA ≤ 1.7500";
     } else {
-        renderSemesters();
-        updateGlobalSummary();
+        honorElem.innerText = "Regular Candidate";
+        honorElem.className = "summary-value honor-badge text-primary";
+        honorSubtext.innerText = "Does not meet honor threshold (GWA > 1.7500)";
     }
 }
 
-function saveData() {
-    localStorage.setItem("bu_gwa_semesters", JSON.stringify(semesters));
-    updateGlobalSummary();
+function evaluateAcademicStanding(stats) {
+    const standingElem = document.getElementById("academic-standing");
+    const standingSubtext = document.getElementById("standing-subtext");
+
+    if (!standingElem || !standingSubtext) return;
+
+    if (stats.failingCount === 0) {
+        standingElem.innerText = "Good Standing";
+        standingElem.className = "summary-value standing-badge text-success";
+        standingSubtext.innerText = "0 Academic Deficiencies Detected";
+    } else if (stats.failingCount === 1) {
+        standingElem.innerText = "Academic Warning";
+        standingElem.className = "summary-value standing-badge text-gold";
+        standingSubtext.innerText = "1 Failure: Subject load reduced next term";
+    } else if (stats.failingCount === 2) {
+        standingElem.innerText = "Academic Probation";
+        standingElem.className = "summary-value standing-badge text-danger";
+        standingSubtext.innerText = "2 Failures: Placed on Probation (Max 75% load)";
+    } else {
+        standingElem.innerText = "Academic Dismissal Risk";
+        standingElem.className = "summary-value standing-badge text-danger";
+        standingSubtext.innerText = "3+ Failures: Dropped from rolls per handbook";
+    }
 }
 
-// Render Semester Cards
+/* ==========================================================================
+   SECTION 8: RENDERER
+   ========================================================================== */
+
 function renderSemesters() {
     const container = document.getElementById("semesters-container");
+    const emptyState = document.getElementById("empty-state");
+
+    if (!container) return;
+
     container.innerHTML = "";
+
+    if (!semesters || semesters.length === 0) {
+        if (emptyState) emptyState.style.display = "block";
+        return;
+    }
+
+    if (emptyState) emptyState.style.display = "none";
 
     semesters.forEach((sem, semIndex) => {
         const semCard = document.createElement("div");
         semCard.className = "semester-card";
 
         const semGWA = calculateSemesterGWA(sem);
+        const semUnits = calculateSemesterUnits(sem);
 
         semCard.innerHTML = `
             <div class="sem-header">
                 <div class="sem-title-group">
-                    <input type="text" class="sem-title-select" value="${escapeHtml(sem.title)}" onchange="updateSemTitle(${semIndex}, this.value)">
+                    <input type="text" class="sem-title-select" value="${escapeHtml(sem.title)}" onchange="updateSemTitle(${semIndex}, this.value)" aria-label="Semester Title">
                     <span class="sem-gwa-pill">GPA: ${semGWA.toFixed(4)}</span>
                 </div>
                 <div class="sem-actions">
@@ -185,29 +397,29 @@ function renderSemesters() {
                 <table class="subject-table">
                     <thead>
                         <tr>
-                            <th style="width: 20%;">Course Code</th>
-                            <th style="width: 45%;">Course Description</th>
-                            <th style="width: 15%;">Grade Rating</th>
-                            <th style="width: 12%;">Credit Units</th>
+                            <th style="width: 22%;">Course Code</th>
+                            <th style="width: 43%;">Course Description</th>
+                            <th style="width: 17%;">Grade Rating</th>
+                            <th style="width: 10%;">Credit Units</th>
                             <th style="width: 8%; text-align: center;">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        ${sem.subjects.map((sub, subIndex) => `
+                        ${sem.subjects ? sem.subjects.map((sub, subIndex) => `
                             <tr>
-                                <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.code)}" placeholder="e.g. CS 111" onchange="updateSubject(${semIndex}, ${subIndex}, 'code', this.value)"></td>
-                                <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.name)}" placeholder="e.g. Computer Programming" onchange="updateSubject(${semIndex}, ${subIndex}, 'name', this.value)"></td>
+                                <td><input type="text" list="subject-suggestions" class="form-control-sm" value="${escapeHtml(sub.code)}" placeholder="e.g. CS 111" onchange="updateSubject(${semIndex}, ${subIndex}, 'code', this.value)" aria-label="Course Code"></td>
+                                <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.name)}" placeholder="e.g. Computer Programming" onchange="updateSubject(${semIndex}, ${subIndex}, 'name', this.value)" aria-label="Course Description"></td>
                                 <td>
-                                    <select class="form-control-sm" onchange="updateSubject(${semIndex}, ${subIndex}, 'grade', this.value)">
+                                    <select class="form-control-sm" onchange="updateSubject(${semIndex}, ${subIndex}, 'grade', this.value)" aria-label="Grade Rating">
                                         ${generateGradeOptions(sub.grade)}
                                     </select>
                                 </td>
-                                <td><input type="number" class="form-control-sm" value="${sub.units}" min="0" max="12" step="0.5" onchange="updateSubject(${semIndex}, ${subIndex}, 'units', parseFloat(this.value) || 0)"></td>
+                                <td><input type="number" class="form-control-sm" value="${sub.units}" min="0" max="12" step="0.5" inputmode="decimal" onchange="updateSubject(${semIndex}, ${subIndex}, 'units', parseFloat(this.value) || 0)" aria-label="Credit Units"></td>
                                 <td style="text-align: center;">
-                                    <button class="btn btn-danger btn-sm" onclick="removeSubject(${semIndex}, ${subIndex})"><i class="fa-solid fa-xmark"></i></button>
+                                    <button class="btn btn-danger btn-sm" onclick="removeSubject(${semIndex}, ${subIndex})" title="Remove Subject"><i class="fa-solid fa-xmark"></i></button>
                                 </td>
                             </tr>
-                        `).join("")}
+                        `).join("") : ""}
                     </tbody>
                 </table>
             </div>
@@ -215,7 +427,7 @@ function renderSemesters() {
                 <button class="btn btn-secondary btn-sm" onclick="addSubject(${semIndex})">
                     <i class="fa-solid fa-plus"></i> Add Course Row
                 </button>
-                <span class="text-muted" style="font-size: 0.82rem;">Total Units: ${calculateSemesterUnits(sem).toFixed(1)}</span>
+                <span class="text-muted" style="font-size: 0.82rem;">Total Units: ${semUnits.toFixed(1)}</span>
             </div>
         `;
         container.appendChild(semCard);
@@ -223,41 +435,17 @@ function renderSemesters() {
 }
 
 function generateGradeOptions(selectedGrade) {
-    const validGrades = [
-        { val: "1.00", label: "1.00 (99-100% Outstanding)" },
-        { val: "1.10", label: "1.10 (98%)" },
-        { val: "1.20", label: "1.20 (97%)" },
-        { val: "1.30", label: "1.30 (96%)" },
-        { val: "1.40", label: "1.40 (95%)" },
-        { val: "1.50", label: "1.50 (94% Superior)" },
-        { val: "1.60", label: "1.60 (93%)" },
-        { val: "1.70", label: "1.70 (92%)" },
-        { val: "1.80", label: "1.80 (91% Very Satisfactory)" },
-        { val: "1.90", label: "1.90 (90%)" },
-        { val: "2.00", label: "2.00 (89%)" },
-        { val: "2.10", label: "2.10 (88%)" },
-        { val: "2.20", label: "2.20 (87%)" },
-        { val: "2.30", label: "2.30 (86%)" },
-        { val: "2.40", label: "2.40 (85%)" },
-        { val: "2.50", label: "2.50 (84%)" },
-        { val: "2.60", label: "2.60 (82-83% Satisfactory)" },
-        { val: "2.70", label: "2.70 (80-81%)" },
-        { val: "2.80", label: "2.80 (78-79%)" },
-        { val: "2.90", label: "2.90 (76-77% Fair)" },
-        { val: "3.00", label: "3.00 (75% Passing)" },
-        { val: "5.00", label: "5.00 (Failure)" },
-        { val: "INC", label: "INC (Incomplete - Excluded)" },
-        { val: "DRP", label: "DRP (Dropped - Excluded)" }
-    ];
-
-    return validGrades.map(g => `<option value="${g.val}" ${g.val === selectedGrade ? "selected" : ""}>${g.label}</option>`).join("");
+    return VALID_GRADES.map(g => `<option value="${g.val}" ${g.val === selectedGrade ? "selected" : ""}>${g.label}</option>`).join("");
 }
 
-// Semester Management Actions
+/* ==========================================================================
+   SECTION 9: CRUD ACTIONS
+   ========================================================================== */
+
 function addNewSemester() {
     const semNumber = semesters.length + 1;
-    let year = Math.ceil(semNumber / 2);
-    let term = semNumber % 2 === 1 ? "1st Semester" : "2nd Semester";
+    const year = Math.ceil(semNumber / 2);
+    const term = semNumber % 2 === 1 ? "1st Semester" : "2nd Semester";
     
     semesters.push({
         title: `Year ${year} - ${term}`,
@@ -281,36 +469,46 @@ function removeSemester(index) {
 }
 
 function updateSemTitle(index, val) {
-    semesters[index].title = val;
-    saveData();
+    if (semesters[index]) {
+        semesters[index].title = val;
+        saveData();
+    }
 }
 
 function toggleUnderload(index, checked) {
-    semesters[index].underload = checked;
-    saveData();
+    if (semesters[index]) {
+        semesters[index].underload = checked;
+        saveData();
+    }
 }
 
 function addSubject(semIndex) {
-    semesters[semIndex].subjects.push({ code: "", name: "", grade: "1.50", units: 3 });
-    renderSemesters();
-    saveData();
+    if (semesters[semIndex]) {
+        if (!semesters[semIndex].subjects) semesters[semIndex].subjects = [];
+        semesters[semIndex].subjects.push({ code: "", name: "", grade: "1.50", units: 3 });
+        renderSemesters();
+        saveData();
+    }
 }
 
 function removeSubject(semIndex, subIndex) {
-    semesters[semIndex].subjects.splice(subIndex, 1);
-    renderSemesters();
-    saveData();
+    if (semesters[semIndex] && semesters[semIndex].subjects) {
+        semesters[semIndex].subjects.splice(subIndex, 1);
+        renderSemesters();
+        saveData();
+    }
 }
 
 function updateSubject(semIndex, subIndex, field, val) {
-    semesters[semIndex].subjects[subIndex][field] = val;
-    saveData();
-    // Update live GPA pill without full re-render
-    renderSemesters();
+    if (semesters[semIndex] && semesters[semIndex].subjects && semesters[semIndex].subjects[subIndex]) {
+        semesters[semIndex].subjects[subIndex][field] = val;
+        saveData();
+        renderSemesters();
+    }
 }
 
-function loadCollegePreset(presetKey) {
-    if (semesters.length > 0 && !confirm("Loading a preset will replace your current entries. Continue?")) {
+function loadCollegePreset(presetKey, confirmUser = true) {
+    if (confirmUser && semesters.length > 0 && !confirm("Loading a preset will replace your current entries. Continue?")) {
         return;
     }
     const preset = COLLEGE_PRESETS[presetKey];
@@ -329,131 +527,18 @@ function confirmResetAll() {
     }
 }
 
-// Math Computation Engine
-function calculateSemesterGWA(sem) {
-    let totalGradePoints = 0;
-    let totalUnits = 0;
+/* ==========================================================================
+   SECTION 10: WHAT-IF SIMULATOR
+   ========================================================================== */
 
-    sem.subjects.forEach(sub => {
-        const numGrade = parseFloat(sub.grade);
-        const units = parseFloat(sub.units) || 0;
-        if (!isNaN(numGrade) && units > 0) {
-            totalGradePoints += numGrade * units;
-            totalUnits += units;
-        }
-    });
-
-    return totalUnits > 0 ? (totalGradePoints / totalUnits) : 0;
-}
-
-function calculateSemesterUnits(sem) {
-    return sem.subjects.reduce((sum, sub) => sum + (parseFloat(sub.units) || 0), 0);
-}
-
-function updateGlobalSummary() {
-    let totalPoints = 0;
-    let totalUnits = 0;
-    let totalCourses = 0;
-    let hasUnderload = false;
-    let hasFailingGrade = false;
-    let hasInc = false;
-    let failingCount = 0;
-
-    semesters.forEach(sem => {
-        if (sem.underload) hasUnderload = true;
-
-        sem.subjects.forEach(sub => {
-            totalCourses++;
-            const numGrade = parseFloat(sub.grade);
-            const units = parseFloat(sub.units) || 0;
-
-            if (sub.grade === "5.00") {
-                hasFailingGrade = true;
-                failingCount++;
-            }
-            if (sub.grade === "INC") {
-                hasInc = true;
-            }
-
-            if (!isNaN(numGrade) && units > 0) {
-                totalPoints += numGrade * units;
-                totalUnits += units;
-            }
-        });
-    });
-
-    const cumulativeGWA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
-
-    // Update UI Elements
-    document.getElementById("overall-gwa").innerText = cumulativeGWA.toFixed(4);
-    document.getElementById("total-units").innerText = totalUnits.toFixed(1);
-    document.getElementById("units-subtext").innerText = `${totalCourses} Courses Recorded`;
-
-    // Honor Standing Evaluation
-    const honorElem = document.getElementById("honor-status");
-    const honorSubtext = document.getElementById("honor-subtext");
-
-    if (totalUnits === 0) {
-        honorElem.innerText = "No Courses Added";
-        honorElem.className = "summary-value honor-badge text-muted";
-        honorSubtext.innerText = "Add subjects to evaluate honor status";
-    } else if (hasFailingGrade || hasInc) {
-        honorElem.innerText = "Not Eligible";
-        honorElem.className = "summary-value honor-badge text-danger";
-        honorSubtext.innerText = "Disqualified: Has failing grade (5.0) or unresolved INC";
-    } else if (hasUnderload) {
-        honorElem.innerText = "Not Eligible";
-        honorElem.className = "summary-value honor-badge text-danger";
-        honorSubtext.innerText = "Disqualified: Student carried underloaded term(s)";
-    } else if (cumulativeGWA > 0 && cumulativeGWA <= 1.25) {
-        honorElem.innerText = "Summa Cum Laude";
-        honorElem.className = "summary-value honor-badge text-gold";
-        honorSubtext.innerText = "Complies with GWA ≤ 1.2500 & Full Load";
-    } else if (cumulativeGWA > 1.25 && cumulativeGWA <= 1.45) {
-        honorElem.innerText = "Magna Cum Laude";
-        honorElem.className = "summary-value honor-badge text-gold";
-        honorSubtext.innerText = "Complies with 1.2500 < GWA ≤ 1.4500";
-    } else if (cumulativeGWA > 1.45 && cumulativeGWA <= 1.75) {
-        honorElem.innerText = "Cum Laude";
-        honorElem.className = "summary-value honor-badge text-gold";
-        honorSubtext.innerText = "Complies with 1.4500 < GWA ≤ 1.7500";
-    } else {
-        honorElem.innerText = "Regular Candidate";
-        honorElem.className = "summary-value honor-badge text-primary";
-        honorSubtext.innerText = "Does not meet honor threshold (GWA > 1.7500)";
-    }
-
-    // Academic Standing Radar
-    const standingElem = document.getElementById("academic-standing");
-    const standingSubtext = document.getElementById("standing-subtext");
-
-    if (failingCount === 0) {
-        standingElem.innerText = "Good Standing";
-        standingElem.className = "summary-value standing-badge text-success";
-        standingSubtext.innerText = "0 Academic Deficiencies Detected";
-    } else if (failingCount === 1) {
-        standingElem.innerText = "Academic Warning";
-        standingElem.className = "summary-value standing-badge text-gold";
-        standingSubtext.innerText = "1 Failure: Subject load reduced next term";
-    } else if (failingCount === 2) {
-        standingElem.innerText = "Academic Probation";
-        standingElem.className = "summary-value standing-badge text-danger";
-        standingSubtext.innerText = "2 Failures: Placed on Probation (Max 75% load)";
-    } else {
-        standingElem.innerText = "Academic Dismissal Risk";
-        standingElem.className = "summary-value standing-badge text-danger";
-        standingSubtext.innerText = "3+ Failures: Dropped from rolls per handbook";
-    }
-}
-
-// "WHAT-IF" SIMULATOR LOGIC
 function initSimulator() {
     const slider = document.getElementById("sim-grade-slider");
     const futureUnits = document.getElementById("sim-future-units");
 
     if (slider) {
         slider.addEventListener("input", () => {
-            document.getElementById("sim-slider-val").innerText = parseFloat(slider.value).toFixed(2);
+            const valElem = document.getElementById("sim-slider-val");
+            if (valElem) valElem.innerText = parseFloat(slider.value).toFixed(2);
             updateSimulator();
         });
     }
@@ -464,81 +549,69 @@ function initSimulator() {
 }
 
 function updateSimulator() {
-    let totalPoints = 0;
-    let totalUnits = 0;
+    const stats = calculateCumulativeStats();
 
-    semesters.forEach(sem => {
-        sem.subjects.forEach(sub => {
-            const numGrade = parseFloat(sub.grade);
-            const units = parseFloat(sub.units) || 0;
-            if (!isNaN(numGrade) && units > 0) {
-                totalPoints += numGrade * units;
-                totalUnits += units;
-            }
-        });
-    });
+    const curGwaElem = document.getElementById("sim-current-gwa");
+    const curUnitsElem = document.getElementById("sim-current-units");
+    
+    if (curGwaElem) curGwaElem.value = stats.cumulativeGWA.toFixed(4);
+    if (curUnitsElem) curUnitsElem.value = stats.totalUnits.toFixed(1);
 
-    const currentGWA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
-    document.getElementById("sim-current-gwa").value = currentGWA.toFixed(4);
-    document.getElementById("sim-current-units").value = totalUnits.toFixed(1);
+    const futureUnitsVal = parseFloat(document.getElementById("sim-future-units")?.value) || 0;
+    const futureGradeVal = parseFloat(document.getElementById("sim-grade-slider")?.value) || 1.50;
 
-    const futureUnitsVal = parseFloat(document.getElementById("sim-future-units").value) || 0;
-    const futureGradeVal = parseFloat(document.getElementById("sim-grade-slider").value) || 1.50;
-
-    const projectedPoints = totalPoints + (futureUnitsVal * futureGradeVal);
-    const projectedTotalUnits = totalUnits + futureUnitsVal;
+    const projectedPoints = stats.totalPoints + (futureUnitsVal * futureGradeVal);
+    const projectedTotalUnits = stats.totalUnits + futureUnitsVal;
     const projectedGWA = projectedTotalUnits > 0 ? (projectedPoints / projectedTotalUnits) : 0;
 
-    document.getElementById("proj-gwa-result").innerText = projectedGWA.toFixed(4);
+    const resElem = document.getElementById("proj-gwa-result");
+    if (resElem) resElem.innerText = projectedGWA.toFixed(4);
 
     const projHonor = document.getElementById("proj-honor-result");
-    if (projectedGWA <= 1.25) {
-        projHonor.innerText = "Projected: Summa Cum Laude";
-    } else if (projectedGWA <= 1.45) {
-        projHonor.innerText = "Projected: Magna Cum Laude";
-    } else if (projectedGWA <= 1.75) {
-        projHonor.innerText = "Projected: Cum Laude";
-    } else {
-        projHonor.innerText = "Projected: Regular Graduate";
+    if (projHonor) {
+        if (projectedTotalUnits === 0) {
+            projHonor.innerText = "Add future units to simulate";
+        } else if (projectedGWA <= 1.2500) {
+            projHonor.innerText = "Projected: Summa Cum Laude";
+        } else if (projectedGWA <= 1.4500) {
+            projHonor.innerText = "Projected: Magna Cum Laude";
+        } else if (projectedGWA <= 1.7500) {
+            projHonor.innerText = "Projected: Cum Laude";
+        } else {
+            projHonor.innerText = "Projected: Regular Graduate";
+        }
     }
 }
 
 function calculateTargetRequired(targetGWA) {
-    let totalPoints = 0;
-    let totalUnits = 0;
+    const stats = calculateCumulativeStats();
+    const futureUnitsVal = parseFloat(document.getElementById("sim-future-units")?.value) || 0;
+    const outputElem = document.getElementById("target-result-output");
 
-    semesters.forEach(sem => {
-        sem.subjects.forEach(sub => {
-            const numGrade = parseFloat(sub.grade);
-            const units = parseFloat(sub.units) || 0;
-            if (!isNaN(numGrade) && units > 0) {
-                totalPoints += numGrade * units;
-                totalUnits += units;
-            }
-        });
-    });
+    if (!outputElem) return;
 
-    const futureUnitsVal = parseFloat(document.getElementById("sim-future-units").value) || 0;
-    if (futureUnitsVal === 0) {
-        document.getElementById("target-result-output").innerText = "Please specify remaining future units to calculate.";
+    if (futureUnitsVal <= 0) {
+        outputElem.innerHTML = "<i class='fa-solid fa-triangle-exclamation text-gold'></i> Please specify remaining future units above to calculate.";
         return;
     }
 
-    const requiredTotalPoints = targetGWA * (totalUnits + futureUnitsVal);
-    const neededFuturePoints = requiredTotalPoints - totalPoints;
+    const requiredTotalPoints = targetGWA * (stats.totalUnits + futureUnitsVal);
+    const neededFuturePoints = requiredTotalPoints - stats.totalPoints;
     const requiredAverageGrade = neededFuturePoints / futureUnitsVal;
 
-    const outputElem = document.getElementById("target-result-output");
     if (requiredAverageGrade < 1.00) {
-        outputElem.innerText = `Goal Achieved! You already qualify even with grades lower than 1.00 (Math average: ${requiredAverageGrade.toFixed(2)}).`;
+        outputElem.innerHTML = `<i class='fa-solid fa-circle-check text-success'></i> <strong>Goal Achieved!</strong> You already qualify even with grades lower than 1.00 (Math required average: ${requiredAverageGrade.toFixed(2)}).`;
     } else if (requiredAverageGrade > 3.00) {
-        outputElem.innerText = `Mathematically Unattainable. You would need an average grade of ${requiredAverageGrade.toFixed(2)} in remaining units.`;
+        outputElem.innerHTML = `<i class='fa-solid fa-circle-xmark text-danger'></i> <strong>Mathematically Unattainable.</strong> You would need an average grade of ${requiredAverageGrade.toFixed(2)} across remaining units.`;
     } else {
-        outputElem.innerText = `To achieve GWA ≤ ${targetGWA.toFixed(2)}, you must average at least ${requiredAverageGrade.toFixed(4)} across your remaining ${futureUnitsVal} units.`;
+        outputElem.innerHTML = `<i class='fa-solid fa-bullseye text-primary'></i> To achieve cumulative GWA ≤ ${targetGWA.toFixed(2)}, you must average at least <strong>${requiredAverageGrade.toFixed(4)}</strong> across your remaining ${futureUnitsVal} units.`;
     }
 }
 
-// SCHOLARSHIP MONITOR LOGIC
+/* ==========================================================================
+   SECTION 11: SCHOLARSHIP MONITOR
+   ========================================================================== */
+
 function initScholarshipMonitor() {
     ["sch-max-gwa", "sch-lowest-grade", "sch-no-inc", "sch-no-fail"].forEach(id => {
         const elem = document.getElementById(id);
@@ -547,57 +620,44 @@ function initScholarshipMonitor() {
 }
 
 function applyScholarshipPreset() {
-    const preset = document.getElementById("scholarship-preset").value;
-    const maxGwa = document.getElementById("sch-max-gwa");
-    const lowest = document.getElementById("sch-lowest-grade");
-    const noInc = document.getElementById("sch-no-inc");
-    const noFail = document.getElementById("sch-no-fail");
+    const presetKey = document.getElementById("scholarship-preset")?.value;
+    const preset = SCHOLARSHIP_PRESETS[presetKey];
 
-    if (preset === "dost") {
-        maxGwa.value = "2.50"; lowest.value = "3.0"; noInc.checked = true; noFail.checked = true;
-    } else if (preset === "ched_full") {
-        maxGwa.value = "1.75"; lowest.value = "2.5"; noInc.checked = true; noFail.checked = true;
-    } else if (preset === "ched_half") {
-        maxGwa.value = "2.50"; lowest.value = "3.0"; noInc.checked = true; noFail.checked = true;
-    } else if (preset === "tes") {
-        maxGwa.value = "3.00"; lowest.value = "3.0"; noInc.checked = false; noFail.checked = false;
-    } else if (preset === "bu_athletic") {
-        maxGwa.value = "3.00"; lowest.value = "3.0"; noInc.checked = true; noFail.checked = true;
+    if (preset) {
+        const maxGwa = document.getElementById("sch-max-gwa");
+        const lowest = document.getElementById("sch-lowest-grade");
+        const noInc = document.getElementById("sch-no-inc");
+        const noFail = document.getElementById("sch-no-fail");
+
+        if (maxGwa) maxGwa.value = preset.maxGWA.toFixed(2);
+        if (lowest) lowest.value = preset.lowestGrade.toFixed(1);
+        if (noInc) noInc.checked = preset.noInc;
+        if (noFail) noFail.checked = preset.noFail;
+
+        evaluateScholarship();
     }
-    evaluateScholarship();
 }
 
 function evaluateScholarship() {
-    const maxGWAAllowed = parseFloat(document.getElementById("sch-max-gwa").value) || 3.0;
-    const lowestGradeAllowed = parseFloat(document.getElementById("sch-lowest-grade").value) || 3.0;
-    const disallowInc = document.getElementById("sch-no-inc").checked;
-    const disallowFail = document.getElementById("sch-no-fail").checked;
+    const maxGWAAllowed = parseFloat(document.getElementById("sch-max-gwa")?.value) || 3.0;
+    const lowestGradeAllowed = parseFloat(document.getElementById("sch-lowest-grade")?.value) || 3.0;
+    const disallowInc = document.getElementById("sch-no-inc")?.checked;
+    const disallowFail = document.getElementById("sch-no-fail")?.checked;
 
-    let totalPoints = 0;
-    let totalUnits = 0;
-    let hasFail = false;
-    let hasInc = false;
+    const stats = calculateCumulativeStats();
+
     let exceededLowestGrade = false;
 
     semesters.forEach(sem => {
-        sem.subjects.forEach(sub => {
-            const numGrade = parseFloat(sub.grade);
-            const units = parseFloat(sub.units) || 0;
-
-            if (sub.grade === "5.00") hasFail = true;
-            if (sub.grade === "INC") hasInc = true;
-
-            if (!isNaN(numGrade)) {
-                if (numGrade > lowestGradeAllowed) exceededLowestGrade = true;
-                if (units > 0) {
-                    totalPoints += numGrade * units;
-                    totalUnits += units;
+        if (sem.subjects) {
+            sem.subjects.forEach(sub => {
+                const numGrade = parseFloat(sub.grade);
+                if (!isNaN(numGrade) && numGrade > lowestGradeAllowed) {
+                    exceededLowestGrade = true;
                 }
-            }
-        });
+            });
+        }
     });
-
-    const currentGWA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
 
     const chkGwa = document.getElementById("chk-gwa");
     const chkGrade = document.getElementById("chk-grade");
@@ -606,32 +666,40 @@ function evaluateScholarship() {
 
     let isCompliant = true;
 
-    if (currentGWA <= maxGWAAllowed && totalUnits > 0) {
-        chkGwa.innerHTML = `<i class="fa-solid fa-check text-success"></i> GWA Check Passed (${currentGWA.toFixed(4)} ≤ ${maxGWAAllowed.toFixed(2)})`;
-    } else {
-        chkGwa.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> GWA Check Failed (${currentGWA.toFixed(4)} > ${maxGWAAllowed.toFixed(2)})`;
-        if (totalUnits > 0) isCompliant = false;
+    if (chkGwa) {
+        if (stats.cumulativeGWA <= maxGWAAllowed && stats.totalUnits > 0) {
+            chkGwa.innerHTML = `<i class="fa-solid fa-check text-success"></i> GWA Check Passed (${stats.cumulativeGWA.toFixed(4)} ≤ ${maxGWAAllowed.toFixed(2)})`;
+        } else {
+            chkGwa.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> GWA Check Failed (${stats.cumulativeGWA.toFixed(4)} > ${maxGWAAllowed.toFixed(2)})`;
+            if (stats.totalUnits > 0) isCompliant = false;
+        }
     }
 
-    if (!exceededLowestGrade) {
-        chkGrade.innerHTML = `<i class="fa-solid fa-check text-success"></i> Individual Grade Cap Passed (All ≤ ${lowestGradeAllowed.toFixed(1)})`;
-    } else {
-        chkGrade.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Grade Cap Exceeded (Some grades > ${lowestGradeAllowed.toFixed(1)})`;
-        isCompliant = false;
+    if (chkGrade) {
+        if (!exceededLowestGrade) {
+            chkGrade.innerHTML = `<i class="fa-solid fa-check text-success"></i> Individual Grade Cap Passed (All ≤ ${lowestGradeAllowed.toFixed(1)})`;
+        } else {
+            chkGrade.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Grade Cap Exceeded (Some grades > ${lowestGradeAllowed.toFixed(1)})`;
+            isCompliant = false;
+        }
     }
 
-    if (!disallowInc || !hasInc) {
-        chkInc.innerHTML = `<i class="fa-solid fa-check text-success"></i> Incomplete (INC) Check Passed`;
-    } else {
-        chkInc.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Disqualified: Unresolved INC Grade Found`;
-        isCompliant = false;
+    if (chkInc) {
+        if (!disallowInc || !stats.hasInc) {
+            chkInc.innerHTML = `<i class="fa-solid fa-check text-success"></i> Incomplete (INC) Check Passed`;
+        } else {
+            chkInc.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Disqualified: Unresolved INC Grade Found`;
+            isCompliant = false;
+        }
     }
 
-    if (!disallowFail || !hasFail) {
-        chkFail.innerHTML = `<i class="fa-solid fa-check text-success"></i> No Failing Mark Check Passed`;
-    } else {
-        chkFail.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Disqualified: Failing Mark (5.0) Found`;
-        isCompliant = false;
+    if (chkFail) {
+        if (!disallowFail || !stats.hasFailingGrade) {
+            chkFail.innerHTML = `<i class="fa-solid fa-check text-success"></i> No Failing Mark Check Passed`;
+        } else {
+            chkFail.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> Disqualified: Failing Mark (5.0) Found`;
+            isCompliant = false;
+        }
     }
 
     const titleElem = document.getElementById("sch-status-title");
@@ -639,34 +707,156 @@ function evaluateScholarship() {
     const iconElem = document.getElementById("sch-icon");
     const containerElem = document.getElementById("sch-status-container");
 
-    if (isCompliant && totalUnits > 0) {
-        containerElem.style.background = "#ecfdf5";
-        containerElem.style.borderColor = "#a7f3d0";
-        iconElem.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i>`;
-        titleElem.innerText = "Eligible & Compliant";
-        descElem.innerText = `Your current performance meets all specified retention criteria.`;
-    } else if (totalUnits === 0) {
-        containerElem.style.background = "#f8fafc";
-        containerElem.style.borderColor = "#cbd5e1";
-        iconElem.innerHTML = `<i class="fa-solid fa-circle-info text-gold"></i>`;
-        titleElem.innerText = "Awaiting Data";
-        descElem.innerText = "Add your subject grades in the Calculator tab to evaluate compliance.";
-    } else {
-        containerElem.style.background = "#fef2f2";
-        containerElem.style.borderColor = "#fecaca";
-        iconElem.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-danger"></i>`;
-        titleElem.innerText = "Retention Risk Warning";
-        descElem.innerText = `One or more scholarship criteria are currently unmet. Review the checklist below.`;
+    if (containerElem && iconElem && titleElem && descElem) {
+        if (isCompliant && stats.totalUnits > 0) {
+            containerElem.style.background = "#ecfdf5";
+            containerElem.style.borderColor = "#a7f3d0";
+            iconElem.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i>`;
+            titleElem.innerText = "Eligible & Compliant";
+            descElem.innerText = `Your current performance meets all specified retention criteria.`;
+        } else if (stats.totalUnits === 0) {
+            containerElem.style.background = "#f8fafc";
+            containerElem.style.borderColor = "#cbd5e1";
+            iconElem.innerHTML = `<i class="fa-solid fa-circle-info text-gold"></i>`;
+            titleElem.innerText = "Awaiting Data";
+            descElem.innerText = "Add your subject grades in the Calculator tab to evaluate compliance.";
+        } else {
+            containerElem.style.background = "#fef2f2";
+            containerElem.style.borderColor = "#fecaca";
+            iconElem.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-danger"></i>`;
+            titleElem.innerText = "Retention Risk Warning";
+            descElem.innerText = `One or more scholarship criteria are currently unmet. Review the checklist below.`;
+        }
     }
 }
 
-// Export / Print
+/* ==========================================================================
+   SECTION 12: IMPORT / EXPORT & PRINT
+   ========================================================================== */
+
 function exportAcademicSummary() {
     window.print();
 }
 
-// Utility Helpers
+function exportToJSON() {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(semesters, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", "bu_gwa_backup.json");
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+function importFromJSON() {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = ".json";
+    
+    fileInput.onchange = e => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = event => {
+            try {
+                const imported = JSON.parse(event.target.result);
+                if (Array.isArray(imported)) {
+                    if (confirm("Importing JSON will replace your current entries. Continue?")) {
+                        semesters = imported;
+                        renderSemesters();
+                        saveData();
+                        alert("Data imported successfully!");
+                    }
+                } else {
+                    alert("Invalid JSON file format.");
+                }
+            } catch (err) {
+                alert("Error reading JSON file.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    fileInput.click();
+}
+
+function openBulkPasteModal() {
+    const modal = document.getElementById("bulk-paste-modal");
+    if (modal) modal.style.display = "flex";
+}
+
+function closeBulkPasteModal() {
+    const modal = document.getElementById("bulk-paste-modal");
+    if (modal) modal.style.display = "none";
+}
+
+function processBulkPaste() {
+    const textElem = document.getElementById("bulk-paste-textarea");
+    if (!textElem) return;
+
+    const rawText = textElem.value.trim();
+    if (!rawText) {
+        closeBulkPasteModal();
+        return;
+    }
+
+    const lines = rawText.split("\n");
+    const newSubjects = [];
+
+    lines.forEach(line => {
+        const trimmed = line.trim();
+        if (!trimmed) return;
+
+        let code = "", name = "", units = 3;
+
+        if (trimmed.includes("-")) {
+            const parts = trimmed.split("-");
+            code = parts[0] ? parts[0].trim() : "";
+            name = parts[1] ? parts[1].trim() : "";
+            if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
+        } else if (trimmed.includes("\t")) {
+            const parts = trimmed.split("\t");
+            code = parts[0] ? parts[0].trim() : "";
+            name = parts[1] ? parts[1].trim() : "";
+            if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
+        } else if (trimmed.includes(",")) {
+            const parts = trimmed.split(",");
+            code = parts[0] ? parts[0].trim() : "";
+            name = parts[1] ? parts[1].trim() : "";
+            if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
+        } else {
+            code = trimmed;
+            name = "Imported Course";
+        }
+
+        newSubjects.push({ code, name, grade: "1.50", units });
+    });
+
+    if (newSubjects.length > 0) {
+        semesters.push({
+            title: `Bulk Imported (${newSubjects.length} Courses)`,
+            underload: false,
+            subjects: newSubjects
+        });
+        renderSemesters();
+        saveData();
+    }
+
+    textElem.value = "";
+    closeBulkPasteModal();
+}
+
+/* ==========================================================================
+   SECTION 13: UTILITIES
+   ========================================================================== */
+
 function escapeHtml(str) {
     if (!str) return "";
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }

@@ -1,0 +1,150 @@
+/* ==========================================================================
+   BU GWA Calculator — Official Print & PDF Export Stylesheet
+   ========================================================================== */
+
+@media print {
+    /* Hide all non-transcript navigation, headers, footers, buttons, and side content */
+    .navbar, 
+    .toolbar-card, 
+    .dashboard-summary, 
+    .footer, 
+    .theme-toggle-btn, 
+    .sem-actions, 
+    .sem-footer, 
+    .info-help-btn, 
+    .underload-info-btn, 
+    .btn, 
+    .modal-close-btn, 
+    .modal-overlay, 
+    #tab-simulator, 
+    #tab-scholarship, 
+    #tab-guide, 
+    #tab-about, 
+    .empty-state {
+        display: none !important;
+    }
+
+    /* Force clean white background and black text */
+    body, html {
+        background: #ffffff !important;
+        color: #000000 !important;
+        font-family: Arial, sans-serif !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .main-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Ensure calculator tab is visible */
+    #tab-calculator {
+        display: block !important;
+    }
+
+    /* Formal Print Transcript Header */
+    .print-transcript-header {
+        display: block !important;
+        text-align: center;
+        border-bottom: 2px dashed #000000;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+    }
+
+    .print-transcript-header h2 {
+        font-size: 1.6rem;
+        font-weight: bold;
+        margin: 0;
+        color: #1b2a6f;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .print-transcript-header h3 {
+        font-size: 1.05rem;
+        font-weight: normal;
+        margin: 4px 0 10px 0;
+        color: #333333;
+    }
+
+    /* Styling for Semester Cards in Print */
+    .semester-card {
+        box-shadow: none !important;
+        border: 1px solid #999999 !important;
+        border-radius: 4px !important;
+        page-break-inside: avoid !important;
+        margin-bottom: 24px !important;
+        background: #ffffff !important;
+    }
+
+    .sem-header {
+        background: #f1f5f9 !important;
+        border-bottom: 1px solid #999999 !important;
+        padding: 10px 14px !important;
+    }
+
+    .sem-title-select {
+        border: none !important;
+        background: transparent !important;
+        font-weight: bold !important;
+        font-size: 1.1rem !important;
+        color: #000000 !important;
+    }
+
+    /* Format Tables for Printing */
+    .subject-table {
+        width: 100% !important;
+        border-collapse: collapse !important;
+    }
+
+    .subject-table th {
+        background: #f8fafc !important;
+        color: #000000 !important;
+        border-bottom: 2px solid #333333 !important;
+        padding: 8px 10px !important;
+        font-size: 0.85rem !important;
+        text-transform: uppercase !important;
+    }
+
+    .subject-table td {
+        border-bottom: 1px solid #e2e8f0 !important;
+        padding: 8px 10px !important;
+        font-size: 0.9rem !important;
+        color: #000000 !important;
+    }
+
+    /* Make input fields and selects display as plain clean text in print */
+    .subject-table input, 
+    .subject-table select {
+        border: none !important;
+        background: transparent !important;
+        appearance: none !important;
+        -webkit-appearance: none !important;
+        font-size: 0.9rem !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Hide action buttons in table rows (delete row cross) */
+    .btn-delete-row, 
+    th:last-child, 
+    td:last-child {
+        display: none !important;
+    }
+
+    /* Print result pills cleanly */
+    .sem-result-pill {
+        border: 1px solid #666666 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+        box-shadow: none !important;
+    }
+}
+
+/* Screen hidden for print header */
+.print-transcript-header {
+    display: none;
+}

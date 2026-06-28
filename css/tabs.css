@@ -1,0 +1,347 @@
+/* ==========================================================================
+   BU GWA Calculator — Tab Content (Simulator, Scholarship, Policy Guide, About)
+   ========================================================================== */
+
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+
+.section-header { margin-bottom: var(--space-lg); }
+
+.section-header h2 {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-primary);
+}
+
+.section-desc { color: var(--text-secondary); font-size: 0.9rem; }
+
+.sim-grid, .sch-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+}
+
+.sim-panel {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.form-group { margin-bottom: var(--space-md); }
+
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+}
+
+.slider {
+    width: 100%;
+    accent-color: var(--bu-gold);
+    height: 6px;
+    cursor: pointer;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.projected-result-box {
+    background: linear-gradient(135deg, var(--bu-blue-dark), var(--bu-blue));
+    color: #ffffff;
+    padding: var(--space-xl);
+    border-radius: var(--radius-md);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-md);
+}
+
+.proj-label { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
+
+.proj-gwa {
+    font-family: var(--font-display);
+    font-size: 2.75rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin: 8px 0;
+}
+
+.proj-honor { font-size: 0.95rem; font-weight: 600; color: var(--bu-gold); }
+
+.target-buttons {
+    display: flex;
+    gap: var(--space-xs);
+    margin-bottom: var(--space-md);
+    flex-wrap: wrap;
+}
+
+.target-result {
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.checkbox-group { margin-top: var(--space-sm); }
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 0.88rem;
+    color: var(--text-primary);
+}
+
+.checkbox-label input { accent-color: var(--bu-blue); width: 16px; height: 16px; }
+
+.sch-status-container {
+    padding: var(--space-lg);
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    transition: var(--transition-normal);
+}
+
+.sch-status-icon { font-size: 2rem; }
+.sch-status-text h3 { font-family: var(--font-display); font-size: 1.2rem; font-weight: 700; margin-bottom: 2px; }
+.sch-status-text p { font-size: 0.85rem; color: var(--text-secondary); }
+
+.sch-checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.sch-checklist li { font-size: 0.9rem; display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: var(--card-header-bg); border-radius: var(--radius-sm); }
+
+.guide-section {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: var(--space-lg);
+    margin-bottom: var(--space-lg);
+    box-shadow: var(--shadow-sm);
+}
+
+.guide-section-title {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: var(--space-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.guide-note { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: var(--space-md); }
+
+.policy-table { width: 100%; border-collapse: collapse; text-align: left; }
+.policy-table th, .policy-table td { padding: 10px 14px; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+
+.adjectival-badge {
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #ffffff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.badge-outstanding { background: #2563eb; }
+.badge-superior { background: #4f46e5; }
+.badge-very-satisfactory { background: #059669; }
+.badge-satisfactory { background: #0891b2; }
+.badge-fair { background: #d97706; }
+.badge-conditional { background: #dc2626; }
+.badge-failure { background: #991b1b; }
+.badge-incomplete { background: #7c3aed; }
+.badge-dropped { background: #6b7280; }
+
+.honors-grid, .recognition-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: var(--space-md);
+    margin-top: var(--space-md);
+}
+
+.honor-card, .recognition-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: var(--space-md);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    transition: var(--transition-normal);
+}
+
+.honor-card:hover, .recognition-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+
+.honor-summa { border-top: 4px solid var(--bu-gold); }
+.honor-magna { border-top: 4px solid var(--bu-orange); }
+.honor-cumlaude { border-top: 4px solid var(--bu-azure); }
+
+.honor-title { font-family: var(--font-display); font-size: 1.1rem; font-weight: 700; }
+.honor-cutoff-pill { font-size: 0.78rem; font-weight: 700; padding: 2px 8px; border-radius: 10px; }
+
+.pill-gold { background: rgba(245, 158, 11, 0.15); color: #b45309; }
+.pill-orange { background: rgba(234, 88, 12, 0.15); color: #c2410c; }
+.pill-blue { background: rgba(37, 99, 235, 0.15); color: #1d4ed8; }
+
+[data-theme="dark"] .pill-gold { color: #fbbf24; }
+[data-theme="dark"] .pill-orange { color: #fb923c; }
+[data-theme="dark"] .pill-blue { color: #60a5fa; }
+
+.honor-desc, .recognition-card p { font-size: 0.85rem; color: var(--text-secondary); }
+.recog-header { display: flex; align-items: center; gap: 8px; }
+.recog-icon { color: var(--bu-gold); }
+
+/* About Page & Sub-Tabs Styling */
+.subtab-bar {
+    display: flex;
+    gap: var(--space-xs);
+    background: var(--card-header-bg);
+    padding: 6px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-color);
+    margin-bottom: var(--space-lg);
+    flex-wrap: wrap;
+}
+
+.subtab-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 16px;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition-fast);
+}
+
+.subtab-btn:hover {
+    color: var(--text-primary);
+}
+
+.subtab-btn.active {
+    background: var(--card-bg);
+    color: var(--bu-blue);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .subtab-btn.active {
+    color: #60a5fa;
+}
+
+.about-subtab-content {
+    display: none;
+}
+
+.about-subtab-content.active {
+    display: block;
+    animation: fadeIn 0.25s ease;
+}
+
+.about-hero-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.about-features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-md);
+    margin-top: var(--space-sm);
+}
+
+.about-feat-card {
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.about-feat-card .feat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 2px;
+}
+
+.about-feat-card h4 {
+    font-family: var(--font-display);
+    font-size: 0.98rem;
+    font-weight: 700;
+}
+
+.about-feat-card p {
+    font-size: 0.83rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+}
+
+.developer-box {
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: var(--radius-md);
+}
+
+@media (max-width: 768px) {
+    .navbar-inner { flex-wrap: wrap; }
+    .app-title .app-subtitle { display: none; }
+    .nav-tabs-container { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
+    .dashboard-summary { grid-template-columns: repeat(2, 1fr); }
+    .sim-grid, .sch-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    .dashboard-summary { grid-template-columns: 1fr; }
+    .sem-header { flex-direction: column; align-items: flex-start; }
+    .sem-title-select { width: 100%; }
+    .subject-table input, .subject-table select { font-size: 16px; }
+}
