@@ -423,7 +423,7 @@ function renderSemesters() {
                 <button class="btn btn-secondary btn-sm" onclick="addSubject(${semIndex})">
                     <i class="fa-solid fa-plus"></i> Add Course Row
                 </button>
-                <span class="text-muted" style="font-size: 0.82rem;">Total Units: ${semUnits.toFixed(1)}</span>
+                <span class="sem-total-units text-muted" style="font-size: 0.82rem;">Total Units: ${Math.round(semUnits)}</span>
             </div>
         `;
         container.appendChild(semCard);
@@ -499,7 +499,9 @@ function updateSubject(semIndex, subIndex, field, val) {
     if (semesters[semIndex] && semesters[semIndex].subjects && semesters[semIndex].subjects[subIndex]) {
         semesters[semIndex].subjects[subIndex][field] = val;
         saveData();
-        renderSemesters();
+        if (typeof updateSemesterUnitsDisplay === "function") {
+            updateSemesterUnitsDisplay(semIndex);
+        }
     }
 }
 

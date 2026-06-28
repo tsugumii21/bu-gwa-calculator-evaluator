@@ -555,7 +555,6 @@
     border-radius: var(--radius-lg);
     overflow: hidden;
     box-shadow: var(--shadow-sm);
-    animation: fadeIn 0.3s ease;
 }
 
 .sem-header {

@@ -74,7 +74,7 @@ function renderSemesters() {
                 <button class="btn btn-secondary btn-sm" onclick="addSubject(${semIndex})">
                     <i class="fa-solid fa-plus"></i> Add Course Row
                 </button>
-                <span class="text-muted" style="font-size: 0.82rem;">Total Units: ${Math.round(semUnits)}</span>
+                <span class="sem-total-units text-muted" style="font-size: 0.82rem;">Total Units: ${Math.round(semUnits)}</span>
             </div>
         `;
         container.appendChild(semCard);

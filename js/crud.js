@@ -108,7 +108,19 @@ function updateSubject(semIndex, subIndex, field, val) {
     if (semesters[semIndex] && semesters[semIndex].subjects && semesters[semIndex].subjects[subIndex]) {
         semesters[semIndex].subjects[subIndex][field] = val;
         saveData();
-        renderSemesters();
+        updateSemesterUnitsDisplay(semIndex);
+    }
+}
+
+function updateSemesterUnitsDisplay(semIndex) {
+    const cards = document.querySelectorAll(".semester-card");
+    if (cards[semIndex]) {
+        const sem = semesters[semIndex];
+        const semUnits = calculateSemesterUnits(sem);
+        const unitsElem = cards[semIndex].querySelector(".sem-total-units");
+        if (unitsElem) {
+            unitsElem.innerText = `Total Units: ${Math.round(semUnits)}`;
+        }
     }
 }
 
