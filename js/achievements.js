@@ -497,7 +497,7 @@ function evaluateAcademicAchievements() {
     // Badge 3: Clean Record
     const isClean = stats.totalUnits > 0 && stats.failingCount === 0 && !stats.hasInc;
     html += `<div class="badge-box ${isClean ? 'unlocked' : 'locked'}">`;
-    html += `<i class="fa-solid fa-shield-check badge-icon"></i>`;
+    html += `<i class="fa-solid fa-shield-halved badge-icon"></i>`;
     html += `<div class="badge-title">Zero Deficiencies</div>`;
     html += `<div class="badge-desc">${isClean ? '100% clean academic record!' : 'No 5.0 or INC marks'}</div></div>`;
 
