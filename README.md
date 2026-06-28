@@ -23,18 +23,13 @@ An unofficial, modern web application designed for Bicol University students to 
 
 ---
 
-## ✨ Features
+## ✨ Main Features
 
-- 🧮 **4-Decimal Precision Engine**: Computes real-time cumulative and semester GWAs using exact weighted grade point math rounded to 4 decimal places, excluding incomplete (`INC`) and dropped (`DRP`) grades.
-- 📄 **Digital COR PDF Scanner**: In-browser client-side extraction of course codes, descriptions, and credit units directly from official BU Certificate of Registration (COR) PDF documents using `PDF.js`.
-- 🏆 **Per-Semester Honor Evaluation Radar**: Evaluates President's Lister (1.00 - 1.45) and Dean's Lister (1.46 - 1.75) eligibility per semester upon pressing 'Compute GPA', displaying 1 of 140 unique motivational achievement quotes.
-- 👑 **Latin Graduation Honors Proximity Radar**: Computes *Summa Cum Laude* (≤ 1.2500), *Magna Cum Laude* (≤ 1.4500), and *Cum Laude* (≤ 1.7500) candidacy while providing exact point proximity gaps to target honors.
-- 🧪 **"What-If" Scenario Simulator**: Simulate future grade outcomes across remaining units and reverse-calculate exact required averages for target graduation honors.
-- 🎓 **Scholarship Retention Monitor**: Check retention compliance against built-in presets for **DOST-SEI**, **CHED Merit**, **TES**, and **BU Athletic** scholarships.
-- 📋 **Smart Bulk Paste Importer**: Multi-format schedule text parser supporting course codes, descriptions, units, and grades with a 1-click sample data magic loader.
-- 🎭 **Animated Deletion & Modals**: Glassmorphism visual design with Animate.css warning shakes and smooth card exit transitions upon item removal.
-- 📱 **Interactive Pill Sub-Tabs System**: Organized sub-navigation dividing Overview, Handbook Grading Scales, and Academic Honor Criteria.
-- 🌙 **Persistent Dark / Light Theme**: Dynamic theme switcher tailored for comfortable late-night study sessions with automatic local preference saving.
+- 🧮 **4-Decimal Precision Engine**: Computes real-time cumulative and semester GWAs using exact weighted grade point math rounded to 4 decimal places per official university policy.
+- 📄 **Digital COR PDF Scanner**: Instant client-side extraction of course codes, descriptions, and credit units directly from official BU PDF documents via `PDF.js` worker.
+- 🏆 **Honor Qualification Radar**: Evaluates President's Lister, Dean's Lister, and graduation Latin Honors (Summa, Magna, Cum Laude) while showing exact point proximity gaps.
+- 🧪 **Scenario Simulator**: Simulate future grade outcomes across remaining units and reverse-calculate exact required average grades to achieve target graduation honors.
+- 🎓 **Scholarship Retention Monitor**: Track whether your current academic performance meets retention criteria across **DOST-SEI**, **CHED Merit**, **TES**, and **BU Athletic** scholarships.
 
 ---
 
