@@ -1,6 +1,4 @@
-<p align="center">
-  <img src="assets/logo.png" alt="BU GWA Calculator Logo" width="120" />
-</p>
+
 
 # 🎓 BU GWA Calculator & Academic Evaluator
 
