@@ -341,7 +341,7 @@ function evaluateAcademicAchievements() {
 
     // 1. Current Graduation Honor Status & Proximity Gap Analysis
     html += `<div class="achieve-section">`;
-    html += `<h4 class="achieve-heading"><i class="fa-solid fa-graduation-cap text-gold"></i> 🎓 Graduation Honor Proximity</h4>`;
+    html += `<h4 class="achieve-heading"><i class="fa-solid fa-graduation-cap text-gold"></i> Graduation Honor Proximity</h4>`;
 
     if (stats.totalUnits === 0) {
         html += `<p class="text-muted" style="font-size:0.9rem;">Add your subjects and grades to evaluate graduation honors.</p>`;
@@ -403,7 +403,7 @@ function evaluateAcademicAchievements() {
     html += `<div class="achieve-section" style="margin-top:18px;">`;
     html += `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
-            <h4 class="achieve-heading" style="margin-bottom:0;"><i class="fa-solid fa-award text-gold"></i> ⭐ Term Academic Recognition (PL & DL)</h4>
+            <h4 class="achieve-heading" style="margin-bottom:0;"><i class="fa-solid fa-award text-gold"></i> Term Academic Recognition (PL & DL)</h4>
             <button class="btn btn-gold btn-sm" onclick="computeAllSemesters()" title="Compute GPA for all semesters at once">
                 <i class="fa-solid fa-calculator"></i> Compute All
             </button>
@@ -477,35 +477,35 @@ function evaluateAcademicAchievements() {
 
     // 3. Unlockable Achievement Badges
     html += `<div class="achieve-section" style="margin-top:20px;">`;
-    html += `<h4 class="achieve-heading"><i class="fa-solid fa-shield-cat text-primary"></i> 🛡️ Achievement Badges</h4>`;
+    html += `<h4 class="achieve-heading"><i class="fa-solid fa-shield-cat text-primary"></i> Achievement Badges</h4>`;
     html += `<div class="badges-grid">`;
 
     // Badge 1: Scholar Power
     const isScholar = (totalPL + totalDL) > 0;
     html += `<div class="badge-box ${isScholar ? 'unlocked' : 'locked'}">`;
     html += `<i class="fa-solid fa-graduation-cap badge-icon"></i>`;
-    html += `<div class="badge-title">🎓 Honor Scholar</div>`;
+    html += `<div class="badge-title">Honor Scholar</div>`;
     html += `<div class="badge-desc">${isScholar ? `Achieved ${totalPL} PL & ${totalDL} DL terms!` : 'Earn at least 1 PL or DL term'}</div></div>`;
 
     // Badge 2: Perfect Streak
     const isPerfect = stats.cumulativeGWA > 0 && stats.cumulativeGWA <= 1.25;
     html += `<div class="badge-box ${isPerfect ? 'unlocked' : 'locked'}">`;
     html += `<i class="fa-solid fa-fire badge-icon"></i>`;
-    html += `<div class="badge-title">🔥 Straight A Phenom</div>`;
+    html += `<div class="badge-title">Straight A Phenom</div>`;
     html += `<div class="badge-desc">${isPerfect ? 'Maintained GWA ≤ 1.25!' : 'Achieve GWA ≤ 1.25'}</div></div>`;
 
     // Badge 3: Clean Record
     const isClean = stats.totalUnits > 0 && stats.failingCount === 0 && !stats.hasInc;
     html += `<div class="badge-box ${isClean ? 'unlocked' : 'locked'}">`;
     html += `<i class="fa-solid fa-shield-check badge-icon"></i>`;
-    html += `<div class="badge-title">🛡️ Zero Deficiencies</div>`;
+    html += `<div class="badge-title">Zero Deficiencies</div>`;
     html += `<div class="badge-desc">${isClean ? '100% clean academic record!' : 'No 5.0 or INC marks'}</div></div>`;
 
     // Badge 4: Full Load Warrior
     const isFullLoad = stats.totalUnits >= 18 && !stats.hasUnderload;
     html += `<div class="badge-box ${isFullLoad ? 'unlocked' : 'locked'}">`;
     html += `<i class="fa-solid fa-dumbbell badge-icon"></i>`;
-    html += `<div class="badge-title">🏋️ Full Load Warrior</div>`;
+    html += `<div class="badge-title">Full Load Warrior</div>`;
     html += `<div class="badge-desc">${isFullLoad ? 'Completed ≥18 units full load!' : 'Complete ≥18 units without underload'}</div></div>`;
 
     html += `</div></div>`;
