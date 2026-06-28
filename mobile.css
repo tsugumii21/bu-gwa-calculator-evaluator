@@ -95,8 +95,9 @@ html, body {
         min-width: 0;
     }
 
-    .app-title .app-subtitle {
-        display: none;
+    .app-title .app-subtitle,
+    .desktop-only-title {
+        display: none !important;
     }
 
     .app-name {
@@ -441,34 +442,55 @@ html, body {
     /* --- Dashboard: iBU Compact 2x2 Grid --- */
     .dashboard-summary {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 8px !important;
+        gap: 6px !important;
         margin-bottom: var(--space-md) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .summary-card {
-        padding: 10px 12px !important;
+        padding: 8px 10px !important;
         position: relative !important;
-        gap: 8px !important;
+        gap: 6px !important;
         border-radius: var(--radius-md) !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
     }
 
     .icon-circle {
-        width: 36px !important;
-        height: 36px !important;
-        font-size: 1rem !important;
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 0.9rem !important;
+        flex-shrink: 0 !important;
     }
 
     .summary-value {
-        font-size: 1.25rem !important;
+        font-size: 1.1rem !important;
+        word-break: break-word !important;
+    }
+
+    .summary-value.honor-badge,
+    .summary-value.standing-badge {
+        font-size: 0.8rem !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
     }
 
     .summary-label {
-        font-size: 0.68rem !important;
-        letter-spacing: 0.3px !important;
+        font-size: 0.65rem !important;
+        letter-spacing: 0.2px !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
     }
 
     .summary-subtext {
-        font-size: 0.72rem !important;
+        font-size: 0.68rem !important;
+        white-space: normal !important;
+        word-break: break-word !important;
+        line-height: 1.2 !important;
     }
 
     .info-help-btn {
@@ -1056,11 +1078,22 @@ html, body {
 
     /* --- Empty state --- */
     .empty-state {
-        padding: var(--space-xl) var(--space-sm);
+        padding: 16px 12px !important;
+        margin: 8px 0 !important;
+    }
+
+    .empty-state h3 {
+        font-size: 0.95rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .empty-state p {
+        font-size: 0.78rem !important;
     }
 
     .empty-state-icon {
-        font-size: 2.2rem;
+        font-size: 1.6rem !important;
+        margin-bottom: 4px !important;
     }
 
     /* --- Form elements: prevent iOS auto-zoom --- */
