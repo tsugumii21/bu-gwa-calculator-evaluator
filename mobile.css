@@ -446,6 +446,7 @@ html, body {
 
     .summary-card {
         padding: var(--space-sm) var(--space-md);
+        position: relative;
     }
 
     .summary-value {
@@ -457,11 +458,12 @@ html, body {
     }
 
     .info-help-btn {
-        width: 20px;
-        height: 20px;
-        font-size: 0.72rem;
-        top: 6px;
-        left: 6px;
+        width: 22px;
+        height: 22px;
+        font-size: 0.75rem;
+        top: 8px;
+        right: 8px;
+        left: auto;
     }
 
     /* --- Toolbar: full width stacked --- */
@@ -484,65 +486,143 @@ html, body {
         min-height: 40px;
     }
 
+    #btn-reset {
+        grid-column: span 2;
+    }
+
     /* --- Semester cards --- */
     .sem-header {
-        padding: var(--space-xs) var(--space-sm);
+        padding: 10px 12px;
+        gap: 8px;
+    }
+
+    .sem-title-group {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
     }
 
     .sem-title-select {
-        font-size: 0.88rem;
-        padding: 6px 8px;
+        font-size: 0.95rem;
+        padding: 8px 10px;
+        width: 100%;
+        min-width: 0;
     }
 
     .sem-title-group .btn-sm {
-        padding: 5px 10px;
-        font-size: 0.78rem;
+        width: 100%;
+        padding: 8px 12px;
+        font-size: 0.82rem;
     }
 
     .sem-result-pill {
-        font-size: 0.75rem;
-        padding: 3px 8px;
+        font-size: 0.78rem;
+        padding: 4px 10px;
+        align-self: flex-start;
     }
 
     .sem-actions {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         gap: var(--space-xs);
+        margin-top: 4px;
     }
 
     .underload-toggle {
-        font-size: 0.75rem;
+        font-size: 0.78rem;
     }
 
-    /* Subject table: mobile-optimized */
-    .subject-table th {
-        font-size: 0.68rem;
-        padding: 6px 4px;
-        letter-spacing: 0;
+    /* --- Subject table: Mobile Flex Card Layout (Fixes cut-off text!) --- */
+    .table-responsive {
+        overflow-x: visible !important;
+    }
+
+    .subject-table, 
+    .subject-table tbody {
+        display: block !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .subject-table thead {
+        display: none !important; /* Hide standard headers on small screens */
+    }
+
+    .subject-table tbody tr {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        padding: 10px !important;
+        margin: 8px 6px !important;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
+        box-shadow: var(--shadow-sm) !important;
     }
 
     .subject-table td {
-        padding: 4px;
+        padding: 0 !important;
+        border: none !important;
+    }
+
+    /* Row 1: Course Code (32%) & Course Description (60%) */
+    .subject-table td:nth-child(1) {
+        flex: 1 1 32% !important;
+        min-width: 90px !important;
+    }
+
+    .subject-table td:nth-child(2) {
+        flex: 2 1 60% !important;
+        min-width: 150px !important;
+    }
+
+    /* Row 2: Grade Rating (36%), Credit Units (36%), Delete Button (Right) */
+    .subject-table td:nth-child(3) {
+        flex: 1 1 36% !important;
+    }
+
+    .subject-table td:nth-child(4) {
+        flex: 1 1 36% !important;
+    }
+
+    .subject-table td:nth-child(5) {
+        flex: 0 0 auto !important;
+        margin-left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+    }
+
+    .subject-table td:nth-child(5) .btn {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
     .form-control-sm {
-        padding: 5px 6px;
-        font-size: 16px;
-    }
-
-    .subject-table .btn-danger.btn-sm {
-        padding: 4px 8px;
-        min-width: 32px;
-        min-height: 32px;
+        padding: 8px 10px !important;
+        font-size: 16px !important;
+        border-radius: var(--radius-sm) !important;
     }
 
     .sem-footer {
-        padding: var(--space-xs) var(--space-sm);
+        padding: 10px 12px;
         flex-wrap: wrap;
-        gap: var(--space-xs);
+        gap: var(--space-sm);
+        justify-content: space-between;
     }
 
     .sem-footer .btn-sm {
-        font-size: 0.78rem;
-        padding: 5px 10px;
+        font-size: 0.82rem;
+        padding: 8px 14px;
     }
 
     /* --- Simulator --- */
@@ -571,12 +651,18 @@ html, body {
     }
 
     .target-buttons {
-        gap: 4px;
+        display: grid !important;
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 6px !important;
+        width: 100% !important;
     }
 
     .target-buttons .btn {
-        padding: 6px 10px;
-        font-size: 0.78rem;
+        padding: 8px 4px !important;
+        font-size: 0.75rem !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+        width: 100% !important;
     }
 
     .target-result {
