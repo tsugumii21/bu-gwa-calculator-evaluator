@@ -899,3 +899,37 @@
     justify-content: flex-end;
     gap: var(--space-sm);
 }
+
+/* Explicit Desktop Guard for Modals and Welcome Screen (> 768px) */
+@media (min-width: 769px) {
+    .welcome-card {
+        max-width: 580px !important;
+        margin: auto !important;
+    }
+    #card-info-modal .modal-content,
+    #underload-info-modal .modal-content {
+        max-width: 580px !important;
+        width: 100% !important;
+    }
+    #latin-honors-modal .modal-content,
+    #term-honor-modal .modal-content {
+        max-width: 600px !important;
+        width: 100% !important;
+    }
+    #achievement-modal .modal-content {
+        max-width: 660px !important;
+        width: 100% !important;
+    }
+    #delete-confirm-modal .modal-content {
+        max-width: 420px !important;
+        width: 100% !important;
+    }
+    #import-success-modal .modal-content {
+        max-width: 440px !important;
+        width: 100% !important;
+    }
+    #bulk-paste-modal .modal-content {
+        max-width: 560px !important;
+        width: 100% !important;
+    }
+}
