@@ -1118,9 +1118,10 @@ html, body {
 
     /* --- Empty state --- */
     .empty-state {
-        padding: 16px 12px !important;
-        margin: 16px auto !important;
-        max-width: 220px !important;
+        padding: 24px 16px !important;
+        margin: 20px auto !important;
+        max-width: 290px !important;
+        width: 90% !important;
         aspect-ratio: 1 / 1 !important;
     }
 
