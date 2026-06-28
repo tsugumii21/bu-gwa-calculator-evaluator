@@ -64,17 +64,6 @@ html, body {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-
-    /* Modals: cap width */
-    .modal-content {
-        max-width: calc(100vw - 32px) !important;
-    }
-
-    /* Welcome card */
-    .welcome-card {
-        max-width: 560px;
-        padding: var(--space-xl) var(--space-lg);
-    }
 }
 
 
@@ -956,7 +945,7 @@ html, body {
     }
 
     .modal-content {
-        max-width: calc(100vw - 20px) !important;
+        max-width: calc(100vw - 24px) !important;
         width: 100% !important;
         max-height: 88vh !important;
         overflow-y: auto !important;
