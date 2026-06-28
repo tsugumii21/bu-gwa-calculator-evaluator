@@ -104,7 +104,7 @@ function evaluateSemesterComputeModal(semIndex) {
     }
 
     let category = "NOT_PL_DL";
-    let title = "Keep Striving 🎯";
+    let title = "Keep Striving";
     let badgeClass = "card-neutral";
     let icon = "fa-bullseye";
     let subtext = "";
@@ -112,13 +112,13 @@ function evaluateSemesterComputeModal(semIndex) {
     if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
         if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
             category = "PL";
-            title = "President's Lister 🏆";
+            title = "President's Lister";
             badgeClass = "card-gold";
             icon = "fa-crown";
             subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
         } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
             category = "DL";
-            title = "Dean's Lister 🌟";
+            title = "Dean's Lister";
             badgeClass = "card-gold";
             icon = "fa-medal";
             subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
@@ -139,8 +139,6 @@ function evaluateSemesterComputeModal(semIndex) {
         }
     }
 
-    const message = typeof getHonorMessage === "function" ? getHonorMessage(category) : "\"Keep aiming high!\"";
-
     container.innerHTML = `
         <div class="achieve-section">
             <div class="achieve-card ${badgeClass}">
@@ -149,10 +147,6 @@ function evaluateSemesterComputeModal(semIndex) {
                     <strong class="achieve-title">${title}</strong>
                     <span class="achieve-subtext">${subtext}</span>
                 </div>
-            </div>
-            <div class="quote-box">
-                <i class="fa-solid fa-quote-left quote-icon"></i>
-                <div class="quote-text">${message}</div>
             </div>
         </div>
     `;
@@ -190,30 +184,25 @@ function evaluateLatinHonorsModal() {
     const allComputed = semesters && semesters.length > 0 && semesters.every(s => s.computed);
 
     if (stats.totalUnits === 0) {
-        const quote = typeof getHonorMessage === "function" ? getHonorMessage("NOT_LAUDE") : "\"Keep pushing your limits!\"";
         html += `
             <div class="achieve-card card-neutral">
-                <div class="achieve-icon"><i class="fa-solid fa-folder-open text-primary" style="font-size:2rem;"></i></div>
+                <div class="achieve-icon"><i class="fa-solid fa-folder-open text-primary" style="font-size:1.6rem;"></i></div>
                 <div class="achieve-details">
-                    <strong>No Courses Added Yet</strong>
-                    <span class="achieve-subtext">Add your subjects and grades in the calculator to evaluate Latin Graduation Honors.</span>
+                    <strong style="font-size:0.95rem;">No Courses Added Yet</strong>
+                    <span class="achieve-subtext" style="font-size:0.82rem;">Add your subjects and grades in the calculator to evaluate Latin Graduation Honors.</span>
                 </div>
-            </div>
-            <div class="quote-box">
-                <i class="fa-solid fa-quote-left quote-icon"></i>
-                <div class="quote-text">${quote}</div>
             </div>
         `;
     } else if (!allComputed) {
         html += `
-            <div class="achieve-card card-neutral" style="border-left: 4px solid var(--bu-gold); padding: 18px;">
-                <div class="achieve-icon"><i class="fa-solid fa-clock-rotate-left text-gold" style="font-size:1.8rem;"></i></div>
+            <div class="achieve-card card-neutral" style="border-left: 4px solid var(--bu-gold); padding: 14px;">
+                <div class="achieve-icon"><i class="fa-solid fa-clock-rotate-left text-gold" style="font-size:1.6rem;"></i></div>
                 <div class="achieve-details">
-                    <strong style="font-size:1.05rem; color:var(--text-primary);">Awaiting Full Computation</strong>
-                    <span class="achieve-subtext" style="display:block; margin-top:4px; line-height:1.5;">
+                    <strong style="font-size:0.95rem; color:var(--text-primary);">Awaiting Full Computation</strong>
+                    <span class="achieve-subtext" style="display:block; margin-top:4px; line-height:1.4; font-size:0.82rem;">
                         Graduation Honor candidacy & proximity gap analysis require all semester GPAs to be computed first. Please compute each semester or click below.
                     </span>
-                    <div style="margin-top:12px;">
+                    <div style="margin-top:10px;">
                         <button class="btn btn-gold btn-sm" onclick="computeAllSemesters()">
                             <i class="fa-solid fa-calculator"></i> Compute All Terms Now
                         </button>
@@ -227,126 +216,90 @@ function evaluateLatinHonorsModal() {
         if (stats.hasInc) reasons.push("Unresolved INC mark");
         if (stats.hasUnderload) reasons.push("Underloaded term");
 
-        const quote = typeof getHonorMessage === "function" ? getHonorMessage("NOT_LAUDE") : "\"Keep your head held high!\"";
-
         html += `
             <div class="achieve-card alert-card-danger">
                 <div class="achieve-icon"><i class="fa-solid fa-circle-xmark text-danger"></i></div>
                 <div class="achieve-details">
-                    <strong style="font-size:1.05rem;">Not Eligible for Latin Graduation Honors</strong>
-                    <span class="achieve-subtext" style="line-height:1.4; margin-top:4px;">
+                    <strong style="font-size:0.95rem;">Not Eligible for Latin Graduation Honors</strong>
+                    <span class="achieve-subtext" style="line-height:1.4; margin-top:4px; font-size:0.82rem;">
                         Per the Bicol University Student Handbook (Art. VIII, Sec. 30), candidates must carry full regular load with zero academic deficiencies. Disqualified due to: <strong>${reasons.join(", ")}</strong>.
                     </span>
                 </div>
-            </div>
-            <div class="quote-box" style="border-left-color: var(--color-danger); background: rgba(239, 68, 68, 0.06);">
-                <i class="fa-solid fa-quote-left quote-icon" style="color: var(--color-danger);"></i>
-                <div class="quote-text">${quote}</div>
             </div>
         `;
     } else {
         const gwa = stats.cumulativeGWA;
 
         if (gwa <= 1.2500) {
-            const quote = typeof getHonorMessage === "function" ? getHonorMessage("SUMMA") : "\"Academic perfection!\"";
             html += `
                 <div class="achieve-card card-gold">
                     <div class="achieve-icon"><i class="fa-solid fa-crown text-gold"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#b45309;">Candidate for Summa Cum Laude! 🎉</strong>
-                        <span class="achieve-subtext">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (≤ 1.2500). You are at the absolute pinnacle of academic excellence!</span>
+                        <strong class="achieve-title" style="color:#b45309; font-size:0.95rem;">Candidate for Summa Cum Laude!</strong>
+                        <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (≤ 1.2500). You are at the absolute pinnacle of academic excellence!</span>
                     </div>
-                </div>
-                <div class="quote-box">
-                    <i class="fa-solid fa-quote-left quote-icon"></i>
-                    <div class="quote-text">${quote}</div>
                 </div>
             `;
         } else if (gwa <= 1.4500) {
             const gapToSumma = gwa - 1.2500;
-            const quote = typeof getHonorMessage === "function" ? getHonorMessage("MAGNA") : "\"Strive higher!\"";
             html += `
                 <div class="achieve-card card-orange">
                     <div class="achieve-icon"><i class="fa-solid fa-medal text-orange"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#c2410c;">Candidate for Magna Cum Laude! 🌟</strong>
-                        <span class="achieve-subtext">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.2500 < GWA ≤ 1.4500).</span>
-                        <span class="gap-pill" style="margin-top:8px;">🔥 So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span>
+                        <strong class="achieve-title" style="color:#c2410c; font-size:0.95rem;">Candidate for Magna Cum Laude!</strong>
+                        <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.2500 < GWA ≤ 1.4500).</span>
+                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span>
                     </div>
-                </div>
-                <div class="quote-box" style="border-left-color: var(--bu-orange); background: rgba(234, 88, 12, 0.06);">
-                    <i class="fa-solid fa-quote-left quote-icon" style="color: var(--bu-orange);"></i>
-                    <div class="quote-text">${quote}</div>
                 </div>
             `;
         } else if (gwa <= 1.7500) {
             const gapToMagna = gwa - 1.4500;
-            const quote = typeof getHonorMessage === "function" ? getHonorMessage("CUM") : "\"Great work!\"";
             html += `
                 <div class="achieve-card card-blue">
                     <div class="achieve-icon"><i class="fa-solid fa-award text-primary"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#1d4ed8;">Candidate for Cum Laude! 🏅</strong>
-                        <span class="achieve-subtext">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.4500 < GWA ≤ 1.7500).</span>
-                        <span class="gap-pill" style="margin-top:8px;">⚡ So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span>
+                        <strong class="achieve-title" style="color:#1d4ed8; font-size:0.95rem;">Candidate for Cum Laude!</strong>
+                        <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.4500 < GWA ≤ 1.7500).</span>
+                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span>
                     </div>
-                </div>
-                <div class="quote-box" style="border-left-color: var(--bu-azure); background: rgba(37, 99, 235, 0.06);">
-                    <i class="fa-solid fa-quote-left quote-icon" style="color: var(--bu-azure);"></i>
-                    <div class="quote-text">${quote}</div>
                 </div>
             `;
         } else {
             const gapToCum = gwa - 1.7500;
-            const quote = typeof getHonorMessage === "function" ? getHonorMessage("NOT_LAUDE") : "\"Keep aiming high!\"";
             html += `
                 <div class="achieve-card card-neutral">
                     <div class="achieve-icon"><i class="fa-solid fa-bullseye text-primary"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title">Regular Graduate Candidate</strong>
-                        <span class="achieve-subtext">Your current cumulative GWA is <strong>${gwa.toFixed(4)}</strong>.</span>
-                        <span class="gap-pill" style="margin-top:8px;">🎯 Goal Gap: You are <strong>${gapToCum.toFixed(4)}</strong> points away from Cum Laude cutoff (1.7500).</span>
+                        <strong class="achieve-title" style="font-size:0.95rem;">Regular Graduate Candidate</strong>
+                        <span class="achieve-subtext" style="font-size:0.82rem;">Your current cumulative GWA is <strong>${gwa.toFixed(4)}</strong>.</span>
+                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">Goal Gap: You are <strong>${gapToCum.toFixed(4)}</strong> points away from Cum Laude cutoff (1.7500).</span>
                     </div>
-                </div>
-                <div class="quote-box">
-                    <i class="fa-solid fa-quote-left quote-icon"></i>
-                    <div class="quote-text">${quote}</div>
                 </div>
             `;
         }
     }
 
-    // Exact Cutoffs Breakdown Table inside Popup
+    // Option A Compact Criteria Cards Breakdown inside Popup
     html += `
-        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border-color);">
-            <h4 style="font-family:var(--font-display); font-size:0.95rem; font-weight:700; margin-bottom:10px;">
+        <div style="margin-top:16px; padding-top:14px; border-top:1px solid var(--border-color);">
+            <h4 style="font-family:var(--font-display); font-size:0.92rem; font-weight:700; margin-bottom:10px; color:var(--text-primary);">
                 <i class="fa-solid fa-list-check text-primary"></i> Exact Bicol University Graduation Honor Criteria
             </h4>
-            <div class="table-responsive">
-                <table style="width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left;">
-                    <thead>
-                        <tr style="background:var(--card-header-bg); border-bottom:1px solid var(--border-color);">
-                            <th style="padding:6px 10px;">Honor Level</th>
-                            <th style="padding:6px 10px;">Exact GWA Cutoff</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr style="border-bottom:1px solid var(--border-color);">
-                            <td style="padding:6px 10px; font-weight:700; color:#b45309;">👑 Summa Cum Laude</td>
-                            <td style="padding:6px 10px;">1.0000 – 1.2500</td>
-                        </tr>
-                        <tr style="border-bottom:1px solid var(--border-color);">
-                            <td style="padding:6px 10px; font-weight:700; color:#c2410c;">🌟 Magna Cum Laude</td>
-                            <td style="padding:6px 10px;">1.2501 – 1.4500</td>
-                        </tr>
-                        <tr style="border-bottom:1px solid var(--border-color);">
-                            <td style="padding:6px 10px; font-weight:700; color:#1d4ed8;">🏅 Cum Laude</td>
-                            <td style="padding:6px 10px;">1.4501 – 1.7500</td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #b45309; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:#b45309; font-size:0.88rem;">Summa Cum Laude</strong>
+                    <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.0000 – 1.2500</span>
+                </div>
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #c2410c; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:#c2410c; font-size:0.88rem;">Magna Cum Laude</strong>
+                    <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.2501 – 1.4500</span>
+                </div>
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #1d4ed8; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:#1d4ed8; font-size:0.88rem;">Cum Laude</strong>
+                    <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.4501 – 1.7500</span>
+                </div>
             </div>
-            <p style="font-size:0.78rem; color:var(--text-secondary); margin-top:8px; line-height:1.4;">
+            <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
                 *Rules: Must carry full regular load every term with zero 5.0 or INC marks (Art. VIII, Sec. 30).
             </p>
         </div>

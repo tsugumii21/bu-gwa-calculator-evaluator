@@ -947,9 +947,10 @@ html, body {
 
     /* Modal inner cards */
     .achieve-card {
-        padding: 10px;
-        gap: 10px;
-        flex-wrap: wrap;
+        padding: 10px 12px;
+        gap: 12px;
+        flex-wrap: nowrap !important;
+        align-items: center !important;
     }
 
     .achieve-icon {
