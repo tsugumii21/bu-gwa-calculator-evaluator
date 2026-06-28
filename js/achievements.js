@@ -3,40 +3,52 @@
 function openAchievementsModal() {
     const modal = document.getElementById("achievement-modal");
     if (modal) {
-        evaluateAcademicAchievements();
-        modal.style.display = "flex";
+        try {
+            evaluateAcademicAchievements();
+        } catch (e) {
+            console.error("Error evaluating achievements:", e);
+        }
+        modal.style.setProperty("display", "flex", "important");
     }
 }
 
 function closeAchievementsModal() {
     const modal = document.getElementById("achievement-modal");
-    if (modal) modal.style.display = "none";
+    if (modal) modal.style.setProperty("display", "none", "important");
 }
 
 function openLatinHonorsModal() {
     const modal = document.getElementById("latin-honors-modal");
     if (modal) {
-        evaluateLatinHonorsModal();
-        modal.style.display = "flex";
+        try {
+            evaluateLatinHonorsModal();
+        } catch (e) {
+            console.error("Error evaluating Latin honors:", e);
+        }
+        modal.style.setProperty("display", "flex", "important");
     }
 }
 
 function closeLatinHonorsModal() {
     const modal = document.getElementById("latin-honors-modal");
-    if (modal) modal.style.display = "none";
+    if (modal) modal.style.setProperty("display", "none", "important");
 }
 
 function openTermHonorModal() {
     const modal = document.getElementById("term-honor-modal");
     if (modal) {
-        evaluateTermHonorModal();
-        modal.style.display = "flex";
+        try {
+            evaluateTermHonorModal();
+        } catch (e) {
+            console.error("Error evaluating term honor:", e);
+        }
+        modal.style.setProperty("display", "flex", "important");
     }
 }
 
 function closeTermHonorModal() {
     const modal = document.getElementById("term-honor-modal");
-    if (modal) modal.style.display = "none";
+    if (modal) modal.style.setProperty("display", "none", "important");
 }
 
 function computeAllSemesters() {
@@ -50,15 +62,15 @@ function computeAllSemesters() {
     updateGlobalSummary();
 
     const achModal = document.getElementById("achievement-modal");
-    if (achModal && achModal.style.display === "flex") {
+    if (achModal && (achModal.style.display === "flex" || achModal.style.display !== "none")) {
         evaluateAcademicAchievements();
     }
     const latinModal = document.getElementById("latin-honors-modal");
-    if (latinModal && latinModal.style.display === "flex") {
+    if (latinModal && (latinModal.style.display === "flex" || latinModal.style.display !== "none")) {
         evaluateLatinHonorsModal();
     }
     const termModal = document.getElementById("term-honor-modal");
-    if (termModal && termModal.style.display === "flex") {
+    if (termModal && (termModal.style.display === "flex" || termModal.style.display !== "none")) {
         evaluateTermHonorModal();
     }
 }
@@ -68,13 +80,21 @@ function openSemesterComputeModal(semIndex) {
         semesters[semIndex].computed = true;
     }
     isHonorEvaluated = true;
-    saveData();
-    renderSemesters();
-    updateGlobalSummary();
+    try {
+        saveData();
+        renderSemesters();
+        updateGlobalSummary();
+    } catch (e) {
+        console.error("Error updating summary on compute:", e);
+    }
     const modal = document.getElementById("term-honor-modal");
     if (modal) {
-        evaluateSemesterComputeModal(semIndex);
-        modal.style.display = "flex";
+        try {
+            evaluateSemesterComputeModal(semIndex);
+        } catch (e) {
+            console.error("Error evaluating semester compute modal:", e);
+        }
+        modal.style.setProperty("display", "flex", "important");
     }
 }
 
