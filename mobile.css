@@ -83,9 +83,9 @@ html, body {
    ============================================================ */
 @media (max-width: 768px) {
 
-    /* --- Navbar --- */
+    /* --- Navbar & Hamburger Menu --- */
     .navbar-inner {
-        flex-wrap: wrap;
+        position: relative;
         padding: var(--space-sm);
         gap: var(--space-xs);
     }
@@ -106,28 +106,50 @@ html, body {
         text-overflow: ellipsis;
     }
 
-    /* Tab bar: full width, scrollable row */
+    .mobile-menu-btn {
+        display: flex !important;
+    }
+
+    /* Tab bar: hidden by default on mobile, opens via hamburger */
     .nav-tabs-container {
-        order: 3;
-        width: 100%;
-        overflow-x: auto;
-        justify-content: flex-start;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-        padding: 4px;
-        gap: 2px;
+        display: none !important;
     }
 
-    .nav-tabs-container::-webkit-scrollbar {
-        display: none;
+    .navbar-inner.mobile-menu-open .nav-tabs-container {
+        display: flex !important;
+        flex-direction: column !important;
+        position: absolute !important;
+        top: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+        background: linear-gradient(180deg, var(--bu-blue-dark), var(--bu-blue)) !important;
+        border-bottom: 3px solid var(--bu-gold) !important;
+        padding: 12px !important;
+        gap: 6px !important;
+        border-radius: 0 0 16px 16px !important;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4) !important;
+        z-index: 999 !important;
+        backdrop-filter: blur(10px) !important;
     }
 
-    .nav-tab {
-        padding: 7px 10px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        flex-shrink: 0;
+    .navbar-inner.mobile-menu-open .nav-tab {
+        width: 100% !important;
+        justify-content: flex-start !important;
+        padding: 12px 16px !important;
+        font-size: 0.95rem !important;
+        border-radius: 10px !important;
+        background: rgba(255, 255, 255, 0.08) !important;
+        color: #ffffff !important;
+    }
+
+    .navbar-inner.mobile-menu-open .nav-tab.active {
+        background: #ffffff !important;
+        color: var(--bu-blue) !important;
+        font-weight: 700 !important;
+    }
+
+    .navbar-inner.mobile-menu-open .nav-tab .tab-label {
+        display: inline !important;
     }
 
     /* Theme toggle: stays top-right */
@@ -403,28 +425,6 @@ html, body {
     .app-name {
         font-size: 0.85rem;
         letter-spacing: 0;
-    }
-
-    /* Tab bar: icon-only with smaller labels */
-    .nav-tabs-container {
-        padding: 3px;
-        gap: 2px;
-        border-radius: 20px;
-    }
-
-    .nav-tab {
-        padding: 6px 8px;
-        font-size: 0.75rem;
-        gap: 4px;
-        border-radius: 16px;
-    }
-
-    .nav-tab .tab-label {
-        display: none;
-    }
-
-    .nav-tab i {
-        font-size: 1rem;
     }
 
     .theme-toggle-btn {
