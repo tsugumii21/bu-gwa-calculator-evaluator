@@ -79,7 +79,13 @@ html, body {
         box-sizing: border-box;
     }
 
-    /* FIX 2 — Simulator Tab: Current Performance Card */
+    /* FIX 2 — Simulator Tab: Current Performance Card & Layout Containment */
+    .sim-grid, .sim-panel, .sim-section-group, .sim-input-panel, .sim-output-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
     .sim-form-row {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
@@ -129,19 +135,7 @@ html, body {
     }
 
     .table-responsive::after {
-        content: "" !important;
-        position: absolute !important;
-        top: 0 !important;
-        right: 0 !important;
-        bottom: 0 !important;
-        width: 32px !important;
-        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95)) !important;
-        pointer-events: none !important;
-        z-index: 2 !important;
-    }
-
-    [data-theme="dark"] .table-responsive::after {
-        background: linear-gradient(to right, transparent, rgba(30, 41, 59, 0.95)) !important;
+        display: none !important;
     }
 
     .policy-table {
@@ -183,14 +177,43 @@ html, body {
         flex-shrink: 0 !important;
     }
 
-    /* FIX 6 & 7 — Global: Touch Target Sizes & iOS Input Zoom Prevention */
+    /* FIX 6 & 7 — Global: Touch Target Sizes, Checkbox Alignment & Icon Button Fixes */
     button, select, .tab-btn, .subtab-btn, a[class*="btn"] {
         min-height: 44px;
     }
 
-    input, input[type="text"], input[type="number"], input[type="email"], select, textarea {
+    .info-help-btn, .modal-close-btn {
+        min-height: unset !important;
+        width: 26px !important;
+        height: 26px !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    input[type="text"], input[type="number"], input[type="email"], select, textarea {
         min-height: 44px;
         font-size: 16px !important;
+    }
+
+    .checkbox-label {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: center !important;
+        gap: 10px !important;
+        cursor: pointer !important;
+    }
+
+    input[type="checkbox"] {
+        min-height: 18px !important;
+        width: 18px !important;
+        height: 18px !important;
+        flex-shrink: 0 !important;
+        margin: 0 !important;
+        cursor: pointer !important;
     }
 
     /* --- Navbar & Hamburger Menu --- */
