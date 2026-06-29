@@ -219,7 +219,7 @@ function showScanLoading(show, message = "Processing PDF...") {
         loadingOverlay.className = "modal-overlay";
         loadingOverlay.style.zIndex = "300";
         loadingOverlay.innerHTML = `
-            <div class="modal-content" style="max-width: 360px; text-align: center; padding: 24px;">
+            <div class="modal-content animate__animated animate__zoomIn animate__faster" style="max-width: 440px; width: 100%; margin: auto; text-align: center; padding: 24px;">
                 <i class="fa-solid fa-circle-notch fa-spin text-primary" style="font-size: 2.5rem; margin-bottom: 16px;"></i>
                 <h4 id="scan-loading-msg" style="font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;">Processing PDF...</h4>
                 <p style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 8px;">Parsing BU COR Certificate of Registration</p>
