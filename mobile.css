@@ -1067,8 +1067,8 @@ html, body {
     }
 
     .sim-form-row {
-        grid-template-columns: 1fr 1fr !important;
-        gap: 8px !important;
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
     }
 
     .panel-title {
