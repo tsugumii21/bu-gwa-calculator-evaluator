@@ -123,11 +123,12 @@ function evaluateSemesterComputeModal(semIndex) {
         });
     }
 
-    let category = "NOT_PL_DL";
-    let title = "Keep Striving";
-    let badgeClass = "card-neutral";
+    let category = "REGULAR";
+    let title = "Dedicated Bueño";
+    let badgeClass = "card-emerald";
     let icon = "fa-bullseye";
     let subtext = "";
+    let headerTitle = `<i class="fa-solid fa-chart-line text-primary"></i> Semester Performance Summary`;
 
     if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
         if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
@@ -136,28 +137,38 @@ function evaluateSemesterComputeModal(semIndex) {
             badgeClass = "card-gold";
             icon = "fa-crown";
             subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
+            headerTitle = `<i class="fa-solid fa-crown text-gold"></i> President's Lister Qualification`;
         } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
             category = "DL";
             title = "Dean's Lister";
-            badgeClass = "card-gold";
+            badgeClass = "card-azure";
             icon = "fa-medal";
+            subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
+            headerTitle = `<i class="fa-solid fa-medal text-gold"></i> Dean's Lister Qualification`;
+        }
+    }
+
+    if (category === "REGULAR") {
+        if (sem.underload) {
+            category = "UNDERLOAD";
+            title = "Balanced Pace Bueño";
+            badgeClass = "card-amber";
+            icon = "fa-scale-balanced";
+            subtext = `${escapeHtml(sem.title)} (GPA: <strong>${semGWA.toFixed(4)}</strong>) — Custom Load Term`;
+            headerTitle = `<i class="fa-solid fa-scale-balanced text-warning"></i> Balanced Load Term Summary`;
+        } else if (hasFailOrInc) {
+            subtext = `${escapeHtml(sem.title)} (GPA: <strong>${semGWA.toFixed(4)}</strong>) — Disqualified due to 5.0 / INC grade`;
+        } else {
             subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
         }
     }
 
-    if (category === "NOT_PL_DL") {
-        if (sem.underload) {
-            subtext = `${escapeHtml(sem.title)} (GPA: <strong>${semGWA.toFixed(4)}</strong>) — Disqualified due to Underloaded Term`;
-            icon = "fa-circle-xmark";
-            badgeClass = "alert-card-danger";
-        } else if (hasFailOrInc) {
-            subtext = `${escapeHtml(sem.title)} (GPA: <strong>${semGWA.toFixed(4)}</strong>) — Disqualified due to 5.0 / INC grade`;
-            icon = "fa-circle-xmark";
-            badgeClass = "alert-card-danger";
-        } else {
-            subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong> (Keep striving!)`;
-        }
+    const modalHeaderTitle = document.getElementById("modal-title-term");
+    if (modalHeaderTitle) {
+        modalHeaderTitle.innerHTML = headerTitle;
     }
+
+    const quote = typeof getHonorMessage === "function" ? getHonorMessage(category) : "\"Keep pushing your limits!\"";
 
     container.innerHTML = `
         <div class="achieve-section">
@@ -167,6 +178,10 @@ function evaluateSemesterComputeModal(semIndex) {
                     <strong class="achieve-title">${title}</strong>
                     <span class="achieve-subtext">${subtext}</span>
                 </div>
+            </div>
+            <div class="quote-box" style="margin-top: 14px;">
+                <i class="fa-solid fa-quote-left quote-icon"></i>
+                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
             </div>
         </div>
     `;
@@ -236,6 +251,9 @@ function evaluateLatinHonorsModal() {
         if (stats.hasInc) reasons.push("Unresolved INC mark");
         if (stats.hasUnderload) reasons.push("Underloaded term");
 
+        let category = "NOT_LAUDE";
+        if (stats.hasUnderload) category = "UNDERLOAD";
+
         html += `
             <div class="achieve-card alert-card-danger">
                 <div class="achieve-icon"><i class="fa-solid fa-circle-xmark text-danger"></i></div>
@@ -247,10 +265,19 @@ function evaluateLatinHonorsModal() {
                 </div>
             </div>
         `;
+        const quote = typeof getHonorMessage === "function" ? getHonorMessage(category) : "\"Keep pushing your limits!\"";
+        html += `
+            <div class="quote-box" style="margin-top: 14px;">
+                <i class="fa-solid fa-quote-left quote-icon"></i>
+                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+            </div>
+        `;
     } else {
         const gwa = stats.cumulativeGWA;
+        let category = "NOT_LAUDE";
 
         if (gwa <= 1.2500) {
+            category = "SUMMA";
             html += `
                 <div class="achieve-card card-gold">
                     <div class="achieve-icon"><i class="fa-solid fa-crown text-gold"></i></div>
@@ -261,6 +288,7 @@ function evaluateLatinHonorsModal() {
                 </div>
             `;
         } else if (gwa <= 1.4500) {
+            category = "MAGNA";
             const gapToSumma = gwa - 1.2500;
             html += `
                 <div class="achieve-card card-orange">
@@ -273,6 +301,7 @@ function evaluateLatinHonorsModal() {
                 </div>
             `;
         } else if (gwa <= 1.7500) {
+            category = "CUM";
             const gapToMagna = gwa - 1.4500;
             html += `
                 <div class="achieve-card card-blue">
@@ -285,18 +314,27 @@ function evaluateLatinHonorsModal() {
                 </div>
             `;
         } else {
+            category = "NOT_LAUDE";
             const gapToCum = gwa - 1.7500;
             html += `
-                <div class="achieve-card card-neutral">
+                <div class="achieve-card card-emerald">
                     <div class="achieve-icon"><i class="fa-solid fa-bullseye text-primary"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="font-size:0.95rem;">Regular Graduate Candidate</strong>
+                        <strong class="achieve-title" style="font-size:0.95rem;">Dedicated Bueño Graduate Candidate</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your current cumulative GWA is <strong>${gwa.toFixed(4)}</strong>.</span>
                         <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">Goal Gap: You are <strong>${gapToCum.toFixed(4)}</strong> points away from Cum Laude cutoff (1.7500).</span>
                     </div>
                 </div>
             `;
         }
+
+        const quote = typeof getHonorMessage === "function" ? getHonorMessage(category) : "\"Keep pushing your limits!\"";
+        html += `
+            <div class="quote-box" style="margin-top: 14px;">
+                <i class="fa-solid fa-quote-left quote-icon"></i>
+                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+            </div>
+        `;
     }
 
     // Option A Compact Criteria Cards Breakdown inside Popup

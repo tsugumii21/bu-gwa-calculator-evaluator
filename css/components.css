@@ -218,20 +218,38 @@
 
 /* Impeccable Color Variants */
 .card-gold {
-    background: linear-gradient(135deg, rgba(245, 158, 11, 0.12), rgba(217, 119, 6, 0.05));
-    border-color: rgba(245, 158, 11, 0.4);
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.14), rgba(217, 119, 6, 0.06));
+    border-color: rgba(245, 158, 11, 0.45);
 }
 .card-gold .achieve-icon { background: var(--card-bg); color: var(--bu-gold); }
 
+.card-azure {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(29, 78, 216, 0.06));
+    border-color: rgba(37, 99, 235, 0.45);
+}
+.card-azure .achieve-icon { background: var(--card-bg); color: #1d4ed8; }
+
+.card-emerald {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(5, 150, 105, 0.06));
+    border-color: rgba(16, 185, 129, 0.45);
+}
+.card-emerald .achieve-icon { background: var(--card-bg); color: #059669; }
+
+.card-amber {
+    background: linear-gradient(135deg, rgba(249, 115, 22, 0.14), rgba(234, 88, 12, 0.06));
+    border-color: rgba(249, 115, 22, 0.45);
+}
+.card-amber .achieve-icon { background: var(--card-bg); color: #ea580c; }
+
 .card-orange {
-    background: linear-gradient(135deg, rgba(234, 88, 12, 0.12), rgba(194, 65, 12, 0.05));
-    border-color: rgba(234, 88, 12, 0.4);
+    background: linear-gradient(135deg, rgba(234, 88, 12, 0.14), rgba(194, 65, 12, 0.06));
+    border-color: rgba(234, 88, 12, 0.45);
 }
 .card-orange .achieve-icon { background: var(--card-bg); color: var(--bu-orange); }
 
 .card-blue {
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(29, 78, 216, 0.05));
-    border-color: rgba(37, 99, 235, 0.4);
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.14), rgba(29, 78, 216, 0.06));
+    border-color: rgba(37, 99, 235, 0.45);
 }
 .card-blue .achieve-icon { background: var(--card-bg); color: var(--bu-azure); }
 
