@@ -955,4 +955,57 @@
         margin: 0 auto !important;
         line-height: 1.5 !important;
     }
+
+    /* Handbook Policy Governance Desktop Enhancements */
+    #about-policies div[style*="grid"] {
+        grid-template-columns: repeat(3, 1fr) !important;
+        gap: 18px !important;
+    }
+    #about-policies div[style*="grid"] > div {
+        padding: 20px !important;
+        border-radius: var(--radius-lg) !important;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+    #about-policies div[style*="grid"] > div:hover {
+        transform: translateY(-4px) !important;
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08) !important;
+        border-color: var(--bu-blue) !important;
+    }
+    [data-theme="dark"] #about-policies div[style*="grid"] > div:hover {
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3) !important;
+        border-color: var(--bu-gold) !important;
+    }
+
+    /* Developer & Feedback Desktop Enhancements */
+    .about-features-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 20px !important;
+    }
+    .about-feat-card {
+        padding: 22px !important;
+        border-radius: var(--radius-lg) !important;
+        transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    }
+    .about-feat-card:hover {
+        transform: translateY(-3px) !important;
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.06) !important;
+    }
+    [data-theme="dark"] .about-feat-card:hover {
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25) !important;
+    }
+    .developer-box {
+        padding: 24px 28px !important;
+        border-radius: var(--radius-lg) !important;
+        background: linear-gradient(135deg, var(--card-bg), var(--bg-secondary)) !important;
+    }
+    #suggestion-form .form-control, #suggestion-form textarea {
+        transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+    }
+    #suggestion-form .form-control:focus, #suggestion-form textarea:focus {
+        border-color: var(--bu-orange) !important;
+        box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15) !important;
+        outline: none !important;
+    }
 }
