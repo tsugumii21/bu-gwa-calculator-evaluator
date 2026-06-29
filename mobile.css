@@ -56,7 +56,8 @@ html, body {
     }
 
     .policy-table {
-        display: block;
+        display: table;
+        width: 100%;
     }
 
     .guide-section .table-responsive,
@@ -125,7 +126,22 @@ html, body {
         flex: 1 1 100% !important;
     }
 
-    /* FIX 4 — Policies Tab: Tables */
+    /* FIX 4 — Policies Tab: Tables & Text Policy Containment */
+    .guide-section {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .guide-section div[style*="display: flex"],
+    .guide-section div[style*="display:flex"] {
+        flex-wrap: wrap !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
     .table-responsive {
         position: relative !important;
         overflow-x: auto !important;
@@ -143,6 +159,7 @@ html, body {
         min-width: 480px !important;
         width: 100% !important;
         font-size: 13px !important;
+        table-layout: auto !important;
     }
 
     .policy-table th {
@@ -152,6 +169,8 @@ html, body {
 
     .policy-table td {
         white-space: normal !important;
+        word-wrap: break-word !important;
+        overflow-wrap: break-word !important;
         padding: 10px 12px !important;
         font-size: 13px !important;
     }
