@@ -72,6 +72,127 @@ html, body {
    ============================================================ */
 @media (max-width: 768px) {
 
+    /* FIX 1 — Global: Page Edge Padding */
+    .main-container {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+        box-sizing: border-box;
+    }
+
+    /* FIX 2 — Simulator Tab: Current Performance Card */
+    .sim-form-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .sim-form-row .form-group {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+
+    .sim-form-row .form-control {
+        min-width: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    /* FIX 3 — Simulator Tab: Target Honor Finder Buttons */
+    .target-buttons {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .target-buttons .btn {
+        flex: 1 1 calc(50% - 4px) !important;
+        min-width: 120px !important;
+        white-space: nowrap !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+    }
+
+    .target-buttons .btn:last-child {
+        flex: 1 1 100% !important;
+    }
+
+    /* FIX 4 — Policies Tab: Tables */
+    .table-responsive {
+        position: relative !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        width: 100% !important;
+        display: block !important;
+    }
+
+    .table-responsive::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        width: 32px !important;
+        background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.95)) !important;
+        pointer-events: none !important;
+        z-index: 2 !important;
+    }
+
+    [data-theme="dark"] .table-responsive::after {
+        background: linear-gradient(to right, transparent, rgba(30, 41, 59, 0.95)) !important;
+    }
+
+    .policy-table {
+        display: table !important;
+        min-width: 480px !important;
+        width: 100% !important;
+        font-size: 13px !important;
+    }
+
+    .policy-table th {
+        white-space: nowrap !important;
+        padding: 10px 12px !important;
+    }
+
+    .policy-table td {
+        white-space: normal !important;
+        padding: 10px 12px !important;
+        font-size: 13px !important;
+    }
+
+    /* FIX 5 — About Tab: Sub-Tab Navigation Bar */
+    .subtab-bar {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        gap: 8px !important;
+        padding-bottom: 6px !important;
+        width: 100% !important;
+        scrollbar-width: none !important;
+    }
+
+    .subtab-bar::-webkit-scrollbar {
+        display: none !important;
+    }
+
+    .subtab-btn {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* FIX 6 & 7 — Global: Touch Target Sizes & iOS Input Zoom Prevention */
+    button, select, .tab-btn, .subtab-btn, a[class*="btn"] {
+        min-height: 44px;
+    }
+
+    input, input[type="text"], input[type="number"], input[type="email"], select, textarea {
+        min-height: 44px;
+        font-size: 16px !important;
+    }
+
     /* --- Navbar & Hamburger Menu --- */
     .navbar-inner {
         position: relative;
