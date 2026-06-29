@@ -879,19 +879,55 @@ html, body {
     }
 
     .sem-actions {
-        width: 100%;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: var(--space-xs);
-        margin-top: 4px;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: var(--space-xs) !important;
+        margin-top: 6px !important;
+        height: 36px !important;
+    }
+
+    .sem-actions > div:first-child {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        height: 36px !important;
     }
 
     .underload-toggle {
-        font-size: 0.78rem;
+        font-size: 0.78rem !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        margin: 0 !important;
+        cursor: pointer !important;
     }
 
-    /* --- Subject table: Mobile Flex Card Layout (Fixes cut-off text!) --- */
+    .underload-toggle input[type="checkbox"] {
+        margin: 0 !important;
+    }
+
+    .underload-info-btn {
+        margin: 0 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+
+    .sem-actions .btn-danger {
+        margin: 0 !important;
+        align-self: center !important;
+        height: 34px !important;
+        width: 34px !important;
+        min-height: 34px !important;
+        min-width: 34px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+    }
+
+    /* --- Subject table: Mobile Flex Card Layout (Fixes cut-off text & alignment!) --- */
     .table-responsive {
         overflow-x: visible !important;
     }
@@ -928,47 +964,48 @@ html, body {
         gap: 3px !important;
     }
 
+    .subject-table td::before {
+        height: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        font-size: 0.62rem !important;
+        font-weight: 700 !important;
+        color: var(--text-muted) !important;
+        letter-spacing: 0.3px !important;
+        white-space: nowrap !important;
+        margin-bottom: 2px !important;
+    }
+
     .subject-table td:nth-child(1)::before {
-        content: "CODE (OPTIONAL)";
-        font-size: 0.62rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        letter-spacing: 0.3px;
+        content: "CODE (OPTIONAL)" !important;
     }
 
     .subject-table td:nth-child(2)::before {
-        content: "COURSE DESCRIPTION";
-        font-size: 0.62rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        letter-spacing: 0.3px;
+        content: "COURSE DESCRIPTION" !important;
     }
 
     .subject-table td:nth-child(3)::before {
-        content: "GRADE RATING";
-        font-size: 0.62rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        letter-spacing: 0.3px;
+        content: "GRADE RATING" !important;
     }
 
     .subject-table td:nth-child(4)::before {
-        content: "CREDIT UNITS";
-        font-size: 0.62rem;
-        font-weight: 700;
-        color: var(--text-muted);
-        letter-spacing: 0.3px;
+        content: "CREDIT UNITS" !important;
     }
 
-    /* Row 1: Course Code (30%) & Course Description (66%) */
+    /* Row 1: Course Code (35%) & Course Description (65%) */
     .subject-table td:nth-child(1) {
-        flex: 1 1 30% !important;
-        min-width: 85px !important;
+        flex: 1 1 calc(35% - 4px) !important;
+        min-width: 95px !important;
     }
 
     .subject-table td:nth-child(2) {
-        flex: 2 1 66% !important;
-        min-width: 150px !important;
+        flex: 2 1 calc(65% - 4px) !important;
+        min-width: 140px !important;
+    }
+
+    .subject-table td input.form-control-sm {
+        padding: 6px 8px !important;
+        font-size: 0.85rem !important;
     }
 
     /* Row 2: Grade Rating (36%), Credit Units (36%), Delete Button (Right) */
