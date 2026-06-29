@@ -194,6 +194,17 @@ html, body {
         flex-shrink: 0 !important;
     }
 
+    .theme-toggle-btn, .mobile-menu-btn {
+        min-height: unset !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+        transform: none !important;
+    }
+
+    .theme-toggle-btn:hover, .mobile-menu-btn:hover {
+        transform: none !important;
+    }
+
     input[type="text"], input[type="number"], input[type="email"], select, textarea {
         min-height: 44px;
         font-size: 16px !important;
@@ -326,8 +337,11 @@ html, body {
 
     /* Theme toggle: stays top-right */
     .theme-toggle-btn {
-        width: 36px;
-        height: 36px;
+        width: 36px !important;
+        height: 36px !important;
+        min-height: unset !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
         font-size: 1rem;
     }
 
@@ -600,8 +614,11 @@ html, body {
     }
 
     .theme-toggle-btn {
-        width: 32px;
-        height: 32px;
+        width: 32px !important;
+        height: 32px !important;
+        min-height: unset !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
         font-size: 0.9rem;
     }
 

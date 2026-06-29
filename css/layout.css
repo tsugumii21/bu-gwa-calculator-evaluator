@@ -128,7 +128,6 @@
 }
 
 .theme-toggle-btn:hover {
-    transform: rotate(30deg);
     background: rgba(255, 255, 255, 0.25);
     box-shadow: 0 0 10px rgba(245, 158, 11, 0.5);
 }
