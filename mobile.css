@@ -80,50 +80,110 @@ html, body {
         box-sizing: border-box;
     }
 
-    /* FIX 2 — Simulator Tab: Current Performance Card & Layout Containment */
-    .sim-grid, .sim-panel, .sim-section-group, .sim-input-panel, .sim-output-panel {
+    /* FIX 2 — Simulator Tab: Panel Box Containment & Layout */
+    .sim-grid {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
         width: 100% !important;
         max-width: 100% !important;
         box-sizing: border-box !important;
     }
 
+    .sim-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 16px !important;
+        gap: 16px !important;
+        box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .sim-section-group, .sim-input-panel, .sim-output-panel {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 14px !important;
+        box-sizing: border-box !important;
+    }
+
     .sim-form-row {
         display: grid !important;
-        grid-template-columns: 1fr 1fr !important;
+        grid-template-columns: 1fr !important;
         gap: 12px !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    .sim-form-row .form-group {
-        min-width: 0 !important;
-        width: 100% !important;
-    }
-
+    .sim-form-row .form-group,
     .sim-form-row .form-control {
         min-width: 0 !important;
         width: 100% !important;
+        max-width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    /* FIX 3 — Simulator Tab: Target Honor Finder Buttons */
+    /* Range slider & badge containment */
+    .slider {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .slider-labels {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 0.72rem !important;
+    }
+
+    .projected-result-box {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 20px 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .projected-result-box .proj-gwa {
+        font-size: 2.25rem !important;
+    }
+
+    /* FIX 3 — Simulator Tab: Target Honor Finder Buttons & Result */
+    .target-finder {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
     .target-buttons {
-        display: flex !important;
-        flex-wrap: wrap !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
         gap: 8px !important;
         width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
     }
 
     .target-buttons .btn {
-        flex: 1 1 calc(50% - 4px) !important;
-        min-width: 120px !important;
+        width: 100% !important;
+        font-size: 0.78rem !important;
+        padding: 8px 6px !important;
         white-space: nowrap !important;
         justify-content: center !important;
         box-sizing: border-box !important;
     }
 
     .target-buttons .btn:last-child {
-        flex: 1 1 100% !important;
+        grid-column: span 2 !important;
+    }
+
+    .target-result {
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+        font-size: 0.85rem !important;
+        padding: 12px !important;
     }
 
     /* FIX 4 — Policies Tab: Tables & Text Policy Containment */
