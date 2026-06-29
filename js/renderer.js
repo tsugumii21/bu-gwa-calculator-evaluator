@@ -106,7 +106,7 @@ function getSemesterHonorBadge(sem) {
         });
     }
 
-    let honorCode = "Regular";
+    let honorCode = "Dedicated Bueño";
     let honorIcon = "fa-user-graduate";
     let pillClass = "sem-pill-regular";
 
@@ -121,13 +121,13 @@ function getSemesterHonorBadge(sem) {
             pillClass = "sem-pill-dl";
         }
     } else if (sem.underload) {
-        honorCode = "Underloaded";
-        honorIcon = "fa-triangle-exclamation";
+        honorCode = "Balanced Pace Bueño ⚖️";
+        honorIcon = "fa-scale-balanced";
         pillClass = "sem-pill-warning";
     } else if (hasFailOrInc) {
-        honorCode = "Not Eligible";
-        honorIcon = "fa-circle-xmark";
-        pillClass = "sem-pill-danger";
+        honorCode = "Dedicated Bueño";
+        honorIcon = "fa-bullseye";
+        pillClass = "sem-pill-regular";
     }
 
     return `

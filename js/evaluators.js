@@ -61,7 +61,7 @@ function evaluateTermHonorStanding() {
             honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)})`;
             return;
         } 
-        // DL: Semester GPA <= 1.7500 and no grade > 2.50 (including GPAs <= 1.4500 with individual grades up to 2.50)
+        // DL: Semester GPA <= 1.7500 and no grade > 2.50
         else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
             honorElem.innerText = "Dean's Lister";
             honorElem.className = "summary-value honor-badge text-gold";
@@ -70,17 +70,21 @@ function evaluateTermHonorStanding() {
         }
     }
 
-    // If not PL or DL, provide explicit explanation in subtext
-    honorElem.innerText = "Keep Striving";
-    honorElem.className = "summary-value honor-badge text-primary";
-
     if (latestSem.underload) {
-        honorSubtext.innerText = `${escapeHtml(latestSem.title)}: Disqualified due to Underloaded Term`;
+        honorElem.innerText = "Balanced Pace Bueño";
+        honorElem.className = "summary-value honor-badge text-warning";
+        honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)}) — Custom Load`;
     } else if (hasFailOrInc) {
+        honorElem.innerText = "Dedicated Bueño";
+        honorElem.className = "summary-value honor-badge text-primary";
         honorSubtext.innerText = `${escapeHtml(latestSem.title)}: Disqualified due to 5.0 / INC grade`;
     } else if (semUnits > 0) {
-        honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)}) — Keep striving!`;
+        honorElem.innerText = "Dedicated Bueño";
+        honorElem.className = "summary-value honor-badge text-primary";
+        honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)})`;
     } else {
+        honorElem.innerText = "Dedicated Bueño";
+        honorElem.className = "summary-value honor-badge text-primary";
         honorSubtext.innerText = "Add subjects to evaluate term honors";
     }
 }
