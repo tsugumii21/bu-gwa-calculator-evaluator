@@ -932,4 +932,27 @@
         max-width: 560px !important;
         width: 100% !important;
     }
+    .empty-state {
+        max-width: 100% !important;
+        width: 100% !important;
+        aspect-ratio: auto !important;
+        padding: 64px 32px !important;
+        margin: 24px 0 !important;
+    }
+    .empty-state-icon {
+        font-size: 3.2rem !important;
+        margin-bottom: 16px !important;
+        color: var(--bu-blue) !important;
+    }
+    .empty-state h3 {
+        font-size: 1.35rem !important;
+        font-weight: 700 !important;
+        margin-bottom: 8px !important;
+    }
+    .empty-state p {
+        font-size: 0.95rem !important;
+        max-width: 520px !important;
+        margin: 0 auto !important;
+        line-height: 1.5 !important;
+    }
 }
