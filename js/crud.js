@@ -12,9 +12,9 @@ function addNewSemester() {
         title: `Year ${year} - ${term}`,
         underload: false,
         subjects: [
-            { code: "", name: "", grade: "1.5", units: 3 },
-            { code: "", name: "", grade: "1.5", units: 3 },
-            { code: "", name: "", grade: "1.5", units: 3 }
+            { code: "", name: "", grade: "", units: "" },
+            { code: "", name: "", grade: "", units: "" },
+            { code: "", name: "", grade: "", units: "" }
         ]
     });
     renderSemesters();
@@ -90,7 +90,7 @@ function toggleUnderload(index, checked) {
 function addSubject(semIndex) {
     if (semesters[semIndex]) {
         if (!semesters[semIndex].subjects) semesters[semIndex].subjects = [];
-        semesters[semIndex].subjects.push({ code: "", name: "", grade: "1.5", units: 3 });
+        semesters[semIndex].subjects.push({ code: "", name: "", grade: "", units: "" });
         renderSemesters();
         saveData();
     }
