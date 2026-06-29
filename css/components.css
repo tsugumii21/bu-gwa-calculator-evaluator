@@ -778,14 +778,14 @@
 
 .empty-state {
     text-align: center;
-    padding: 28px 20px;
+    padding: 48px 24px;
     background: var(--card-bg);
     border: 2px dashed var(--border-color);
     border-radius: var(--radius-lg);
-    max-width: 320px;
+    max-width: 100%;
     width: 100%;
-    aspect-ratio: 1 / 1;
-    margin: 24px auto;
+    aspect-ratio: auto;
+    margin: 24px 0;
     display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
@@ -794,9 +794,9 @@
 }
 
 .empty-state-icon {
-    font-size: 2rem;
-    color: var(--text-muted);
-    margin-bottom: 8px;
+    font-size: 2.8rem;
+    color: var(--bu-blue);
+    margin-bottom: 12px;
 }
 
 /* Impeccable Modals */
