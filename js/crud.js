@@ -11,6 +11,7 @@ function addNewSemester() {
     semesters.push({
         title: `Year ${year} - ${term}`,
         underload: false,
+        computed: false,
         subjects: [
             { code: "", name: "", grade: "", units: "" },
             { code: "", name: "", grade: "", units: "" },
@@ -19,6 +20,7 @@ function addNewSemester() {
     });
     renderSemesters();
     saveData();
+    updateGlobalSummary();
 }
 
 function showDeleteModal(message, onConfirm) {
@@ -64,11 +66,13 @@ function removeSemester(index) {
                 semesters.splice(index, 1);
                 renderSemesters();
                 saveData();
+                updateGlobalSummary();
             }, 300);
         } else {
             semesters.splice(index, 1);
             renderSemesters();
             saveData();
+            updateGlobalSummary();
         }
     });
 }
@@ -83,7 +87,9 @@ function updateSemTitle(index, val) {
 function toggleUnderload(index, checked) {
     if (semesters[index]) {
         semesters[index].underload = checked;
+        semesters[index].computed = false;
         saveData();
+        updateGlobalSummary();
     }
 }
 
@@ -91,24 +97,30 @@ function addSubject(semIndex) {
     if (semesters[semIndex]) {
         if (!semesters[semIndex].subjects) semesters[semIndex].subjects = [];
         semesters[semIndex].subjects.push({ code: "", name: "", grade: "", units: "" });
+        semesters[semIndex].computed = false;
         renderSemesters();
         saveData();
+        updateGlobalSummary();
     }
 }
 
 function removeSubject(semIndex, subIndex) {
     if (semesters[semIndex] && semesters[semIndex].subjects) {
         semesters[semIndex].subjects.splice(subIndex, 1);
+        semesters[semIndex].computed = false;
         renderSemesters();
         saveData();
+        updateGlobalSummary();
     }
 }
 
 function updateSubject(semIndex, subIndex, field, val) {
     if (semesters[semIndex] && semesters[semIndex].subjects && semesters[semIndex].subjects[subIndex]) {
         semesters[semIndex].subjects[subIndex][field] = val;
+        semesters[semIndex].computed = false;
         saveData();
         updateSemesterUnitsDisplay(semIndex);
+        updateGlobalSummary();
     }
 }
 
@@ -131,16 +143,20 @@ function loadCollegePreset(presetKey, confirmUser = true) {
             const preset = COLLEGE_PRESETS[presetKey];
             if (preset) {
                 semesters = JSON.parse(JSON.stringify(preset));
+                semesters.forEach(s => s.computed = false);
                 renderSemesters();
                 saveData();
+                updateGlobalSummary();
             }
         });
     } else {
         const preset = COLLEGE_PRESETS[presetKey];
         if (preset) {
             semesters = JSON.parse(JSON.stringify(preset));
+            semesters.forEach(s => s.computed = false);
             renderSemesters();
             saveData();
+            updateGlobalSummary();
         }
     }
 }
@@ -156,11 +172,13 @@ function confirmResetAll() {
                 semesters = [];
                 renderSemesters();
                 saveData();
+                updateGlobalSummary();
             }, 300);
         } else {
             semesters = [];
             renderSemesters();
             saveData();
+            updateGlobalSummary();
         }
     });
 }

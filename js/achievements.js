@@ -478,9 +478,9 @@ function evaluateAcademicAchievements() {
                 });
             }
 
-            let statusTitle = "Regular Term";
-            let statusBadge = "badge-neutral";
-            let icon = "fa-minus";
+            let statusTitle = "Dedicated Bueño";
+            let statusBadge = "badge-success";
+            let icon = "fa-check";
 
             if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
                 if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
@@ -497,11 +497,16 @@ function evaluateAcademicAchievements() {
                     const gapToDL = semGWA - 1.7500;
                     statusTitle = `Close to DL 🎯 (Gap: ${gapToDL.toFixed(4)})`;
                     statusBadge = "badge-close";
-                    icon = "fa-bullseye";
+                    icon = "fa-focus";
                 }
             } else if (sem.underload) {
-                statusTitle = "Underloaded Term";
-                statusBadge = "badge-danger";
+                statusTitle = "Balanced Pace Bueño ⚖️";
+                statusBadge = "badge-warning";
+                icon = "fa-scale-balanced";
+            } else if (hasFailOrInc) {
+                statusTitle = "Dedicated Bueño";
+                statusBadge = "badge-success";
+                icon = "fa-circle-exclamation";
             }
 
             html += `<div class="term-recog-item">`;
@@ -518,33 +523,58 @@ function evaluateAcademicAchievements() {
     html += `<h4 class="achieve-heading"><i class="fa-solid fa-shield-cat text-primary"></i> Achievement Badges</h4>`;
     html += `<div class="badges-grid">`;
 
-    // Badge 1: Scholar Power
-    const isScholar = (totalPL + totalDL) > 0;
-    html += `<div class="badge-box ${isScholar ? 'unlocked' : 'locked'}">`;
-    html += `<i class="fa-solid fa-graduation-cap badge-icon"></i>`;
-    html += `<div class="badge-title">Honor Scholar</div>`;
-    html += `<div class="badge-desc">${isScholar ? `Achieved ${totalPL} PL & ${totalDL} DL terms!` : 'Earn at least 1 PL or DL term'}</div></div>`;
+    if (!allComputed) {
+        html += `
+            <div class="badge-box locked">
+                <i class="fa-solid fa-graduation-cap badge-icon"></i>
+                <div class="badge-title">Honor Scholar</div>
+                <div class="badge-desc">Awaiting semester computation</div>
+            </div>
+            <div class="badge-box locked">
+                <i class="fa-solid fa-fire badge-icon"></i>
+                <div class="badge-title">Straight A Phenom</div>
+                <div class="badge-desc">Awaiting semester computation</div>
+            </div>
+            <div class="badge-box locked">
+                <i class="fa-solid fa-shield-halved badge-icon"></i>
+                <div class="badge-title">Zero Deficiencies</div>
+                <div class="badge-desc">Awaiting semester computation</div>
+            </div>
+            <div class="badge-box locked">
+                <i class="fa-solid fa-dumbbell badge-icon"></i>
+                <div class="badge-title">Full Load Warrior</div>
+                <div class="badge-desc">Awaiting semester computation</div>
+            </div>
+        `;
+    } else {
+        // Badge 1: Scholar Power
+        const isScholar = (totalPL + totalDL) > 0;
+        html += `<div class="badge-box ${isScholar ? 'unlocked' : 'locked'}">`;
+        html += `<i class="fa-solid fa-graduation-cap badge-icon"></i>`;
+        html += `<div class="badge-title">Honor Scholar</div>`;
+        html += `<div class="badge-desc">${isScholar ? `Achieved ${totalPL} PL & ${totalDL} DL terms!` : 'Earn at least 1 PL or DL term'}</div></div>`;
 
-    // Badge 2: Perfect Streak
-    const isPerfect = stats.cumulativeGWA > 0 && stats.cumulativeGWA <= 1.25;
-    html += `<div class="badge-box ${isPerfect ? 'unlocked' : 'locked'}">`;
-    html += `<i class="fa-solid fa-fire badge-icon"></i>`;
-    html += `<div class="badge-title">Straight A Phenom</div>`;
-    html += `<div class="badge-desc">${isPerfect ? 'Maintained GWA ≤ 1.25!' : 'Achieve GWA ≤ 1.25'}</div></div>`;
+        // Badge 2: Perfect Streak
+        const isPerfect = stats.cumulativeGWA > 0 && stats.cumulativeGWA <= 1.25;
+        html += `<div class="badge-box ${isPerfect ? 'unlocked' : 'locked'}">`;
+        html += `<i class="fa-solid fa-fire badge-icon"></i>`;
+        html += `<div class="badge-title">Straight A Phenom</div>`;
+        html += `<div class="badge-desc">${isPerfect ? 'Maintained GWA ≤ 1.25!' : 'Achieve GWA ≤ 1.25'}</div></div>`;
 
-    // Badge 3: Clean Record
-    const isClean = stats.totalUnits > 0 && stats.failingCount === 0 && !stats.hasInc;
-    html += `<div class="badge-box ${isClean ? 'unlocked' : 'locked'}">`;
-    html += `<i class="fa-solid fa-shield-halved badge-icon"></i>`;
-    html += `<div class="badge-title">Zero Deficiencies</div>`;
-    html += `<div class="badge-desc">${isClean ? '100% clean academic record!' : 'No 5.0 or INC marks'}</div></div>`;
+        // Badge 3: Clean Record
+        const isClean = stats.totalUnits > 0 && stats.failingCount === 0 && !stats.hasInc;
+        html += `<div class="badge-box ${isClean ? 'unlocked' : 'locked'}">`;
+        html += `<i class="fa-solid fa-shield-halved badge-icon"></i>`;
+        html += `<div class="badge-title">Zero Deficiencies</div>`;
+        html += `<div class="badge-desc">${isClean ? '100% clean academic record!' : 'No 5.0 or INC marks'}</div></div>`;
 
-    // Badge 4: Full Load Warrior
-    const isFullLoad = stats.totalUnits >= 18 && !stats.hasUnderload;
-    html += `<div class="badge-box ${isFullLoad ? 'unlocked' : 'locked'}">`;
-    html += `<i class="fa-solid fa-dumbbell badge-icon"></i>`;
-    html += `<div class="badge-title">Full Load Warrior</div>`;
-    html += `<div class="badge-desc">${isFullLoad ? 'Completed ≥18 units full load!' : 'Complete ≥18 units without underload'}</div></div>`;
+        // Badge 4: Full Load Warrior
+        const isFullLoad = stats.totalUnits >= 18 && !stats.hasUnderload;
+        html += `<div class="badge-box ${isFullLoad ? 'unlocked' : 'locked'}">`;
+        html += `<i class="fa-solid fa-dumbbell badge-icon"></i>`;
+        html += `<div class="badge-title">Full Load Warrior</div>`;
+        html += `<div class="badge-desc">${isFullLoad ? 'Completed ≥18 units full load!' : 'Complete ≥18 units without underload'}</div></div>`;
+    }
 
     html += `</div></div>`;
 

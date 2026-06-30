@@ -6,10 +6,24 @@ function updateGlobalSummary() {
     const stats = calculateCumulativeStats();
 
     const gwaElem = document.getElementById("overall-gwa");
+    const gwaSubtextElem = document.getElementById("gwa-subtext");
     const unitsElem = document.getElementById("total-units");
     const unitsSubtextElem = document.getElementById("units-subtext");
 
-    if (gwaElem) gwaElem.innerText = stats.cumulativeGWA.toFixed(4);
+    const allComputed = semesters && semesters.length > 0 && semesters.every(s => s.computed);
+
+    if (gwaElem) {
+        if (semesters.length === 0) {
+            gwaElem.innerText = "0.0000";
+            if (gwaSubtextElem) gwaSubtextElem.innerText = "Weighted Grade Average";
+        } else if (allComputed) {
+            gwaElem.innerText = stats.cumulativeGWA.toFixed(4);
+            if (gwaSubtextElem) gwaSubtextElem.innerText = "Weighted Grade Average";
+        } else {
+            gwaElem.innerText = "Pending";
+            if (gwaSubtextElem) gwaSubtextElem.innerText = "Awaiting term computation";
+        }
+    }
     if (unitsElem) unitsElem.innerText = Math.round(stats.totalUnits);
     if (unitsSubtextElem) unitsSubtextElem.innerText = `${stats.totalCourses} Courses Recorded`;
 
@@ -64,7 +78,7 @@ function evaluateTermHonorStanding() {
         // DL: Semester GPA <= 1.7500 and no grade > 2.50
         else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
             honorElem.innerText = "Dean's Lister";
-            honorElem.className = "summary-value honor-badge text-gold";
+            honorElem.className = "summary-value honor-badge text-blue";
             honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)})`;
             return;
         }
@@ -72,19 +86,19 @@ function evaluateTermHonorStanding() {
 
     if (latestSem.underload) {
         honorElem.innerText = "Balanced Pace Bueño";
-        honorElem.className = "summary-value honor-badge text-warning";
+        honorElem.className = "summary-value honor-badge text-orange";
         honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)}) — Custom Load`;
     } else if (hasFailOrInc) {
         honorElem.innerText = "Dedicated Bueño";
-        honorElem.className = "summary-value honor-badge text-primary";
+        honorElem.className = "summary-value honor-badge text-success";
         honorSubtext.innerText = `${escapeHtml(latestSem.title)}: Disqualified due to 5.0 / INC grade`;
     } else if (semUnits > 0) {
         honorElem.innerText = "Dedicated Bueño";
-        honorElem.className = "summary-value honor-badge text-primary";
+        honorElem.className = "summary-value honor-badge text-success";
         honorSubtext.innerText = `${escapeHtml(latestSem.title)} (GPA: ${semGWA.toFixed(4)})`;
     } else {
         honorElem.innerText = "Dedicated Bueño";
-        honorElem.className = "summary-value honor-badge text-primary";
+        honorElem.className = "summary-value honor-badge text-success";
         honorSubtext.innerText = "Add subjects to evaluate term honors";
     }
 }

@@ -407,7 +407,7 @@ function renderSemesters() {
                     <tbody>
                         ${sem.subjects ? sem.subjects.map((sub, subIndex) => `
                             <tr>
-                                <td><input type="text" list="subject-suggestions" class="form-control-sm" value="${escapeHtml(sub.code)}" placeholder="e.g. CS 111 (Optional)" onchange="updateSubject(${semIndex}, ${subIndex}, 'code', this.value)" aria-label="Course Code (Optional)"></td>
+                                <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.code)}" placeholder="e.g. CS 111 (Optional)" onchange="updateSubject(${semIndex}, ${subIndex}, 'code', this.value)" autocomplete="off" aria-label="Course Code (Optional)"></td>
                                 <td><input type="text" class="form-control-sm" value="${escapeHtml(sub.name)}" placeholder="e.g. Computer Programming" onchange="updateSubject(${semIndex}, ${subIndex}, 'name', this.value)" aria-label="Course Description"></td>
                                 <td><input type="number" class="form-control-sm" value="${sub.grade !== undefined && sub.grade !== null ? sub.grade : ''}" min="1.0" max="5.0" step="0.1" inputmode="decimal" placeholder="e.g. 1.5" onchange="updateSubject(${semIndex}, ${subIndex}, 'grade', this.value)" aria-label="Grade Rating"></td>
                                 <td><input type="number" class="form-control-sm" value="${sub.units !== undefined && sub.units !== null ? sub.units : ''}" min="0" max="12" step="0.5" inputmode="decimal" placeholder="e.g. 3" onchange="updateSubject(${semIndex}, ${subIndex}, 'units', this.value)" aria-label="Credit Units"></td>
