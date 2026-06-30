@@ -67,10 +67,6 @@ An unofficial, modern web application designed for Bicol University students to 
 **Allen Del Valle**
 - BSIT Student at Bicol University Polangui Campus
 - GitHub: [@tsugumii21](https://github.com/tsugumii21)
-- Email: [allendelvalle04@gmail.com](mailto:allendelvalle04@gmail.com)
+- Email: [allendelvalle04@gmail.com](mailto:allendelvalle016@gmail.com)
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
