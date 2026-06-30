@@ -397,6 +397,149 @@
     border-radius: var(--radius-md);
 }
 
+/* About Bicol University Section (Desktop) */
+.about-bu-box {
+    padding: 28px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-left: 5px solid var(--bu-blue);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: var(--transition-normal);
+}
+
+.about-bu-box:hover {
+    box-shadow: var(--shadow-md);
+    border-left-color: var(--bu-orange);
+}
+
+.bu-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--bu-blue);
+    margin-bottom: 4px;
+}
+
+[data-theme="dark"] .bu-header {
+    color: #60a5fa;
+}
+
+.bu-header i {
+    font-size: 1.5rem;
+}
+
+.bu-header h4 {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin: 0;
+}
+
+.bu-content p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.bu-links-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.bu-link-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-normal);
+}
+
+[data-theme="dark"] .bu-link-card {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.bu-link-card:hover {
+    background: var(--card-bg);
+    border-color: var(--bu-blue);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+[data-theme="dark"] .bu-link-card:hover {
+    border-color: #60a5fa;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.bu-link-card .link-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(27, 42, 111, 0.08);
+    color: var(--bu-blue);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    transition: var(--transition-normal);
+}
+
+[data-theme="dark"] .bu-link-card .link-card-icon {
+    background: rgba(96, 165, 250, 0.12);
+    color: #60a5fa;
+}
+
+.bu-link-card:hover .link-card-icon {
+    background: var(--bu-blue);
+    color: #ffffff;
+    transform: scale(1.08);
+}
+
+[data-theme="dark"] .bu-link-card:hover .link-card-icon {
+    background: #60a5fa;
+    color: var(--bu-blue-dark);
+}
+
+.bu-link-card .link-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.bu-link-card .link-details strong {
+    font-size: 0.92rem;
+    color: var(--text-primary);
+}
+
+.bu-link-card .link-details .url-text {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.bu-link-card .mini-arrow {
+    font-size: 0.7rem;
+    opacity: 0.6;
+    transition: transform var(--transition-fast);
+}
+
+.bu-link-card:hover .mini-arrow {
+    transform: translate(2px, -2px);
+    opacity: 1;
+}
+
 @media (max-width: 768px) {
     .navbar-inner { flex-wrap: wrap; }
     .app-title .app-subtitle { display: none; }

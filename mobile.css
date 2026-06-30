@@ -1275,6 +1275,46 @@ html, body {
         min-height: 44px !important;
     }
 
+    /* About Bicol University Section (Mobile) */
+    .about-bu-box {
+        padding: var(--space-md) !important;
+        border-left-width: 4px !important;
+    }
+
+    .bu-header h4 {
+        font-size: 1.1rem !important;
+    }
+
+    .bu-content p {
+        font-size: 0.84rem !important;
+        line-height: 1.5 !important;
+    }
+
+    .bu-links-grid {
+        grid-template-columns: 1fr !important;
+        gap: var(--space-sm) !important;
+        margin-top: 14px !important;
+    }
+
+    .bu-link-card {
+        padding: 12px var(--space-md) !important;
+        gap: 12px !important;
+    }
+
+    .bu-link-card .link-card-icon {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 1rem !important;
+    }
+
+    .bu-link-card .link-details strong {
+        font-size: 0.85rem !important;
+    }
+
+    .bu-link-card .link-details .url-text {
+        font-size: 0.75rem !important;
+    }
+
     /* Disclaimer box */
     .welcome-disclaimer-box {
         padding: var(--space-sm) var(--space-md);
