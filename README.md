@@ -13,7 +13,6 @@ An unofficial, modern web application designed for Bicol University students to 
 </p>
 
 👉 **Live Website**: [https://tsugumii21.github.io/bu-gwa-calculator-evaluator/](https://tsugumii21.github.io/bu-gwa-calculator-evaluator/)
-👉 **Live Repository**: [https://github.com/tsugumii21/bu-gwa-calculator-evaluator](https://github.com/tsugumii21/bu-gwa-calculator-evaluator)
 
 ---
 
