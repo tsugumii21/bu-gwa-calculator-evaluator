@@ -53,9 +53,23 @@ function closeTermHonorModal() {
 
 function computeAllSemesters() {
     if (!semesters || semesters.length === 0) return;
+    let computedAny = false;
     semesters.forEach(sem => {
-        sem.computed = true;
+        const hasAnyGrade = sem.subjects && sem.subjects.some(sub => sub.grade && sub.grade.trim() !== "" && !isNaN(parseFloat(sub.grade)));
+        if (hasAnyGrade) {
+            sem.computed = true;
+            computedAny = true;
+        } else {
+            sem.computed = false;
+        }
     });
+    
+    // If none were computed, show alert
+    if (!computedAny) {
+        alert("Please enter at least one Grade Rating in your semesters before computing.");
+        return;
+    }
+
     isHonorEvaluated = true;
     saveData();
     renderSemesters();
@@ -77,6 +91,12 @@ function computeAllSemesters() {
 
 function openSemesterComputeModal(semIndex) {
     if (semesters && semesters[semIndex]) {
+        const sem = semesters[semIndex];
+        const hasAnyGrade = sem.subjects && sem.subjects.some(sub => sub.grade && sub.grade.trim() !== "" && !isNaN(parseFloat(sub.grade)));
+        if (!hasAnyGrade) {
+            alert("Please enter at least one Grade Rating before computing.");
+            return;
+        }
         semesters[semIndex].computed = true;
     }
     isHonorEvaluated = true;
@@ -218,7 +238,7 @@ function evaluateLatinHonorsModal() {
 
     const allComputed = semesters && semesters.length > 0 && semesters.every(s => s.computed);
 
-    if (stats.totalUnits === 0) {
+    if (!semesters || semesters.length === 0) {
         html += `
             <div class="achieve-card card-neutral">
                 <div class="achieve-icon"><i class="fa-solid fa-folder-open text-primary" style="font-size:1.6rem;"></i></div>
@@ -381,7 +401,7 @@ function evaluateAcademicAchievements() {
     html += `<div class="achieve-section">`;
     html += `<h4 class="achieve-heading"><i class="fa-solid fa-graduation-cap text-gold"></i> Graduation Honor Proximity</h4>`;
 
-    if (stats.totalUnits === 0) {
+    if (!semesters || semesters.length === 0) {
         html += `<p class="text-muted" style="font-size:0.9rem;">Add your subjects and grades to evaluate graduation honors.</p>`;
     } else if (!allComputed) {
         html += `

@@ -26,6 +26,7 @@ function calculateSemesterUnits(sem) {
 function calculateCumulativeStats() {
     let totalPoints = 0;
     let totalUnits = 0;
+    let gradedUnits = 0;
     let totalCourses = 0;
     let hasUnderload = false;
     let hasFailingGrade = false;
@@ -49,19 +50,23 @@ function calculateCumulativeStats() {
                     hasInc = true;
                 }
 
-                if (!isNaN(numGrade) && units > 0) {
-                    totalPoints += numGrade * units;
+                if (units > 0) {
                     totalUnits += units;
+                    if (!isNaN(numGrade)) {
+                        totalPoints += numGrade * units;
+                        gradedUnits += units;
+                    }
                 }
             });
         }
     });
 
-    const cumulativeGWA = totalUnits > 0 ? (totalPoints / totalUnits) : 0;
+    const cumulativeGWA = gradedUnits > 0 ? (totalPoints / gradedUnits) : 0;
 
     return {
         totalPoints,
         totalUnits,
+        gradedUnits,
         totalCourses,
         hasUnderload,
         hasFailingGrade,

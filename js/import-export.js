@@ -181,6 +181,7 @@ function parseExtractedText(text, filename) {
         semesters.push({
             title: semesterTitle,
             underload: false,
+            computed: false,
             subjects: newSubjects
         });
         renderSemesters();

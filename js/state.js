@@ -15,6 +15,13 @@ function loadSavedData() {
     if (saved) {
         try {
             semesters = JSON.parse(saved);
+            if (Array.isArray(semesters)) {
+                semesters.forEach(sem => {
+                    if (sem.computed === undefined) {
+                        sem.computed = false;
+                    }
+                });
+            }
         } catch (e) {
             semesters = [];
         }

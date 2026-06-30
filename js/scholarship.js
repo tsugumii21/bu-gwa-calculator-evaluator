@@ -55,11 +55,11 @@ function evaluateScholarship() {
     let isCompliant = true;
 
     if (chkGwa) {
-        if (stats.cumulativeGWA <= maxGWAAllowed && stats.totalUnits > 0) {
+        if (stats.cumulativeGWA <= maxGWAAllowed && stats.gradedUnits > 0) {
             chkGwa.innerHTML = `<i class="fa-solid fa-check text-success"></i> GWA Check Passed (${stats.cumulativeGWA.toFixed(4)} ≤ ${maxGWAAllowed.toFixed(2)})`;
         } else {
             chkGwa.innerHTML = `<i class="fa-solid fa-xmark text-danger"></i> GWA Check Failed (${stats.cumulativeGWA.toFixed(4)} > ${maxGWAAllowed.toFixed(2)})`;
-            if (stats.totalUnits > 0) isCompliant = false;
+            if (stats.gradedUnits > 0) isCompliant = false;
         }
     }
 
@@ -98,7 +98,7 @@ function evaluateScholarship() {
     if (containerElem && iconElem && titleElem && descElem) {
         const isDark = document.documentElement.getAttribute("data-theme") === "dark";
 
-        if (isCompliant && stats.totalUnits > 0) {
+        if (isCompliant && stats.gradedUnits > 0) {
             containerElem.style.background = isDark ? "rgba(16, 185, 129, 0.12)" : "#ecfdf5";
             containerElem.style.borderColor = isDark ? "rgba(16, 185, 129, 0.3)" : "#a7f3d0";
             titleElem.style.color = isDark ? "#34d399" : "#065f46";
@@ -106,7 +106,7 @@ function evaluateScholarship() {
             iconElem.innerHTML = `<i class="fa-solid fa-circle-check text-success"></i>`;
             titleElem.innerText = "Eligible & Compliant";
             descElem.innerText = `Your current performance meets all specified retention criteria.`;
-        } else if (stats.totalUnits === 0) {
+        } else if (stats.gradedUnits === 0) {
             containerElem.style.background = isDark ? "rgba(148, 163, 184, 0.08)" : "#f8fafc";
             containerElem.style.borderColor = isDark ? "rgba(148, 163, 184, 0.2)" : "#cbd5e1";
             titleElem.style.color = isDark ? "#fbbf24" : "#92400e";
