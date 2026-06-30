@@ -12,6 +12,8 @@ An unofficial, modern web application designed for Bicol University students to 
   <img src="https://img.shields.io/badge/pdf.js-%23FF0000.svg?style=for-the-badge&logo=adobeacrobatreader&logoColor=white" alt="PDF.js" />
 </p>
 
+👉 **Live Website**: [https://tsugumii21.github.io/bu-gwa-calculator-evaluator/](https://tsugumii21.github.io/bu-gwa-calculator-evaluator/)
+👉 **Live Repository**: [https://github.com/tsugumii21/bu-gwa-calculator-evaluator](https://github.com/tsugumii21/bu-gwa-calculator-evaluator)
 
 ---
 
