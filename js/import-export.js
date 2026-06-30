@@ -152,7 +152,7 @@ function parseExtractedText(text, filename) {
             newSubjects.push({
                 code: lastCodeMatch.code,
                 name: name || "Scanned Course",
-                grade: "1.5",
+                grade: "",
                 units: creditUnits
             });
         }
@@ -169,7 +169,7 @@ function parseExtractedText(text, filename) {
                 newSubjects.push({
                     code: lMatch[1].trim().toUpperCase(),
                     name: lMatch[2].trim(),
-                    grade: "1.5",
+                    grade: "",
                     units: parseFloat(lMatch[3]) || 3
                 });
             }

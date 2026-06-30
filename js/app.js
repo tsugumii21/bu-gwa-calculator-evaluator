@@ -19,9 +19,6 @@ function dismissWelcomeScreen() {
         welcomeScreen.classList.add("animate__animated", "animate__fadeOut", "animate__faster");
         setTimeout(() => {
             welcomeScreen.style.display = "none";
-            if (mainContainer) {
-                mainContainer.classList.add("animate__animated", "animate__fadeInUp", "animate__faster");
-            }
         }, 400);
     }
 }
