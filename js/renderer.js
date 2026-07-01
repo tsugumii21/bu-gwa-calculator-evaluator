@@ -9,11 +9,11 @@ function renderSemesters() {
     container.innerHTML = "";
 
     if (!semesters || semesters.length === 0) {
-        if (emptyState) emptyState.style.display = "block";
+        if (emptyState) emptyState.classList.remove("hidden");
         return;
     }
 
-    if (emptyState) emptyState.style.display = "none";
+    if (emptyState) emptyState.classList.add("hidden");
 
     semesters.forEach((sem, semIndex) => {
         const semCard = document.createElement("div");
