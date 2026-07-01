@@ -27,7 +27,7 @@ body {
 .text-muted { color: var(--text-muted) !important; }
 .text-blue { color: #1d4ed8 !important; }
 .text-orange { color: #ea580c !important; }
-.hidden { display: none !important; }
+.hidden, #empty-state.hidden, body #empty-state.hidden { display: none !important; }
 
 /* Hide Datalist Picker Indicator Arrow */
 input::-webkit-calendar-picker-indicator {
