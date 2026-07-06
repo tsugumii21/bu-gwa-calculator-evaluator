@@ -110,3 +110,18 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ensure mobile carousel is centered
     updateMobileCarouselUI();
 });
+
+// Switch to About -> How to Use guide subtab and scroll to view
+function openHowToUseGuide() {
+    if (typeof activateTab === "function") {
+        activateTab("tab-about");
+    }
+    const guideBtn = document.querySelector('button[onclick*="about-guide"]');
+    if (typeof switchAboutSubtab === "function") {
+        switchAboutSubtab("about-guide", guideBtn);
+    }
+    const guideSection = document.getElementById("about-guide");
+    if (guideSection) {
+        guideSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+}
