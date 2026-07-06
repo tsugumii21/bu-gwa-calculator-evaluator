@@ -23,14 +23,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Application Modular Stylesheets -->
-    <link rel="stylesheet" href="css/variables.css?v=8.8">
-    <link rel="stylesheet" href="css/dark-theme.css?v=8.8">
-    <link rel="stylesheet" href="css/base.css?v=8.8">
-    <link rel="stylesheet" href="css/layout.css?v=8.8">
-    <link rel="stylesheet" href="css/components.css?v=8.8">
-    <link rel="stylesheet" href="css/tabs.css?v=8.8">
-    <link rel="stylesheet" href="css/print.css?v=8.8">
-    <link rel="stylesheet" href="mobile.css?v=8.8">
+    <link rel="stylesheet" href="css/variables.css?v=8.9">
+    <link rel="stylesheet" href="css/dark-theme.css?v=8.9">
+    <link rel="stylesheet" href="css/base.css?v=8.9">
+    <link rel="stylesheet" href="css/layout.css?v=8.9">
+    <link rel="stylesheet" href="css/components.css?v=8.9">
+    <link rel="stylesheet" href="css/tabs.css?v=8.9">
+    <link rel="stylesheet" href="css/print.css?v=8.9">
+    <link rel="stylesheet" href="mobile.css?v=8.9">
 </head>
 <body>
 
@@ -535,6 +535,7 @@
             <!-- SUB-TAB BAR -->
             <div class="subtab-bar" style="margin-bottom: 20px;">
                 <button class="subtab-btn active" onclick="switchAboutSubtab('about-overview', this)"><i class="fa-solid fa-book-open"></i> Overview & Disclaimer</button>
+                <button class="subtab-btn" onclick="switchAboutSubtab('about-guide', this)"><i class="fa-solid fa-circle-question"></i> How to Use</button>
                 <button class="subtab-btn" onclick="switchAboutSubtab('about-policies', this)"><i class="fa-solid fa-landmark"></i> Handbook Policy Governance</button>
                 <button class="subtab-btn" onclick="switchAboutSubtab('about-developer', this)"><i class="fa-solid fa-user-gear"></i> Developer & Feedback</button>
             </div>
@@ -615,7 +616,206 @@
                 </div>
             </div>
 
-            <!-- SUB-TAB 2: HANDBOOK POLICY GOVERNANCE -->
+            <!-- SUB-TAB 2: HOW TO USE GUIDE -->
+            <div class="about-subtab-content" id="about-guide">
+                <div class="guide-section">
+                    <h3 class="guide-section-title"><i class="fa-solid fa-circle-question text-primary"></i> How to Use the Calculator & Evaluator</h3>
+                    <p class="guide-note">Follow these interactive steps to get the most out of the BU GWA Calculator platform:</p>
+                    
+                    <!-- Desktop Guide Workspace -->
+                    <div class="guide-workspace">
+                        <div class="guide-steps-list">
+                            <button class="guide-step-btn active" onclick="setDesktopGuideStep(0)">
+                                <i class="fa-solid fa-file-import"></i> 1. Setup & Import
+                            </button>
+                            <button class="guide-step-btn" onclick="setDesktopGuideStep(1)">
+                                <i class="fa-solid fa-pen-to-square"></i> 2. Manage Courses
+                            </button>
+                            <button class="guide-step-btn" onclick="setDesktopGuideStep(2)">
+                                <i class="fa-solid fa-chart-line"></i> 3. Read Dashboard
+                            </button>
+                            <button class="guide-step-btn" onclick="setDesktopGuideStep(3)">
+                                <i class="fa-solid fa-flask"></i> 4. Grade Simulation
+                            </button>
+                            <button class="guide-step-btn" onclick="setDesktopGuideStep(4)">
+                                <i class="fa-solid fa-graduation-cap"></i> 5. Scholar Monitor
+                            </button>
+                        </div>
+                        
+                        <div class="guide-preview-canvas">
+                            <!-- Slide 1: Setup & Import -->
+                            <div class="guide-mockup-slide active">
+                                <div class="guide-mockup-info">
+                                    <h4>Step 1: Setup & Importing Your Classes</h4>
+                                    <p>Get started by clicking <strong>Add Semester</strong> to build your transcript manually, or click <strong>Scan COR PDF</strong> to instantly parse courses directly from your official Certificate of Registration file. You can also paste schedule text using <strong>Bulk Paste</strong>.</p>
+                                </div>
+                                <div class="css-mockup-wrapper">
+                                    <div style="display: flex; gap: 8px;">
+                                        <div class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Add Semester</div>
+                                        <div class="btn btn-secondary btn-sm"><i class="fa-solid fa-qrcode"></i> Scan COR PDF</div>
+                                        <div class="btn btn-secondary btn-sm"><i class="fa-solid fa-paste"></i> Bulk Paste</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 2: Enter Grades & Units -->
+                            <div class="guide-mockup-slide">
+                                <div class="guide-mockup-info">
+                                    <h4>Step 2: Managing Semester Cards & Grade Inputs</h4>
+                                    <p>For each semester, input course details. Select your grade ratings (e.g. 1.00 to 5.00, or INC) and credit units. When ready, click the <strong>Compute GPA</strong> button on that card to lock in your semester calculation.</p>
+                                </div>
+                                <div class="css-mockup-wrapper">
+                                    <div class="mockup-sem-card">
+                                        <strong style="font-size: 0.82rem; color: var(--text-primary);">AY 2025-2026 1st Semester</strong>
+                                        <table class="mockup-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Course</th>
+                                                    <th>Grade</th>
+                                                    <th>Units</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>IT 101</td>
+                                                    <td><input type="text" class="mockup-input" value="1.25" disabled style="max-width:44px;"></td>
+                                                    <td><input type="text" class="mockup-input" value="3" disabled style="max-width:30px;"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <div style="text-align:right; margin-top:8px;">
+                                            <div class="btn btn-gold btn-sm"><i class="fa-solid fa-calculator"></i> Compute GPA</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 3: Dashboard Summary -->
+                            <div class="guide-mockup-slide">
+                                <div class="guide-mockup-info">
+                                    <h4>Step 3: Reading Your Dashboard Analytics</h4>
+                                    <p>The dashboard summary cards show your GWA. If some terms are uncomputed, the GWA shows a <strong>Partial</strong> label. The honor standing is evaluated based on your latest computed term, colored by your status (PL, DL, Balanced, or Dedicated).</p>
+                                </div>
+                                <div class="css-mockup-wrapper">
+                                    <div class="mockup-gwa-card">
+                                        <div style="font-size:0.76rem; color:var(--text-secondary); font-weight:700;">CUMULATIVE GWA</div>
+                                        <div class="mockup-gwa-val">1.3429</div>
+                                        <span style="font-size:0.68rem; padding:2px 8px; border-radius:10px; background:rgba(234, 88, 12, 0.15); color:var(--bu-orange); font-weight: 700;">Partial: 1 of 2 terms computed</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 4: Grade Projection -->
+                            <div class="guide-mockup-slide">
+                                <div class="guide-mockup-info">
+                                    <h4>Step 4: Scenario Simulation & Target Honors</h4>
+                                    <p>Need to hit a certain Latin Honors cutoff? Use the **What-If Scenario Simulator** tab. Enter your remaining credits and slide the anticipated grade handle. The simulator displays your projected GWA and target honor achievements dynamically.</p>
+                                </div>
+                                <div class="css-mockup-wrapper">
+                                    <div style="width:100%; max-width:320px; text-align:center;">
+                                        <div style="font-size:0.75rem; font-weight:700; color:var(--text-secondary);">Anticipated Grade: 1.50</div>
+                                        <input type="range" min="1" max="3" step="0.05" value="1.5" disabled style="width:100%; accent-color:var(--bu-orange); margin:10px 0;">
+                                        <div style="font-size:0.78rem; font-weight:800; color:var(--bu-orange);"><i class="fa-solid fa-flask"></i> Projected: Magna Cum Laude</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Slide 5: Scholarship Retention -->
+                            <div class="guide-mockup-slide">
+                                <div class="guide-mockup-info">
+                                    <h4>Step 5: Scholarship Retention Monitor</h4>
+                                    <p>Navigate to the **Scholarship Monitor** tab. Select your scholarship program (DOST, CHED, TES, or Athletics). The engine compares your computed academic data against lister caps and grade rules to verify your compliance status.</p>
+                                </div>
+                                <div class="css-mockup-wrapper">
+                                    <div style="display:flex; flex-direction:column; gap:8px; width:100%; max-width:280px;">
+                                        <div style="padding:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.3); border-radius:6px; display:flex; align-items:center; gap:8px;">
+                                            <i class="fa-solid fa-circle-check text-success"></i>
+                                            <span style="font-size:0.8rem; font-weight:700; color:var(--text-primary);">DOST: Eligible & Compliant</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile Guide Step Carousel -->
+                    <div class="guide-carousel">
+                        <div class="mobile-carousel-container">
+                            <div class="mobile-carousel-track">
+                                <!-- Slide 1 -->
+                                <div class="mobile-carousel-slide active">
+                                    <h4 style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color:var(--text-primary);"><i class="fa-solid fa-file-import text-primary"></i> 1. Setup & Import</h4>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                                        Add semesters manually, paste schedule text, or click **Scan COR PDF** to parse official Certificate of Registration details automatically.
+                                    </p>
+                                    <div style="display:flex; justify-content:center; gap:6px;">
+                                        <span class="btn btn-primary btn-sm" style="font-size:0.75rem;"><i class="fa-solid fa-plus"></i> Add</span>
+                                        <span class="btn btn-secondary btn-sm" style="font-size:0.75rem;"><i class="fa-solid fa-qrcode"></i> Scan PDF</span>
+                                    </div>
+                                </div>
+                                <!-- Slide 2 -->
+                                <div class="mobile-carousel-slide">
+                                    <h4 style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color:var(--text-primary);"><i class="fa-solid fa-pen-to-square text-primary"></i> 2. Manage Courses</h4>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                                        Select grades and input units for each subject. Click **Compute GPA** on the semester card to lock in and save that term's calculations.
+                                    </p>
+                                    <div style="display:flex; justify-content:center;">
+                                        <span class="btn btn-gold btn-sm" style="font-size:0.75rem;"><i class="fa-solid fa-calculator"></i> Compute GPA</span>
+                                    </div>
+                                </div>
+                                <!-- Slide 3 -->
+                                <div class="mobile-carousel-slide">
+                                    <h4 style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color:var(--text-primary);"><i class="fa-solid fa-chart-line text-primary"></i> 3. Read Dashboard</h4>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                                        Check your overall GWA. Subtexts will display a **Partial** badge if any of your semester cards remain uncomputed.
+                                    </p>
+                                    <div style="text-align:center; padding:10px; background:var(--card-header-bg); border-radius:6px; display:inline-block; margin:0 auto; width:80%;">
+                                        <div style="font-size:0.7rem; color:var(--text-secondary);">GWA (Partial)</div>
+                                        <strong style="color:var(--bu-azure); font-size:1.2rem;">1.3429</strong>
+                                    </div>
+                                </div>
+                                <!-- Slide 4 -->
+                                <div class="mobile-carousel-slide">
+                                    <h4 style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color:var(--text-primary);"><i class="fa-solid fa-flask text-primary"></i> 4. Grade Simulation</h4>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                                        Open the **Simulator** tab, slide the anticipated grade bar, and project GWA outcomes for remaining credits.
+                                    </p>
+                                    <input type="range" min="1" max="3" step="0.1" value="1.5" disabled style="width:80%; margin:0 auto; display:block; accent-color:var(--bu-orange);">
+                                </div>
+                                <!-- Slide 5 -->
+                                <div class="mobile-carousel-slide">
+                                    <h4 style="font-weight:700; font-size:1.05rem; margin-bottom:8px; color:var(--text-primary);"><i class="fa-solid fa-graduation-cap text-primary"></i> 5. Scholar Monitor</h4>
+                                    <p style="font-size:0.85rem; color:var(--text-secondary); line-height:1.45; margin-bottom:14px;">
+                                        Open the **Scholarship** tab, select your program, and review compliance against grade caps and lister limits.
+                                    </p>
+                                    <div style="padding:8px; background:rgba(16, 185, 129, 0.1); border-radius:4px; text-align:center; color:var(--color-success); font-size:0.75rem; font-weight:700; width:80%; margin:0 auto;">
+                                        <i class="fa-solid fa-circle-check"></i> Eligible & Compliant
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Carousel Controls -->
+                            <div class="carousel-controls">
+                                <button class="carousel-nav-btn" id="carousel-prev" onclick="moveMobileGuideStep(-1)" disabled>
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <div class="carousel-dots">
+                                    <span class="carousel-dot active" onclick="setMobileGuideStep(0)"></span>
+                                    <span class="carousel-dot" onclick="setMobileGuideStep(1)"></span>
+                                    <span class="carousel-dot" onclick="setMobileGuideStep(2)"></span>
+                                    <span class="carousel-dot" onclick="setMobileGuideStep(3)"></span>
+                                    <span class="carousel-dot" onclick="setMobileGuideStep(4)"></span>
+                                </div>
+                                <button class="carousel-nav-btn" id="carousel-next" onclick="moveMobileGuideStep(1)">
+                                    <i class="fa-solid fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-TAB 3: HANDBOOK POLICY GOVERNANCE -->
             <div class="about-subtab-content" id="about-policies">
                 <div class="guide-section">
                     <h3 class="guide-section-title"><i class="fa-solid fa-book-bookmark text-orange"></i> Governing Bicol University Student Handbook Articles & Citations</h3>
@@ -675,26 +875,186 @@
             <div class="about-subtab-content" id="about-developer">
                 <div class="guide-section">
                     <h3 class="guide-section-title"><i class="fa-solid fa-rocket text-gold"></i> Core Platform Capabilities</h3>
-                    <div class="about-features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; margin-top: 14px;">
-                        <div class="about-feat-card" style="padding: 18px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <i class="fa-solid fa-calculator text-primary feat-icon" style="font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
-                            <h4 style="font-weight: 700; margin-bottom: 6px;">4-Decimal Precision Engine</h4>
-                            <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.45;">Computes real-time cumulative and semester GWAs using exact weighted grade point math rounded to 4 decimal places per official university policy.</p>
+                    
+                    <!-- Desktop Bento Grid Capabilities -->
+                    <div class="capabilities-bento">
+                        <!-- Card 1: Dynamic GWA Math Engine -->
+                        <div class="bento-card bento-col-2 accent-blue">
+                            <div>
+                                <i class="fa-solid fa-calculator text-primary feat-icon"></i>
+                                <h4>Dynamic GWA Math Engine</h4>
+                                <p>Computes exact semester GPA and Cumulative GWA (separating total units from graded units to handle ungraded draft semesters, and calculating partial stats for computed terms so far).</p>
+                            </div>
                         </div>
-                        <div class="about-feat-card" style="padding: 18px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <i class="fa-solid fa-file-pdf text-danger feat-icon" style="font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
-                            <h4 style="font-weight: 700; margin-bottom: 6px;">Digital COR PDF Scanner</h4>
-                            <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.45;">Instant client-side extraction of course codes, descriptions, and credit units directly from official BU PDF documents via PDF.js worker.</p>
+                        
+                        <!-- Card 2: Digital COR PDF Scanner -->
+                        <div class="bento-card bento-row-2 accent-orange">
+                            <div>
+                                <i class="fa-solid fa-file-pdf text-danger feat-icon"></i>
+                                <h4>Digital COR PDF Scanner</h4>
+                                <p>Instant client-side parsing and text extraction of Bicol University Certificate of Registration (COR) files, importing classes with blank grade ratings to wait for student input.</p>
+                            </div>
                         </div>
-                        <div class="about-feat-card" style="padding: 18px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <i class="fa-solid fa-trophy text-gold feat-icon" style="font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
-                            <h4 style="font-weight: 700; margin-bottom: 6px;">Honor Qualification Radar</h4>
-                            <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.45;">Evaluates President's Lister, Dean's Lister, and graduation Latin Honors (Summa, Magna, Cum Laude) while showing exact point proximity gaps.</p>
+                        
+                        <!-- Card 3: Academic Honors Lister -->
+                        <div class="bento-card accent-gold">
+                            <div>
+                                <i class="fa-solid fa-medal text-gold feat-icon"></i>
+                                <h4>Academic Honors Lister</h4>
+                                <p>Automatically evaluates semester academic standings (President's Lister or Dean's Lister eligibility) in compliance with BU Student Handbook rules.</p>
+                            </div>
                         </div>
-                        <div class="about-feat-card" style="padding: 18px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md);">
-                            <i class="fa-solid fa-flask text-success feat-icon" style="font-size: 1.6rem; margin-bottom: 10px; display: block;"></i>
-                            <h4 style="font-weight: 700; margin-bottom: 6px;">Scenario Simulator</h4>
-                            <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.45;">Simulate future grade outcomes across remaining units and reverse-calculate exact required average grades to achieve target graduation honors.</p>
+                        
+                        <!-- Card 4: Graduation Honor Proximity Radar -->
+                        <div class="bento-card accent-blue">
+                            <div>
+                                <i class="fa-solid fa-award text-primary feat-icon"></i>
+                                <h4>Graduation Honor Proximity Radar</h4>
+                                <p>Live analysis showing candidacy status for Summa, Magna, or Cum Laude, including the exact point gap needed to reach the next honor level.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Card 5: Underload & Deficiency Safeguards -->
+                        <div class="bento-card bento-col-2 accent-success">
+                            <div>
+                                <i class="fa-solid fa-triangle-exclamation text-warning feat-icon"></i>
+                                <h4>Underload & Deficiency Safeguards</h4>
+                                <p>Detects academic anomalies like underloaded terms or carrying failing/incomplete grades (5.0 or INC) and flags their impact on lister and graduation honors eligibility.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Card 6: Bulk Paste Parser -->
+                        <div class="bento-card accent-orange">
+                            <div>
+                                <i class="fa-solid fa-paste text-success feat-icon"></i>
+                                <h4>Bulk Paste Parser</h4>
+                                <p>Rapidly populates semester classes by parsing copied raw schedule or text blocks directly.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Card 7: What-If Scenario Simulator -->
+                        <div class="bento-card bento-col-2 accent-blue">
+                            <div>
+                                <i class="fa-solid fa-flask text-orange feat-icon"></i>
+                                <h4>What-If Scenario Simulator</h4>
+                                <p>Projects future GWA outcomes based on simulated grades for remaining course units, letting you plan grade requirements.</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Card 8: Scholarship Retention Tracker -->
+                        <div class="bento-card accent-success">
+                            <div>
+                                <i class="fa-solid fa-graduation-cap text-info feat-icon"></i>
+                                <h4>Scholarship Tracker</h4>
+                                <p>Custom guidelines compliance monitor for DOST, CHED, TES, and BU Athletic scholarship programs.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Collapsible Accordion Capabilities -->
+                    <div class="capabilities-accordion">
+                        <!-- Item 1 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-calculator text-primary"></i> Dynamic GWA Math Engine</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Computes exact semester GPA and Cumulative GWA (separating total units from graded units to handle ungraded draft semesters, and calculating partial stats for computed terms so far).
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 2 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-file-pdf text-danger"></i> Digital COR PDF Scanner</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Instant client-side parsing and text extraction of Bicol University Certificate of Registration (COR) files, importing classes with blank grade ratings to wait for student input.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 3 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-medal text-gold"></i> Academic Honors Lister</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Automatically evaluates semester academic standings (President's Lister or Dean's Lister eligibility) in compliance with BU Student Handbook rules.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 4 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-award text-primary"></i> Graduation Honor Radar</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Live analysis showing candidacy status for Summa, Magna, or Cum Laude, including the exact point gap needed to reach the next honor level.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 5 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-triangle-exclamation text-warning"></i> Underload & Deficiency Safeguards</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Detects academic anomalies like underloaded terms or carrying failing/incomplete grades (5.0 or INC) and flags their impact on lister and graduation honors eligibility.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 6 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-paste text-success"></i> Bulk Paste Parser</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Rapidly populates semester classes by parsing copied raw schedule or text blocks directly.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 7 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-flask text-orange"></i> What-If Scenario Simulator</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Projects future GWA outcomes based on simulated grades for remaining course units, letting you plan grade requirements.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 8 -->
+                        <div class="accordion-item">
+                            <button class="accordion-header" onclick="toggleCapabilitiesAccordion(this)">
+                                <span><i class="fa-solid fa-graduation-cap text-info"></i> Scholarship Tracker</span>
+                                <i class="fa-solid fa-chevron-down text-muted"></i>
+                            </button>
+                            <div class="accordion-panel">
+                                <div class="accordion-content">
+                                    Custom guidelines compliance monitor for DOST, CHED, TES, and BU Athletic scholarship programs.
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -911,19 +1271,20 @@
 
 
     <!-- Application Modular JavaScript Engine -->
-    <script src="js/utils.js?v=8.8"></script>
-    <script src="js/constants.js?v=8.8"></script>
-    <script src="js/state.js?v=8.8"></script>
-    <script src="js/math-engine.js?v=8.8"></script>
-    <script src="js/evaluators.js?v=8.8"></script>
-    <script src="js/achievements.js?v=8.8"></script>
-    <script src="js/renderer.js?v=8.8"></script>
-    <script src="js/crud.js?v=8.8"></script>
-    <script src="js/theme.js?v=8.8"></script>
-    <script src="js/tabs.js?v=8.8"></script>
-    <script src="js/simulator.js?v=8.8"></script>
-    <script src="js/scholarship.js?v=8.8"></script>
-    <script src="js/import-export.js?v=8.8"></script>
-    <script src="js/app.js?v=8.8"></script>
+    <script src="js/utils.js?v=8.9"></script>
+    <script src="js/constants.js?v=8.9"></script>
+    <script src="js/state.js?v=8.9"></script>
+    <script src="js/math-engine.js?v=8.9"></script>
+    <script src="js/evaluators.js?v=8.9"></script>
+    <script src="js/guide.js?v=8.9"></script>
+    <script src="js/achievements.js?v=8.9"></script>
+    <script src="js/renderer.js?v=8.9"></script>
+    <script src="js/crud.js?v=8.9"></script>
+    <script src="js/theme.js?v=8.9"></script>
+    <script src="js/tabs.js?v=8.9"></script>
+    <script src="js/simulator.js?v=8.9"></script>
+    <script src="js/scholarship.js?v=8.9"></script>
+    <script src="js/import-export.js?v=8.9"></script>
+    <script src="js/app.js?v=8.9"></script>
 </body>
 </html>

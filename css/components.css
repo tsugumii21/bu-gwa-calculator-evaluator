@@ -1033,3 +1033,294 @@
         outline: none !important;
     }
 }
+
+/* ==========================================================================
+   Bento Grid Capabilities & Split-Screen Guide Tab
+   ========================================================================== */
+
+/* 1. Bento Grid (Desktop) */
+.capabilities-bento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.bento-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.bento-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    transition: background 0.2s ease;
+}
+
+.bento-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.bento-card.accent-blue::before { background: linear-gradient(90deg, var(--bu-azure), #60a5fa); }
+.bento-card.accent-gold::before { background: linear-gradient(90deg, var(--bu-gold), #facc15); }
+.bento-card.accent-orange::before { background: linear-gradient(90deg, var(--bu-orange), #fb923c); }
+.bento-card.accent-success::before { background: linear-gradient(90deg, var(--color-success), #34d399); }
+
+.bento-col-2 { grid-column: span 2; }
+.bento-col-3 { grid-column: span 3; }
+.bento-row-2 { grid-row: span 2; }
+
+.bento-card .feat-icon {
+    font-size: 2rem;
+    margin-bottom: 14px;
+    display: inline-block;
+}
+
+.bento-card h4 {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.bento-card p {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* 2. Collapsible Accordion (Mobile - Hidden by default on Desktop) */
+.capabilities-accordion {
+    display: none;
+}
+
+.accordion-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    margin-bottom: 10px;
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+}
+
+.accordion-item.active {
+    border-color: var(--bu-azure);
+}
+
+.accordion-header {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 14px 18px;
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    text-align: left;
+}
+
+.accordion-header i {
+    transition: transform 0.25s ease;
+}
+
+.accordion-item.active .accordion-header i.fa-chevron-down {
+    transform: rotate(180deg);
+}
+
+.accordion-panel {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    background: var(--card-header-bg);
+}
+
+.accordion-content {
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 3. Split-Screen Guide (Desktop) */
+.guide-workspace {
+    display: flex;
+    gap: 28px;
+    margin-top: 16px;
+    align-items: stretch;
+}
+
+.guide-steps-list {
+    flex: 0 0 280px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.guide-step-btn {
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-left: 4px solid transparent;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    text-align: left;
+    transition: var(--transition-fast);
+}
+
+.guide-step-btn:hover {
+    background: var(--card-header-bg);
+    color: var(--text-primary);
+}
+
+.guide-step-btn.active {
+    background: var(--card-bg);
+    border-left-color: var(--bu-azure);
+    color: var(--bu-azure);
+    box-shadow: var(--shadow-sm);
+}
+
+[data-theme="dark"] .guide-step-btn.active {
+    color: #60a5fa;
+    border-left-color: #60a5fa;
+}
+
+.guide-preview-canvas {
+    flex: 1;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    min-height: 380px;
+    overflow: hidden;
+}
+
+.guide-mockup-slide {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+    height: 100%;
+}
+
+.guide-mockup-slide.active {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    opacity: 1;
+}
+
+.guide-mockup-info h4 {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+}
+
+.guide-mockup-info p {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+/* 4. Carousel elements (Mobile - Hidden on Desktop) */
+.guide-carousel {
+    display: none;
+}
+
+/* 5. CSS Mockups for Split-Screen previews */
+.css-mockup-wrapper {
+    background: var(--bg-main);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 20px;
+    margin-top: 14px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 180px;
+}
+
+.mockup-gwa-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 16px;
+    width: 100%;
+    max-width: 320px;
+    box-shadow: var(--shadow-sm);
+    text-align: center;
+}
+
+.mockup-gwa-val {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--bu-blue);
+    margin: 6px 0;
+}
+
+[data-theme="dark"] .mockup-gwa-val { color: #60a5fa; }
+
+.mockup-sem-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    padding: 14px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: var(--shadow-sm);
+}
+
+.mockup-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.76rem;
+    margin-top: 8px;
+}
+
+.mockup-table th, .mockup-table td {
+    padding: 6px;
+    border-bottom: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.mockup-input {
+    width: 100%;
+    padding: 4px;
+    border: 1px solid var(--border-color);
+    background: var(--input-bg);
+    color: var(--text-primary);
+    border-radius: 4px;
+}
+
