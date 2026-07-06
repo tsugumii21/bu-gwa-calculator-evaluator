@@ -55,7 +55,7 @@ function evaluateTermHonorStanding() {
 
     if (computedSemesters.length === 0) {
         honorElem.innerText = "Pending Computation";
-        honorElem.className = "summary-value honor-badge text-muted";
+        honorElem.className = "summary-value honor-badge text-black-white";
         honorSubtext.innerText = "Click 'Compute GPA' on card to evaluate";
         return;
     }
