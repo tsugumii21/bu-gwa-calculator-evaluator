@@ -46,7 +46,7 @@ function evaluateTermHonorStanding() {
 
     if (!semesters || semesters.length === 0) {
         honorElem.innerText = "No Courses Added";
-        honorElem.className = "summary-value honor-badge text-muted";
+        honorElem.className = "summary-value honor-badge text-black-white";
         honorSubtext.innerText = "Add subjects to evaluate honor status";
         return;
     }
