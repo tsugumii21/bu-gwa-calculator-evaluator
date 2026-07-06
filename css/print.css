@@ -69,6 +69,22 @@
         color: #333333;
     }
 
+    .print-disclaimer {
+        font-size: 0.76rem;
+        color: #475569;
+        background: #f8fafc !important;
+        border: 1px solid #cbd5e1;
+        border-radius: 6px;
+        padding: 8px 12px;
+        margin: 10px auto 14px auto;
+        max-width: 620px;
+        line-height: 1.4;
+        text-align: center;
+        box-sizing: border-box;
+        print-color-adjust: exact !important;
+        -webkit-print-color-adjust: exact !important;
+    }
+
     /* Styling for Semester Cards in Print */
     .semester-card {
         box-shadow: none !important;
