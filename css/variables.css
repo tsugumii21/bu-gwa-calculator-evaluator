@@ -47,6 +47,11 @@
     --color-warning: #f59e0b;
     --color-danger: #ef4444;
 
+    /* Latin Honor Colors */
+    --honor-summa: #b45309;
+    --honor-magna: #c2410c;
+    --honor-cum: #1d4ed8;
+
     /* Fonts */
     --font-display: 'Outfit', sans-serif;
     --font-body: 'Inter', system-ui, -apple-system, sans-serif;

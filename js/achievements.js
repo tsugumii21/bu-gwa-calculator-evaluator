@@ -302,7 +302,7 @@ function evaluateLatinHonorsModal() {
                 <div class="achieve-card card-gold">
                     <div class="achieve-icon"><i class="fa-solid fa-crown text-gold"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#b45309; font-size:0.95rem;">Candidate for Summa Cum Laude!</strong>
+                        <strong class="achieve-title" style="color:var(--honor-summa); font-size:0.95rem;">Candidate for Summa Cum Laude!</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (≤ 1.2500). You are at the absolute pinnacle of academic excellence!</span>
                     </div>
                 </div>
@@ -314,7 +314,7 @@ function evaluateLatinHonorsModal() {
                 <div class="achieve-card card-orange">
                     <div class="achieve-icon"><i class="fa-solid fa-medal text-orange"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#c2410c; font-size:0.95rem;">Candidate for Magna Cum Laude!</strong>
+                        <strong class="achieve-title" style="color:var(--honor-magna); font-size:0.95rem;">Candidate for Magna Cum Laude!</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.2500 < GWA ≤ 1.4500).</span>
                         <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span>
                     </div>
@@ -327,7 +327,7 @@ function evaluateLatinHonorsModal() {
                 <div class="achieve-card card-blue">
                     <div class="achieve-icon"><i class="fa-solid fa-award text-primary"></i></div>
                     <div class="achieve-details">
-                        <strong class="achieve-title" style="color:#1d4ed8; font-size:0.95rem;">Candidate for Cum Laude!</strong>
+                        <strong class="achieve-title" style="color:var(--honor-cum); font-size:0.95rem;">Candidate for Cum Laude!</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.4500 < GWA ≤ 1.7500).</span>
                         <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span>
                     </div>
@@ -364,16 +364,16 @@ function evaluateLatinHonorsModal() {
                 <i class="fa-solid fa-list-check text-primary"></i> Exact Bicol University Graduation Honor Criteria
             </h4>
             <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #b45309; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="color:#b45309; font-size:0.88rem;">Summa Cum Laude</strong>
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid var(--honor-summa); border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--honor-summa); font-size:0.88rem;">Summa Cum Laude</strong>
                     <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.0000 – 1.2500</span>
                 </div>
-                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #c2410c; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="color:#c2410c; font-size:0.88rem;">Magna Cum Laude</strong>
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid var(--honor-magna); border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--honor-magna); font-size:0.88rem;">Magna Cum Laude</strong>
                     <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.2501 – 1.4500</span>
                 </div>
-                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid #1d4ed8; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
-                    <strong style="color:#1d4ed8; font-size:0.88rem;">Cum Laude</strong>
+                <div style="padding:10px 12px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid var(--honor-cum); border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+                    <strong style="color:var(--honor-cum); font-size:0.88rem;">Cum Laude</strong>
                     <span style="font-size:0.84rem; font-weight:700; color:var(--text-primary);">1.4501 – 1.7500</span>
                 </div>
             </div>
@@ -434,18 +434,18 @@ function evaluateAcademicAchievements() {
         if (gwa <= 1.2500) {
             html += `<div class="achieve-card card-gold">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-crown text-gold"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:#b45309;">Candidate for Summa Cum Laude! 👑</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)} ≤ 1.2500. You are at the pinnacle of academic excellence!</span></div></div>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-summa);">Candidate for Summa Cum Laude! 👑</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)} ≤ 1.2500. You are at the pinnacle of academic excellence!</span></div></div>`;
         } else if (gwa <= 1.4500) {
             const gapToSumma = gwa - 1.2500;
             html += `<div class="achieve-card card-orange">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-medal text-orange"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:#c2410c;">Candidate for Magna Cum Laude! 🌟</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-magna);">Candidate for Magna Cum Laude! 🌟</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
             html += `<span class="gap-pill" style="margin-top:8px; display:inline-block; font-size:0.78rem;">🔥 So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span></div></div>`;
         } else if (gwa <= 1.7500) {
             const gapToMagna = gwa - 1.4500;
             html += `<div class="achieve-card card-blue">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-award text-primary"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:#1d4ed8;">Candidate for Cum Laude! 🏅</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-cum);">Candidate for Cum Laude! 🏅</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
             html += `<span class="gap-pill" style="margin-top:8px; display:inline-block; font-size:0.78rem;">⚡ So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span></div></div>`;
         } else {
             const gapToCum = gwa - 1.7500;
