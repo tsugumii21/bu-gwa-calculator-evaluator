@@ -24,10 +24,41 @@ An unofficial, modern web application designed for Bicol University students to 
 ## ✨ Main Features
 
 - 🧮 **4-Decimal Precision Engine**: Computes real-time cumulative and semester GWAs using exact weighted grade point math rounded to 4 decimal places per official university policy.
-- 📄 **Digital COR PDF Scanner**: Instant client-side extraction of course codes, descriptions, and credit units directly from official BU PDF documents via `PDF.js` worker.
-- 🏆 **Honor Qualification Radar**: Evaluates President's Lister, Dean's Lister, and graduation Latin Honors (Summa, Magna, Cum Laude) while showing exact point proximity gaps.
+- 📄 **Digital COR PDF Scanner**: Instant client-side extraction of course codes, descriptions, and credit units directly from official BU Certificate of Registration (COR) PDF documents via `PDF.js` worker.
+- 📋 **Bulk Paste Parser**: Parses copied schedule text directly to rapidly populate semester classes.
+- 🏆 **Honor Qualification Radar**: Automatically checks semester criteria for **President's Lister (PL)** and **Dean's Lister (DL)** eligibility, as well as graduation Latin Honors (Summa, Magna, Cum Laude) while showing exact point proximity gaps.
 - 🧪 **Scenario Simulator**: Simulate future grade outcomes across remaining units and reverse-calculate exact required average grades to achieve target graduation honors.
 - 🎓 **Scholarship Retention Monitor**: Track whether your current academic performance meets retention criteria across **DOST-SEI**, **CHED Merit**, **TES**, and **BU Athletic** scholarships.
+- 🖨️ **Unofficial Print & PDF Transcript Export**: Automatically generates formal, printable transcript documents complete with an unofficial student planning tool disclaimer.
+- 💼 **Safe Client-Side Storage**: Browser `localStorage` ensures 100% client-side privacy with zero server storage.
+
+---
+
+## 🎴 Dashboard Card Display Logic
+
+The main dashboard features three critical metric cards that dynamically update to guide Bicol University students:
+
+### 1. Cumulative GWA Card
+- **No Semesters Added**: Shows `0.0000`.
+- **Some Semesters Computed**: Displays the cumulative GWA of computed semesters only. Subtext shows: `Partial: X of Y terms computed` (where $X$ is computed semesters and $Y$ is total semesters).
+- **All Semesters Computed**: Displays the total Cumulative GWA. Subtext shows: `Weighted Grade Average`.
+- **No Semesters Computed**: Displays `Pending`. Subtext shows: `Awaiting term computation`.
+
+### 2. Honor Qualification Card
+- **No Semesters Added**: Shows `No Courses Added`. Subtext shows: `Add subjects to evaluate honor status`.
+- **No Semesters Computed**: Shows `Pending Computation` in grey. Subtext shows: `Click 'Compute GPA' on card to evaluate`.
+- **Computed Semesters (Mix or Complete)**: Evaluates academic standing based on the **most recently computed** semester card:
+  - **President's Lister** (Gold text): Semester GPA $\le 1.4500$, no single grade $> 1.75$, and no underload.
+  - **Dean's Lister** (Blue text): Semester GPA $\le 1.7500$, no single grade $> 2.50$, and no underload.
+  - **Balanced Pace Bueño** (Orange text): Semester is flagged as underloaded.
+  - **Dedicated Bueño** (Green text): Did not qualify for PL/DL or had deficiencies (`5.0` / `INC`).
+  - *Note: If some semesters are still uncomputed, it appends a `(Latest Computed)` tag to the term title subtext.*
+
+### 3. Academic Standing Card
+- **Good Standing** (Green text): $0$ deficiencies.
+- **Academic Warning** (Gold text): Exactly $1$ deficiency (`5.00` or `INC`).
+- **Academic Probation** (Red text): Exactly $2$ deficiencies.
+- **Academic Dismissal Risk** (Red text): $3$ or more deficiencies.
 
 ---
 
