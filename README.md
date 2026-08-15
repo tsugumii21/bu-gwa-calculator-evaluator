@@ -73,3 +73,9 @@ An unofficial, modern web application designed for Bicol University students to 
 - Email: [allendelvalle016@gmail.com](mailto:allendelvalle016@gmail.com)
 
 ---
+
+## 📜 License
+
+Copyright © 2026 **Allen Del Valle**. All Rights Reserved.  
+This software is provided for personal academic use only. Unauthorized copying, cloning, redistribution, or modification of the source code, stylesheets, or calculation engines is strictly prohibited. See [LICENSE](LICENSE) for details.
+
