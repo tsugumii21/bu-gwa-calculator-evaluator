@@ -107,32 +107,34 @@ function getSemesterHonorBadge(sem) {
     }
 
     let honorCode = "Dedicated Bueño";
-    let honorIcon = "fa-user-graduate";
+    let honorIcon = "";
     let pillClass = "sem-pill-regular";
 
     if (!hasFailOrInc && !sem.underload) {
         if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
-            honorCode = "President's Lister 🏆";
-            honorIcon = "fa-crown";
+            honorCode = "President's Lister";
+            honorIcon = "";
             pillClass = "sem-pill-pl";
         } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
-            honorCode = "Dean's Lister 🌟";
-            honorIcon = "fa-medal";
+            honorCode = "Dean's Lister";
+            honorIcon = "";
             pillClass = "sem-pill-dl";
         }
     } else if (sem.underload) {
-        honorCode = "Balanced Pace Bueño ⚖️";
-        honorIcon = "fa-scale-balanced";
+        honorCode = "Balanced Pace Bueño";
+        honorIcon = "";
         pillClass = "sem-pill-warning";
     } else if (hasFailOrInc) {
         honorCode = "Dedicated Bueño";
-        honorIcon = "fa-bullseye";
+        honorIcon = "";
         pillClass = "sem-pill-regular";
     }
 
+    const iconHtml = honorIcon ? `<i class="fa-solid ${honorIcon}"></i> ` : "";
+
     return `
         <span class="sem-result-pill ${pillClass} animate__animated animate__fadeIn">
-            <i class="fa-solid ${honorIcon}"></i> GPA: <strong>${semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>${honorCode}</strong>
+            ${iconHtml}GPA: <strong>${semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>${honorCode}</strong>
         </span>
     `;
 }

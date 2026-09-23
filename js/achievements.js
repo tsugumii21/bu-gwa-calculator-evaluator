@@ -201,7 +201,7 @@ function evaluateSemesterComputeModal(semIndex) {
             </div>
             <div class="quote-box" style="margin-top: 14px;">
                 <i class="fa-solid fa-quote-left quote-icon"></i>
-                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+                <div class="quote-text"><strong>Motivational Reminder:</strong><br>${quote}</div>
             </div>
         </div>
     `;
@@ -289,7 +289,7 @@ function evaluateLatinHonorsModal() {
         html += `
             <div class="quote-box" style="margin-top: 14px;">
                 <i class="fa-solid fa-quote-left quote-icon"></i>
-                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+                <div class="quote-text"><strong>Motivational Reminder:</strong><br>${quote}</div>
             </div>
         `;
     } else {
@@ -316,7 +316,7 @@ function evaluateLatinHonorsModal() {
                     <div class="achieve-details">
                         <strong class="achieve-title" style="color:var(--honor-magna); font-size:0.95rem;">Candidate for Magna Cum Laude!</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.2500 < GWA ≤ 1.4500).</span>
-                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span>
+                        <span class="gap-pill">So close! | You are only&nbsp;<strong>${gapToSumma.toFixed(4)}</strong>&nbsp;points away from Summa Cum Laude!</span>
                     </div>
                 </div>
             `;
@@ -329,7 +329,7 @@ function evaluateLatinHonorsModal() {
                     <div class="achieve-details">
                         <strong class="achieve-title" style="color:var(--honor-cum); font-size:0.95rem;">Candidate for Cum Laude!</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your cumulative GWA is <strong>${gwa.toFixed(4)}</strong> (1.4500 < GWA ≤ 1.7500).</span>
-                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span>
+                        <span class="gap-pill">So close! | You are only&nbsp;<strong>${gapToMagna.toFixed(4)}</strong>&nbsp;points away from Magna Cum Laude!</span>
                     </div>
                 </div>
             `;
@@ -342,7 +342,7 @@ function evaluateLatinHonorsModal() {
                     <div class="achieve-details">
                         <strong class="achieve-title" style="font-size:0.95rem;">Dedicated Bueño Graduate Candidate</strong>
                         <span class="achieve-subtext" style="font-size:0.82rem;">Your current cumulative GWA is <strong>${gwa.toFixed(4)}</strong>.</span>
-                        <span class="gap-pill" style="margin-top:6px; font-size:0.78rem;">Goal Gap: You are <strong>${gapToCum.toFixed(4)}</strong> points away from Cum Laude cutoff (1.7500).</span>
+                        <span class="gap-pill">Goal Gap: You are&nbsp;<strong>${gapToCum.toFixed(4)}</strong>&nbsp;points away from Cum Laude cutoff (1.7500).</span>
                     </div>
                 </div>
             `;
@@ -352,7 +352,7 @@ function evaluateLatinHonorsModal() {
         html += `
             <div class="quote-box" style="margin-top: 14px;">
                 <i class="fa-solid fa-quote-left quote-icon"></i>
-                <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+                <div class="quote-text"><strong>Motivational Reminder:</strong><br>${quote}</div>
             </div>
         `;
     }
@@ -434,25 +434,25 @@ function evaluateAcademicAchievements() {
         if (gwa <= 1.2500) {
             html += `<div class="achieve-card card-gold">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-crown text-gold"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-summa);">Candidate for Summa Cum Laude! 👑</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)} ≤ 1.2500. You are at the pinnacle of academic excellence!</span></div></div>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-summa);">Candidate for Summa Cum Laude!</strong><span style="font-size:0.82rem; color:var(--text-secondary);">Cumulative GWA ${gwa.toFixed(4)} ≤ 1.2500. You are at the pinnacle of academic excellence!</span></div></div>`;
         } else if (gwa <= 1.4500) {
             const gapToSumma = gwa - 1.2500;
             html += `<div class="achieve-card card-orange">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-medal text-orange"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-magna);">Candidate for Magna Cum Laude! 🌟</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
-            html += `<span class="gap-pill" style="margin-top:8px; display:inline-block; font-size:0.78rem;">🔥 So Close! You are only <strong>${gapToSumma.toFixed(4)}</strong> points away from Summa Cum Laude!</span></div></div>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-magna);">Candidate for Magna Cum Laude!</strong><span style="font-size:0.82rem; color:var(--text-secondary);">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
+            html += `<span class="gap-pill">So close! | You are only&nbsp;<strong>${gapToSumma.toFixed(4)}</strong>&nbsp;points away from Summa Cum Laude!</span></div></div>`;
         } else if (gwa <= 1.7500) {
             const gapToMagna = gwa - 1.4500;
             html += `<div class="achieve-card card-blue">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-award text-primary"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-cum);">Candidate for Cum Laude! 🏅</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
-            html += `<span class="gap-pill" style="margin-top:8px; display:inline-block; font-size:0.78rem;">⚡ So Close! You are only <strong>${gapToMagna.toFixed(4)}</strong> points away from Magna Cum Laude!</span></div></div>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem; color:var(--honor-cum);">Candidate for Cum Laude!</strong><span style="font-size:0.82rem; color:var(--text-secondary);">Cumulative GWA ${gwa.toFixed(4)}.</span>`;
+            html += `<span class="gap-pill">So close! | You are only&nbsp;<strong>${gapToMagna.toFixed(4)}</strong>&nbsp;points away from Magna Cum Laude!</span></div></div>`;
         } else {
             const gapToCum = gwa - 1.7500;
             html += `<div class="achieve-card card-neutral">`;
             html += `<div class="achieve-icon"><i class="fa-solid fa-bullseye text-primary"></i></div>`;
-            html += `<div class="achieve-details"><strong style="font-size:0.95rem;">Regular Graduate Candidate</strong><br><span style="font-size:0.82rem; display:block; margin-top:2px;">Current GWA is ${gwa.toFixed(4)}.</span>`;
-            html += `<span class="gap-pill" style="margin-top:8px; display:inline-block; font-size:0.78rem;">🎯 Goal Gap: You are <strong>${gapToCum.toFixed(4)}</strong> points away from Cum Laude threshold (1.7500).</span></div></div>`;
+            html += `<div class="achieve-details"><strong style="font-size:0.95rem;">Regular Graduate Candidate</strong><span style="font-size:0.82rem; color:var(--text-secondary);">Current GWA is ${gwa.toFixed(4)}.</span>`;
+            html += `<span class="gap-pill">Goal Gap: You are&nbsp;<strong>${gapToCum.toFixed(4)}</strong>&nbsp;points away from Cum Laude threshold (1.7500).</span></div></div>`;
         }
     }
     html += `</div>`;
@@ -500,38 +500,32 @@ function evaluateAcademicAchievements() {
 
             let statusTitle = "Dedicated Bueño";
             let statusBadge = "badge-success";
-            let icon = "fa-check";
 
             if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
                 if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
-                    statusTitle = "President's Lister (PL) 👑";
+                    statusTitle = "President's Lister (PL)";
                     statusBadge = "badge-pl";
-                    icon = "fa-crown";
                     totalPL++;
                 } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
-                    statusTitle = "Dean's Lister (DL) 🌟";
+                    statusTitle = "Dean's Lister (DL)";
                     statusBadge = "badge-dl";
-                    icon = "fa-medal";
                     totalDL++;
                 } else if (semGWA > 1.7500 && semGWA <= 1.8500) {
                     const gapToDL = semGWA - 1.7500;
-                    statusTitle = `Close to DL 🎯 (Gap: ${gapToDL.toFixed(4)})`;
+                    statusTitle = `Close to DL (Gap: ${gapToDL.toFixed(4)})`;
                     statusBadge = "badge-close";
-                    icon = "fa-focus";
                 }
             } else if (sem.underload) {
-                statusTitle = "Balanced Pace Bueño ⚖️";
+                statusTitle = "Balanced Pace Bueño";
                 statusBadge = "badge-warning";
-                icon = "fa-scale-balanced";
             } else if (hasFailOrInc) {
                 statusTitle = "Dedicated Bueño";
                 statusBadge = "badge-success";
-                icon = "fa-circle-exclamation";
             }
 
             html += `<div class="term-recog-item">`;
             html += `<div class="term-recog-info"><strong>${escapeHtml(sem.title)}</strong> <span class="term-gpa-tag">GPA: ${semGWA.toFixed(4)}</span></div>`;
-            html += `<span class="recog-pill ${statusBadge}"><i class="fa-solid ${icon}"></i> ${statusTitle}</span>`;
+            html += `<span class="recog-pill ${statusBadge}">${statusTitle}</span>`;
             html += `</div>`;
         });
         html += `</div>`;
@@ -540,7 +534,7 @@ function evaluateAcademicAchievements() {
 
     // 3. Unlockable Achievement Badges
     html += `<div class="achieve-section" style="margin-top:20px;">`;
-    html += `<h4 class="achieve-heading"><i class="fa-solid fa-shield-cat text-primary"></i> Achievement Badges</h4>`;
+    html += `<h4 class="achieve-heading"><i class="fa-solid fa-award text-primary"></i> Achievement Badges</h4>`;
     html += `<div class="badges-grid">`;
 
     if (!allComputed) {
@@ -561,7 +555,7 @@ function evaluateAcademicAchievements() {
                 <div class="badge-desc">Awaiting semester computation</div>
             </div>
             <div class="badge-box locked">
-                <i class="fa-solid fa-dumbbell badge-icon"></i>
+                <i class="fa-solid fa-layer-group badge-icon"></i>
                 <div class="badge-title">Full Load Warrior</div>
                 <div class="badge-desc">Awaiting semester computation</div>
             </div>
@@ -591,7 +585,7 @@ function evaluateAcademicAchievements() {
         // Badge 4: Full Load Warrior
         const isFullLoad = stats.totalUnits >= 18 && !stats.hasUnderload;
         html += `<div class="badge-box ${isFullLoad ? 'unlocked' : 'locked'}">`;
-        html += `<i class="fa-solid fa-dumbbell badge-icon"></i>`;
+        html += `<i class="fa-solid fa-layer-group badge-icon"></i>`;
         html += `<div class="badge-title">Full Load Warrior</div>`;
         html += `<div class="badge-desc">${isFullLoad ? 'Completed ≥18 units full load!' : 'Complete ≥18 units without underload'}</div></div>`;
     }

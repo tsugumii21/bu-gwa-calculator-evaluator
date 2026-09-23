@@ -31,7 +31,7 @@ function showUnderloadInfo() {
                 <div class="achieve-card alert-card-danger" style="margin-bottom: 16px;">
                     <div class="achieve-icon"><i class="fa-solid fa-triangle-exclamation text-danger" style="font-size: 1.8rem;"></i></div>
                     <div class="achieve-details">
-                        <strong style="font-size: 1rem; color: var(--color-danger);">📌 Official Disqualification Rule (Art. VIII, Sec. 30):</strong>
+                        <strong style="font-size: 1rem; color: var(--color-danger);">Official Disqualification Rule (Art. VIII, Sec. 30):</strong>
                         <span class="achieve-subtext" style="display: block; margin-top: 4px; line-height: 1.55; color: var(--text-primary);">
                             Carrying an underloaded term officially <strong>disqualifies</strong> a student candidate from <strong>Graduation Latin Honors</strong> (Summa, Magna, or Cum Laude) and <strong>Semester Academic Recognition</strong> (President's Lister or Dean's Lister).
                         </span>
@@ -40,7 +40,7 @@ function showUnderloadInfo() {
 
                 <div class="quote-box" style="margin-top: 0;">
                     <i class="fa-solid fa-quote-left quote-icon"></i>
-                    <div class="quote-text">💡 <strong>Motivational Reminder:</strong><br>${quote}</div>
+                    <div class="quote-text"><strong>Motivational Reminder:</strong><br>${quote}</div>
                 </div>
             </div>
         `;

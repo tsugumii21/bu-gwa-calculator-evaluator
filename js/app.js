@@ -3,13 +3,18 @@
 function initWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     if (!welcomeScreen) return;
+    if (localStorage.getItem("bu_welcome_dismissed") === "true") {
+        welcomeScreen.style.display = "none";
+        return;
+    }
     welcomeScreen.style.display = "flex";
 }
 
 function dismissWelcomeScreen() {
     const welcomeScreen = document.getElementById("welcome-screen");
     const welcomeCard = welcomeScreen ? welcomeScreen.querySelector(".welcome-card") : null;
-    const mainContainer = document.querySelector(".main-container");
+
+    localStorage.setItem("bu_welcome_dismissed", "true");
 
     if (welcomeCard) {
         welcomeCard.classList.add("animate__animated", "animate__zoomOut", "animate__faster");

@@ -27,10 +27,17 @@ function initTabs() {
         });
     });
 
-    // On refresh, restore the active tab from sessionStorage if available
-    const savedTab = sessionStorage.getItem("bu_gwa_active_tab");
+    // On refresh, restore the active tab from localStorage if available
+    const savedTab = localStorage.getItem("bu_gwa_active_tab") || sessionStorage.getItem("bu_gwa_active_tab");
     if (savedTab && document.getElementById(savedTab)) {
         activateTab(savedTab);
+    }
+
+    // On refresh, restore the active About subtab if available
+    const savedSubtab = localStorage.getItem("bu_gwa_active_subtab");
+    if (savedSubtab && document.getElementById(savedSubtab)) {
+        const matchingBtn = document.querySelector(`.subtab-btn[onclick*="${savedSubtab}"]`);
+        switchAboutSubtab(savedSubtab, matchingBtn);
     }
 }
 
@@ -54,6 +61,7 @@ function activateTab(targetTabId) {
         }
     });
 
+    localStorage.setItem("bu_gwa_active_tab", targetTabId);
     sessionStorage.setItem("bu_gwa_active_tab", targetTabId);
 
     if (targetTabId === "tab-simulator" && typeof updateSimulator === "function") {
@@ -71,7 +79,15 @@ function switchAboutSubtab(subtabId, btnElem) {
     const subtabContents = document.querySelectorAll(".about-subtab-content");
     subtabContents.forEach(c => c.classList.remove("active"));
 
-    if (btnElem) btnElem.classList.add("active");
+    if (btnElem) {
+        btnElem.classList.add("active");
+    } else {
+        const matchingBtn = document.querySelector(`.subtab-btn[onclick*="${subtabId}"]`);
+        if (matchingBtn) matchingBtn.classList.add("active");
+    }
+
     const targetElem = document.getElementById(subtabId);
     if (targetElem) targetElem.classList.add("active");
+
+    localStorage.setItem("bu_gwa_active_subtab", subtabId);
 }

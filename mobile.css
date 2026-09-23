@@ -279,16 +279,18 @@ html, body {
         font-size: 0.92rem !important;
     }
 
-    /* FIX 5 — About Tab: Sub-Tab Navigation Bar */
+    /* FIX 5 — About Tab: Sub-Tab Navigation Bar (2x2 Grid) */
     .subtab-bar {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 8px !important;
-        padding-bottom: 6px !important;
+        padding: 8px !important;
+        background: var(--card-header-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
         width: 100% !important;
-        scrollbar-width: none !important;
+        overflow: visible !important;
+        margin-bottom: 16px !important;
     }
 
     .subtab-bar::-webkit-scrollbar {
@@ -296,8 +298,18 @@ html, body {
     }
 
     .subtab-btn {
-        white-space: nowrap !important;
-        flex-shrink: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 10px 8px !important;
+        font-size: 0.8rem !important;
+        font-weight: 600 !important;
+        white-space: normal !important;
+        line-height: 1.25 !important;
+        min-height: 44px !important;
+        border-radius: var(--radius-sm) !important;
+        gap: 6px !important;
     }
 
     /* FIX 6 & 7 — Global: Touch Target Sizes, Checkbox Alignment & Icon Button Fixes */
@@ -647,25 +659,84 @@ html, body {
         padding: var(--space-md);
     }
 
-    /* --- Welcome screen --- */
-    .welcome-card {
-        max-width: 480px;
-        padding: var(--space-lg) var(--space-md);
+    /* --- Welcome screen (Compact Floating Modal) --- */
+    .welcome-screen {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+        box-sizing: border-box !important;
     }
 
-    .welcome-title {
-        font-size: 1.6rem;
+    .welcome-card {
+        width: 92% !important;
+        max-width: 400px !important;
+        max-height: 86vh !important;
+        overflow-y: auto !important;
+        margin: auto !important;
+        padding: 18px 16px !important;
+        border-radius: 16px !important;
+        box-sizing: border-box !important;
+    }
+
+    .welcome-hero {
+        margin-bottom: 10px !important;
     }
 
     .welcome-logo {
-        width: 56px;
-        height: 56px;
-        font-size: 1.8rem;
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 1.45rem !important;
+        margin-bottom: 8px !important;
+    }
+
+    .welcome-title {
+        font-size: 1.25rem !important;
+        margin-bottom: 4px !important;
+        line-height: 1.25 !important;
+    }
+
+    .welcome-subtitle {
+        font-size: 0.8rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .welcome-disclaimer-box {
+        padding: 10px 12px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .disclaimer-header {
+        font-size: 0.85rem !important;
+        margin-bottom: 4px !important;
+    }
+
+    .disclaimer-text {
+        font-size: 0.76rem !important;
+        line-height: 1.45 !important;
+    }
+
+    .welcome-features {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 6px !important;
+        margin-bottom: 14px !important;
     }
 
     .feat-chip {
-        padding: 5px 10px;
-        font-size: 0.76rem;
+        padding: 6px 8px !important;
+        font-size: 0.72rem !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .feat-chip:last-child {
+        grid-column: span 2 !important;
+    }
+
+    .welcome-btn {
+        padding: 11px 16px !important;
+        font-size: 0.92rem !important;
     }
 
     /* --- Footer --- */
@@ -695,14 +766,16 @@ html, body {
 
     /* Achievement cards in modal */
     .achieve-card {
-        padding: 14px;
+        padding: 12px 14px;
         gap: 12px;
+        align-items: flex-start;
     }
 
     .achieve-icon {
-        width: 44px;
-        height: 44px;
-        font-size: 1.8rem;
+        width: 38px;
+        height: 38px;
+        font-size: 1.25rem;
+        margin-top: 2px;
     }
 
     .achieve-title {
@@ -727,7 +800,7 @@ html, body {
         display: block !important;
     }
 
-    /* Guide Split-Screen -> Step Carousel Mobile Overrides */
+    /* Guide Split-Screen -> Step Cards Mobile Overrides (Vertical Stack) */
     .guide-workspace {
         display: none !important;
     }
@@ -736,84 +809,41 @@ html, body {
     }
 
     .mobile-carousel-container {
-        position: relative;
-        overflow: hidden;
-        width: 100%;
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-lg);
-        box-shadow: var(--shadow-sm);
-        box-sizing: border-box;
-        margin-top: 14px;
+        position: relative !important;
+        overflow: visible !important;
+        width: 100% !important;
+        background: transparent !important;
+        border: none !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+        margin-top: 12px !important;
     }
 
     .mobile-carousel-track {
-        display: flex;
-        width: 100%;
-        transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 14px !important;
+        transform: none !important;
+        width: 100% !important;
+        transition: none !important;
     }
 
     .mobile-carousel-slide {
-        flex: 0 0 100%;
-        width: 100%;
-        padding: 22px 18px;
-        box-sizing: border-box;
+        display: block !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        flex: 1 1 auto !important;
+        width: 100% !important;
+        padding: 18px 16px !important;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
+        box-shadow: var(--shadow-sm) !important;
+        box-sizing: border-box !important;
     }
 
     .carousel-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 12px 18px;
-        background: var(--card-header-bg);
-        border-top: 1px solid var(--border-color);
-    }
-
-    .carousel-nav-btn {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 50%;
-        width: 38px;
-        height: 38px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        color: var(--text-primary);
-        font-size: 0.9rem;
-        transition: var(--transition-fast);
-        box-shadow: var(--shadow-sm);
-    }
-
-    .carousel-nav-btn:disabled {
-        opacity: 0.35;
-        cursor: not-allowed;
-        box-shadow: none;
-    }
-
-    .carousel-dots {
-        display: flex;
-        gap: 8px;
-    }
-
-    .carousel-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: var(--border-color);
-        border: none;
-        padding: 0;
-        cursor: pointer;
-        transition: var(--transition-fast);
-    }
-
-    .carousel-dot.active {
-        background: var(--bu-azure);
-        transform: scale(1.2);
-    }
-
-    [data-theme="dark"] .carousel-dot.active {
-        background: #60a5fa;
+        display: none !important;
     }
 }
 
@@ -1294,25 +1324,35 @@ html, body {
     }
 
     .subtab-bar {
-        display: flex !important;
-        flex-wrap: nowrap !important;
-        overflow-x: auto !important;
-        white-space: nowrap !important;
-        -webkit-overflow-scrolling: touch !important;
-        scrollbar-width: none;
-        padding: 4px !important;
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
         gap: 6px !important;
+        padding: 6px !important;
+        background: var(--card-header-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
+        width: 100% !important;
+        overflow: visible !important;
+        margin-bottom: 14px !important;
     }
 
     .subtab-bar::-webkit-scrollbar {
-        display: none;
+        display: none !important;
     }
 
     .subtab-btn {
-        flex-shrink: 0 !important;
-        padding: 8px 14px !important;
-        font-size: 0.82rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        padding: 8px 6px !important;
+        font-size: 0.75rem !important;
+        font-weight: 600 !important;
+        white-space: normal !important;
+        line-height: 1.25 !important;
+        min-height: 42px !important;
         border-radius: var(--radius-sm) !important;
+        gap: 4px !important;
     }
 
     /* About hero */
@@ -1493,15 +1533,16 @@ html, body {
     /* Modal inner cards */
     .achieve-card {
         padding: 10px 12px;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: nowrap !important;
-        align-items: center !important;
+        align-items: flex-start !important;
     }
 
     .achieve-icon {
-        width: 40px;
-        height: 40px;
-        font-size: 1.5rem;
+        width: 36px;
+        height: 36px;
+        font-size: 1.15rem;
+        margin-top: 2px;
     }
 
     .achieve-title {
@@ -1522,8 +1563,9 @@ html, body {
     }
 
     .gap-pill {
-        font-size: 0.78rem;
-        padding: 3px 10px;
+        font-size: 0.75rem;
+        padding: 2px 8px;
+        margin-top: 4px;
     }
 
     .badges-grid {
@@ -1584,45 +1626,69 @@ html, body {
         font-size: 0.75rem;
     }
 
-    /* --- Welcome screen --- */
+    /* --- Welcome screen (Compact Floating Modal ≤480px) --- */
     .welcome-screen {
-        padding: var(--space-md);
+        padding: 12px !important;
     }
 
     .welcome-card {
-        max-width: 100%;
-        padding: var(--space-lg) var(--space-md);
+        width: 95% !important;
+        max-width: 360px !important;
+        max-height: 86vh !important;
+        padding: 16px 14px !important;
+        border-radius: 14px !important;
     }
 
     .welcome-logo {
-        width: 52px;
-        height: 52px;
-        font-size: 1.6rem;
-        margin-bottom: var(--space-sm);
+        width: 42px !important;
+        height: 42px !important;
+        font-size: 1.35rem !important;
+        margin-bottom: 6px !important;
     }
 
     .welcome-title {
-        font-size: 1.35rem;
+        font-size: 1.15rem !important;
     }
 
     .welcome-subtitle {
-        font-size: 0.82rem;
+        font-size: 0.76rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .welcome-disclaimer-box {
+        padding: 8px 10px !important;
+        margin-bottom: 10px !important;
+    }
+
+    .disclaimer-header {
+        font-size: 0.8rem !important;
+    }
+
+    .disclaimer-text {
+        font-size: 0.72rem !important;
     }
 
     .welcome-features {
-        gap: 6px;
-        margin-bottom: var(--space-lg);
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 5px !important;
+        margin-bottom: 12px !important;
     }
 
     .feat-chip {
-        padding: 4px 8px;
-        font-size: 0.72rem;
-        gap: 5px;
+        padding: 5px 6px !important;
+        font-size: 0.68rem !important;
+        justify-content: center !important;
+        text-align: center !important;
+    }
+
+    .feat-chip:last-child {
+        grid-column: span 2 !important;
     }
 
     .welcome-btn {
-        padding: 12px 16px;
-        font-size: 0.95rem;
+        padding: 10px 14px !important;
+        font-size: 0.88rem !important;
     }
 
     /* --- Footer --- */

@@ -45,76 +45,76 @@ const SCHOLARSHIP_PRESETS = {
 // 7 Curated Unique Quotes/Messages per Category
 const HONOR_MESSAGES = {
     PL: [
-        "🏆 Outstanding excellence! You've officially secured President's Lister honors this term!",
-        "👑 Top of the class! Your focus and discipline earned you a spot on the President's List!",
-        "🌟 Phenomenal performance! Achieving President's Lister proves your relentless drive.",
-        "✨ Simply extraordinary! You've set the gold standard of academic brilliance.",
-        "🔥 Unstoppable force! Your impressive GPA proves that consistency yields greatness.",
-        "💎 Pure perfection! You handled your academic load with utmost mastery and honor.",
-        "🚀 Reaching new heights! Your President's Lister award inspires your entire college."
+        "Outstanding excellence! You've officially secured President's Lister honors this term!",
+        "Top of the class! Your focus and discipline earned you a spot on the President's List!",
+        "Phenomenal performance! Achieving President's Lister proves your relentless drive.",
+        "Simply extraordinary! You've set the gold standard of academic brilliance.",
+        "Unstoppable force! Your impressive GPA proves that consistency yields greatness.",
+        "Pure perfection! You handled your academic load with utmost mastery and honor.",
+        "Reaching new heights! Your President's Lister award inspires your entire college."
     ],
     DL: [
-        "🌟 Fantastic work! You've officially earned your place on the Dean's List this semester!",
-        "🏅 High academic distinction! Your diligence and perseverance yielded Dean's Lister honors.",
-        "🎉 Well deserved! Dean's Lister recognition proves your commitment to growth.",
-        "✨ Stellar term performance! You're making continuous strides toward excellence.",
-        "🔥 Remarkable dedication! Dean's Lister is a testament to your steady hard work.",
-        "💎 Impressive accomplishment! Keep pushing your limits as an honor student.",
-        "🚀 Soaring high! Your Dean's Lister award reflects your strong scholarly ambition."
+        "Fantastic work! You've officially earned your place on the Dean's List this semester!",
+        "High academic distinction! Your diligence and perseverance yielded Dean's Lister honors.",
+        "Well deserved! Dean's Lister recognition proves your commitment to growth.",
+        "Stellar term performance! You're making continuous strides toward excellence.",
+        "Remarkable dedication! Dean's Lister is a testament to your steady hard work.",
+        "Impressive accomplishment! Keep pushing your limits as an honor student.",
+        "Soaring high! Your Dean's Lister award reflects your strong scholarly ambition."
     ],
     REGULAR: [
-        "💪 Every semester is a stepping stone. Your resilience today builds tomorrow's glory!",
-        "✨ Progress over perfection! Stay dedicated and watch your potential unfold next term.",
-        "🔥 Success is the sum of small daily efforts. Keep pushing forward with pride!",
-        "🎯 Growth happens through persistence. Learn from this term and conquer the next!",
-        "🌱 Setbacks are temporary, but your grit is permanent. Keep your eyes on the goal!",
-        "⚡ Fall seven times, stand up eight! You have the power to rise higher next semester.",
-        "📚 Consistency creates champions. Keep grinding and your breakthrough will come!"
+        "Every semester is a stepping stone. Your resilience today builds tomorrow's glory!",
+        "Progress over perfection! Stay dedicated and watch your potential unfold next term.",
+        "Success is the sum of small daily efforts. Keep pushing forward with pride!",
+        "Growth happens through persistence. Learn from this term and conquer the next!",
+        "Setbacks are temporary, but your grit is permanent. Keep your eyes on the goal!",
+        "Fall seven times, stand up eight! You have the power to rise higher next semester.",
+        "Consistency creates champions. Keep grinding and your breakthrough will come!"
     ],
     UNDERLOAD: [
-        "🌱 Education is a personal marathon, not a sprint. Honor your own unique pace!",
-        "💡 Quality of learning beats quantity of units. Be proud of taking care of your wellness.",
-        "⚡ Taking a custom load shows wisdom and self-awareness. Keep mastering your courses!",
-        "🌈 Your academic journey is uniquely yours. Move at the speed that ensures your success.",
-        "💪 A lighter load lets you shine brighter in every subject. Stay focused on mastery!",
-        "✨ Balance is key to long-term triumph. Value your peace while achieving your degree.",
-        "🎯 Every step forward is real progress, no matter the unit count. Keep going strong!"
+        "Education is a personal marathon, not a sprint. Honor your own unique pace!",
+        "Quality of learning beats quantity of units. Be proud of taking care of your wellness.",
+        "Taking a custom load shows wisdom and self-awareness. Keep mastering your courses!",
+        "Your academic journey is uniquely yours. Move at the speed that ensures your success.",
+        "A lighter load lets you shine brighter in every subject. Stay focused on mastery!",
+        "Balance is key to long-term triumph. Value your peace while achieving your degree.",
+        "Every step forward is real progress, no matter the unit count. Keep going strong!"
     ],
     SUMMA: [
-        "👑 Absolute pinnacle of academic distinction! Candidate for Summa Cum Laude! 🎉",
-        "🏆 Legendary achievement! Your Summa Cum Laude standing places you among the elites!",
-        "🌟 Historical brilliance! Maintaining a Summa Cum Laude GWA is monumental.",
-        "✨ Flawless dedication! You represent the apex of scholastic excellence.",
-        "🎉 Mind-blowing achievement! Summa Cum Laude is the ultimate crown of your college life.",
-        "🔥 Peerless academic titan! Your name belongs in Bicol University's hall of fame.",
-        "💎 Rare academic gemstone! You've maintained perfection across your entire degree."
+        "Absolute pinnacle of academic distinction! Candidate for Summa Cum Laude!",
+        "Legendary achievement! Your Summa Cum Laude standing places you among the elites!",
+        "Historical brilliance! Maintaining a Summa Cum Laude GWA is monumental.",
+        "Flawless dedication! You represent the apex of scholastic excellence.",
+        "Mind-blowing achievement! Summa Cum Laude is the ultimate crown of your college life.",
+        "Peerless academic titan! Your name belongs in Bicol University's hall of fame.",
+        "Rare academic gemstone! You've maintained perfection across your entire degree."
     ],
     MAGNA: [
-        "🌟 High academic distinction! Candidate for Magna Cum Laude! 🎉",
-        "🏅 Stellar accomplishment! Magna Cum Laude honors reflect your exceptional intellect.",
-        "🎉 Outstanding triumph! Celebrating your Magna Cum Laude candidacy today!",
-        "✨ High distinction scholar! Your hard work placed you in the top tier of graduates.",
-        "🔥 Remarkable brilliance! Magna Cum Laude is a glowing testament to your perseverance.",
-        "💎 Exquisite achievement! You've maintained high honors throughout your college stay.",
-        "🚀 Bound for greatness! Magna Cum Laude distinction opens vast horizons for your future."
+        "High academic distinction! Candidate for Magna Cum Laude!",
+        "Stellar accomplishment! Magna Cum Laude honors reflect your exceptional intellect.",
+        "Outstanding triumph! Celebrating your Magna Cum Laude candidacy today!",
+        "High distinction scholar! Your hard work placed you in the top tier of graduates.",
+        "Remarkable brilliance! Magna Cum Laude is a glowing testament to your perseverance.",
+        "Exquisite achievement! You've maintained high honors throughout your college stay.",
+        "Bound for greatness! Magna Cum Laude distinction opens vast horizons for your future."
     ],
     CUM: [
-        "🏅 Graduation with distinction! Candidate for Cum Laude honors! 🎉",
-        "🌟 Fantastic milestone! Your Cum Laude candidate status celebrates your hard work.",
-        "🎉 Well-deserved honor! Graduating Cum Laude is a proud testament to your dedication.",
-        "✨ Honorable distinction! You've maintained solid academic performance throughout college.",
-        "🔥 Continuous drive! Cum Laude honors prove your commitment to scholarly growth.",
-        "💎 Valued achievement! Graduating Cum Laude sets a strong foundation for your career.",
-        "🚀 Launchpad to success! Your Cum Laude candidacy opens exciting opportunities."
+        "Graduation with distinction! Candidate for Cum Laude honors!",
+        "Fantastic milestone! Your Cum Laude candidate status celebrates your hard work.",
+        "Well-deserved honor! Graduating Cum Laude is a proud testament to your dedication.",
+        "Honorable distinction! You've maintained solid academic performance throughout college.",
+        "Continuous drive! Cum Laude honors prove your commitment to scholarly growth.",
+        "Valued achievement! Graduating Cum Laude sets a strong foundation for your career.",
+        "Launchpad to success! Your Cum Laude candidacy opens exciting opportunities."
     ],
     NOT_LAUDE: [
-        "🎓 You are a victorious candidate for graduation! Every graduate is a champion!",
-        "✨ A degree is a lifetime achievement! Be proud of overcoming every academic challenge.",
-        "🔥 Your worth isn't defined by a title. Your practical skills and resilience will shine!",
-        "🎯 Goal achieved: Completing a degree program in Bicol University is a massive accomplishment!",
-        "🌱 Great things await! Real-world success rewards grit, passion, and adaptability.",
-        "⚡ You conquered college! Be proud of every late night and exam you successfully passed.",
-        "📚 Knowledge is power! The real test begins now, and you are fully equipped."
+        "You are a victorious candidate for graduation! Every graduate is a champion!",
+        "A degree is a lifetime achievement! Be proud of overcoming every academic challenge.",
+        "Your worth isn't defined by a title. Your practical skills and resilience will shine!",
+        "Goal achieved: Completing a degree program in Bicol University is a massive accomplishment!",
+        "Great things await! Real-world success rewards grit, passion, and adaptability.",
+        "You conquered college! Be proud of every late night and exam you successfully passed.",
+        "Knowledge is power! The real test begins now, and you are fully equipped."
     ]
 };
 
