@@ -16,6 +16,14 @@
     color: #ffffff;
 }
 
+.welcome-screen.hidden,
+.welcome-screen[style*="display: none"],
+.welcome-screen[style*="display:none"] {
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+}
+
 .welcome-card {
     background: var(--card-bg);
     color: var(--text-primary);

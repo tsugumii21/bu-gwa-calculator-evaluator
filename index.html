@@ -23,19 +23,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <!-- Application Modular Stylesheets -->
-    <link rel="stylesheet" href="css/variables.css?v=9.7">
-    <link rel="stylesheet" href="css/dark-theme.css?v=9.7">
-    <link rel="stylesheet" href="css/base.css?v=9.7">
-    <link rel="stylesheet" href="css/layout.css?v=9.7">
-    <link rel="stylesheet" href="css/components.css?v=9.7">
-    <link rel="stylesheet" href="css/tabs.css?v=9.7">
-    <link rel="stylesheet" href="css/print.css?v=9.7">
-    <link rel="stylesheet" href="mobile.css?v=9.7">
+    <link rel="stylesheet" href="css/variables.css?v=9.8">
+    <link rel="stylesheet" href="css/dark-theme.css?v=9.8">
+    <link rel="stylesheet" href="css/base.css?v=9.8">
+    <link rel="stylesheet" href="css/layout.css?v=9.8">
+    <link rel="stylesheet" href="css/components.css?v=9.8">
+    <link rel="stylesheet" href="css/tabs.css?v=9.8">
+    <link rel="stylesheet" href="css/print.css?v=9.8">
+    <link rel="stylesheet" href="mobile.css?v=9.8">
 </head>
 <body>
 
     <!-- ONBOARDING WELCOME OVERLAY SCREEN -->
     <div class="welcome-screen" id="welcome-screen" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999; display: flex;">
+        <script>
+            if (localStorage.getItem("bu_welcome_dismissed") === "true") {
+                var ws = document.getElementById("welcome-screen");
+                if (ws) {
+                    ws.classList.add("hidden");
+                    ws.style.display = "none";
+                    ws.style.pointerEvents = "none";
+                }
+            }
+        </script>
         <div class="welcome-card animate__animated animate__zoomIn animate__faster">
             <div class="welcome-hero">
                 <div class="welcome-logo">
@@ -1274,20 +1284,20 @@
 
 
     <!-- Application Modular JavaScript Engine -->
-    <script src="js/utils.js?v=9.7"></script>
-    <script src="js/constants.js?v=9.7"></script>
-    <script src="js/state.js?v=9.7"></script>
-    <script src="js/math-engine.js?v=9.7"></script>
-    <script src="js/evaluators.js?v=9.7"></script>
-    <script src="js/guide.js?v=9.7"></script>
-    <script src="js/achievements.js?v=9.7"></script>
-    <script src="js/renderer.js?v=9.7"></script>
-    <script src="js/crud.js?v=9.7"></script>
-    <script src="js/theme.js?v=9.7"></script>
-    <script src="js/tabs.js?v=9.7"></script>
-    <script src="js/simulator.js?v=9.7"></script>
-    <script src="js/scholarship.js?v=9.7"></script>
-    <script src="js/import-export.js?v=9.7"></script>
-    <script src="js/app.js?v=9.7"></script>
+    <script src="js/utils.js?v=9.8"></script>
+    <script src="js/constants.js?v=9.8"></script>
+    <script src="js/state.js?v=9.8"></script>
+    <script src="js/math-engine.js?v=9.8"></script>
+    <script src="js/evaluators.js?v=9.8"></script>
+    <script src="js/guide.js?v=9.8"></script>
+    <script src="js/achievements.js?v=9.8"></script>
+    <script src="js/renderer.js?v=9.8"></script>
+    <script src="js/crud.js?v=9.8"></script>
+    <script src="js/theme.js?v=9.8"></script>
+    <script src="js/tabs.js?v=9.8"></script>
+    <script src="js/simulator.js?v=9.8"></script>
+    <script src="js/scholarship.js?v=9.8"></script>
+    <script src="js/import-export.js?v=9.8"></script>
+    <script src="js/app.js?v=9.8"></script>
 </body>
 </html>

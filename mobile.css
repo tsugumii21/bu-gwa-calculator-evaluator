@@ -661,11 +661,18 @@ html, body {
 
     /* --- Welcome screen (Compact Floating Modal) --- */
     .welcome-screen {
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
+        align-items: center;
+        justify-content: center;
         padding: 16px !important;
         box-sizing: border-box !important;
+    }
+
+    .welcome-screen.hidden,
+    .welcome-screen[style*="display: none"],
+    .welcome-screen[style*="display:none"] {
+        display: none !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
     }
 
     .welcome-card {
