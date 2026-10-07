@@ -1,0 +1,57 @@
+/* ==========================================================================
+   BU GWA Calculator — Base Resets, Utilities & Animations
+   ========================================================================== */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-main);
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Utilities */
+.text-success { color: var(--color-success) !important; }
+.text-danger { color: var(--color-danger) !important; }
+.text-gold { color: var(--bu-gold) !important; }
+.text-primary { color: var(--bu-blue) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.text-blue { color: #1d4ed8 !important; }
+.text-orange { color: #ea580c !important; }
+.text-warning { color: #d97706 !important; }
+.text-amber { color: #d97706 !important; }
+.text-info { color: #0284c7 !important; }
+.text-cyan { color: #0284c7 !important; }
+.text-black-white { color: var(--text-black-white) !important; }
+.hidden, #empty-state.hidden, body #empty-state.hidden { display: none !important; }
+
+/* Hide Datalist Picker Indicator Arrow */
+input::-webkit-calendar-picker-indicator {
+    display: none !important;
+    opacity: 0 !important;
+    width: 0 !important;
+    height: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Disable Resizing on All Textareas Across Entire App */
+textarea,
+textarea.form-control,
+.bulk-textarea {
+    resize: none !important;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}

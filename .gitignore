@@ -24,3 +24,8 @@ yarn-error.log*
 
 # AI Agent Local Directives
 .agents/
+
+# Build outputs & caches
+dist/
+*.tsbuildinfo
+*.traineddata
