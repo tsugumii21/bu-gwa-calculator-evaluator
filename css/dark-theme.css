@@ -174,13 +174,25 @@
 .citation-cat-danger { color: var(--color-danger); }
 .citation-cat-green  { color: var(--color-success); }
 .citation-cat-azure  { color: var(--bu-azure); }
+.citation-cat-amber  { color: #d97706; }
+.citation-cat-purple { color: #7c3aed; }
 
-[data-theme="dark"] .citation-cat-blue   { color: #60a5fa; }
-[data-theme="dark"] .citation-cat-gold   { color: #fbbf24; }
-[data-theme="dark"] .citation-cat-orange { color: #fb923c; }
-[data-theme="dark"] .citation-cat-danger { color: #f87171; }
-[data-theme="dark"] .citation-cat-green  { color: #34d399; }
-[data-theme="dark"] .citation-cat-azure  { color: #38bdf8; }
+[data-theme="dark"] .citation-cat-blue,
+.dark .citation-cat-blue   { color: #60a5fa; }
+[data-theme="dark"] .citation-cat-gold,
+.dark .citation-cat-gold   { color: #fbbf24; }
+[data-theme="dark"] .citation-cat-orange,
+.dark .citation-cat-orange { color: #fb923c; }
+[data-theme="dark"] .citation-cat-danger,
+.dark .citation-cat-danger { color: #f87171; }
+[data-theme="dark"] .citation-cat-amber,
+.dark .citation-cat-amber  { color: #f59e0b; }
+[data-theme="dark"] .citation-cat-green,
+.dark .citation-cat-green  { color: #34d399; }
+[data-theme="dark"] .citation-cat-azure,
+.dark .citation-cat-azure  { color: #38bdf8; }
+[data-theme="dark"] .citation-cat-purple,
+.dark .citation-cat-purple { color: #c084fc; }
 
 /* ==========================================================================
    Scholarship Tab
