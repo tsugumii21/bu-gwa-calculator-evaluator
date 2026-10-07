@@ -77,7 +77,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
       });
     }
 
-    let honorCode = 'Dedicated Bueño';
+    let honorCode = 'Good Academic Standing';
     let pillClass = 'sem-pill-regular';
 
     if (!hasFailOrInc && !semester.underload) {
@@ -92,7 +92,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
       honorCode = 'Balanced Pace Bueño';
       pillClass = 'sem-pill-warning';
     } else if (hasFailOrInc) {
-      honorCode = 'Dedicated Bueño';
+      honorCode = 'Good Academic Standing';
       pillClass = 'sem-pill-regular';
     }
 

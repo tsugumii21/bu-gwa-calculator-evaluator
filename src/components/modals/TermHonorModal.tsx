@@ -37,7 +37,7 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
     }
 
     let category: 'PL' | 'DL' | 'REGULAR' | 'UNDERLOAD' = 'REGULAR';
-    let title = 'Dedicated Bueño';
+    let title = 'Good Academic Standing';
     let badgeClass = 'card-emerald';
     let icon = 'fa-bullseye';
     let subtext = `${semester.title} • Semester GPA: ${semGWA.toFixed(4)}`;

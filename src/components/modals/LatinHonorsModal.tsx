@@ -170,7 +170,7 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
                     </div>
                     <div className="achieve-details">
                       <strong className="achieve-title" style={{ fontSize: '0.95rem' }}>
-                        Dedicated Bueño Graduate Candidate
+                        Good Academic Standing Graduate Candidate
                       </strong>
                       <span className="achieve-subtext" style={{ fontSize: '0.82rem' }}>
                         Your current cumulative GWA is <strong>{gwa.toFixed(4)}</strong>.

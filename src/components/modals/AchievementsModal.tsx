@@ -214,7 +214,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                     if (!isNaN(num) && num > lowestGradeInSem) lowestGradeInSem = num;
                   });
 
-                  let statusTitle = 'Dedicated Bueño';
+                  let statusTitle = 'Good Academic Standing';
                   let statusBadge = 'badge-success';
 
                   if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
