@@ -280,7 +280,7 @@ export const AboutView: React.FC = () => {
                   }}
                 >
                   <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-stamp" style={{ color: 'var(--bu-gold)' }}></i>
+                    <i className="fa-solid fa-stamp text-primary"></i>
                     Clause II — Sole Certification Authority of the University Registrar (OUR) & College Deans
                   </strong>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -293,12 +293,12 @@ export const AboutView: React.FC = () => {
                   style={{
                     padding: '14px 18px',
                     borderRadius: 'var(--radius-md)',
-                    background: 'rgba(239, 68, 68, 0.04)',
-                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    background: 'var(--subtle-bg, rgba(0,0,0,0.02))',
+                    border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-danger)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-triangle-exclamation"></i>
+                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
+                    <i className="fa-solid fa-triangle-exclamation text-primary"></i>
                     Clause III — Anti-Falsification Policy & Prohibition of Document Misrepresentation
                   </strong>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -316,7 +316,7 @@ export const AboutView: React.FC = () => {
                   }}
                 >
                   <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-shield-halved" style={{ color: 'var(--color-success)' }}></i>
+                    <i className="fa-solid fa-shield-halved text-primary"></i>
                     Clause IV — Absolute Limitation of Liability
                   </strong>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
@@ -329,12 +329,12 @@ export const AboutView: React.FC = () => {
                   style={{
                     padding: '14px 18px',
                     borderRadius: 'var(--radius-md)',
-                    background: 'rgba(16, 185, 129, 0.04)',
-                    border: '1px solid rgba(16, 185, 129, 0.25)',
+                    background: 'var(--subtle-bg, rgba(0,0,0,0.02))',
+                    border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--color-success)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-lock"></i>
+                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
+                    <i className="fa-solid fa-lock text-primary"></i>
                     Clause V — Zero-Knowledge Privacy Architecture & Philippine Data Privacy Act (RA 10173)
                   </strong>
                   <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>

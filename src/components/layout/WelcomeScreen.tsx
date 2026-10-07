@@ -1,4 +1,5 @@
 import React from 'react';
+import buAppLogo from '../../assets/images/bu-app-logo.png';
 import { useAppStore } from '../../store';
 
 export const WelcomeScreen: React.FC = () => {
@@ -21,7 +22,7 @@ export const WelcomeScreen: React.FC = () => {
       <div className="welcome-card animate__animated animate__zoomIn animate__faster">
         <div className="welcome-hero">
           <div className="welcome-logo">
-            <img src="/images/bu-app-logo.png" alt="BU GWA Logo" />
+            <img src={buAppLogo} alt="BU GWA Logo" />
           </div>
           <h1 className="welcome-title">BU GWA Calculator & Academic Evaluator</h1>
           <p className="welcome-subtitle">Bicol University Academic Evaluator & Scenario Simulator</p>

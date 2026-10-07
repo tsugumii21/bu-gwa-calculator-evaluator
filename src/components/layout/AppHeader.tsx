@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import buAppLogo from '../../assets/images/bu-app-logo.png';
 import { useAppStore } from '../../store';
 import type { AppTab } from '../../types';
 
@@ -36,7 +37,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenGuide }) => {
           onClick={() => setActiveTab('calculator')}
         >
           <div className="brand-logo">
-            <img src="/images/bu-app-logo.png" alt="BU GWA Logo" />
+            <img src={buAppLogo} alt="BU GWA Logo" />
           </div>
           <div className="app-title">
             <span className="app-name">
