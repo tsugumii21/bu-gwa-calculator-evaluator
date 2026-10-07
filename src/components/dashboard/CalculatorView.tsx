@@ -10,7 +10,6 @@ import { AchievementsModal } from '../modals/AchievementsModal';
 import { CorScanModal } from '../scanner/CorScanModal';
 import { PhotoScanModal } from '../scanner/PhotoScanModal';
 import { ImportSuccessModal } from '../modals/ImportSuccessModal';
-import { StoryMilestoneModal } from '../modals/StoryMilestoneModal';
 
 export const CalculatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
@@ -21,7 +20,6 @@ export const CalculatorView: React.FC = () => {
   const [isBulkPasteOpen, setIsBulkPasteOpen] = useState(false);
   const [isLatinHonorsOpen, setIsLatinHonorsOpen] = useState(false);
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
-  const [isStoryModalOpen, setIsStoryModalOpen] = useState(false);
   const [isCorScanOpen, setIsCorScanOpen] = useState(false);
   const [isPhotoScanOpen, setIsPhotoScanOpen] = useState(false);
   const [successInfo, setSuccessInfo] = useState<{ isOpen: boolean; count: number; title: string }>({
@@ -75,7 +73,6 @@ export const CalculatorView: React.FC = () => {
         onOpenBulkPaste={() => setIsBulkPasteOpen(true)}
         onOpenLatinHonors={() => setIsLatinHonorsOpen(true)}
         onOpenAchievements={() => setIsAchievementsOpen(true)}
-        onOpenStoryCard={() => setIsStoryModalOpen(true)}
       />
 
       {/* SEMESTERS CONTAINER */}
@@ -100,11 +97,6 @@ export const CalculatorView: React.FC = () => {
       <AchievementsModal
         isOpen={isAchievementsOpen}
         onClose={() => setIsAchievementsOpen(false)}
-      />
-
-      <StoryMilestoneModal
-        isOpen={isStoryModalOpen}
-        onClose={() => setIsStoryModalOpen(false)}
       />
 
       <CorScanModal

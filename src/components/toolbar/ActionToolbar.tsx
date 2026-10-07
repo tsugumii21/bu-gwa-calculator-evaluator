@@ -9,7 +9,6 @@ interface ActionToolbarProps {
   onOpenBulkPaste: () => void;
   onOpenLatinHonors: () => void;
   onOpenAchievements: () => void;
-  onOpenStoryCard: () => void;
 }
 
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
@@ -19,7 +18,6 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   onOpenBulkPaste,
   onOpenLatinHonors,
   onOpenAchievements,
-  onOpenStoryCard,
 }) => {
   const { clearAll, semesters } = useSemesterStore();
   const [isClearAllModalOpen, setIsClearAllModalOpen] = useState(false);
@@ -52,15 +50,6 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           title="View Academic Achievements Radar"
         >
           <i className="fa-solid fa-trophy"></i> Achievements
-        </button>
-
-        <button
-          className="btn btn-gold btn-sm"
-          onClick={onOpenStoryCard}
-          id="btn-story-card"
-          title="Create customizable 9:16 Story Milestone Card"
-        >
-          <i className="fa-solid fa-wand-magic-sparkles"></i> Story Card
         </button>
 
         <button
