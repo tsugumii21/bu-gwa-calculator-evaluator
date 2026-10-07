@@ -1910,6 +1910,28 @@ html, body {
     .bento-card .accordion-card-body.is-expanded {
         margin-top: 10px;
     }
+
+    /* Technology Stack Mobile Rules */
+    .tech-stack-category {
+        padding: 14px 12px !important;
+    }
+
+    .tech-stack-grid {
+        grid-template-columns: 1fr !important;
+        gap: 8px !important;
+    }
+
+    .tech-item-card {
+        padding: 10px 12px !important;
+    }
+
+    .tech-item-name {
+        font-size: 0.84rem !important;
+    }
+
+    .tech-item-desc {
+        font-size: 0.78rem !important;
+    }
 }
 
 

@@ -1349,6 +1349,149 @@ export const AboutView: React.FC = () => {
 
           <div className="guide-section">
             <h3 className="guide-section-title">
+              <i className="fa-solid fa-layer-group text-primary"></i> Technology Stack & Architecture
+            </h3>
+            <div className="tech-stack-container">
+              {/* Category 1: Core Framework & Runtime */}
+              <div className="tech-stack-category">
+                <h4 className="tech-cat-title">
+                  <i className="fa-solid fa-code text-primary"></i> Core Framework & Runtime
+                </h4>
+                <div className="tech-stack-grid">
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">React 19</span>
+                      <span className="tech-item-badge">UI Library</span>
+                    </div>
+                    <p className="tech-item-desc">Component-driven reactive user interface architecture.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">TypeScript 5.6</span>
+                      <span className="tech-item-badge">Language</span>
+                    </div>
+                    <p className="tech-item-desc">Strict type-safe arithmetic, grade validation, and domain models.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Vite 6</span>
+                      <span className="tech-item-badge">Build Tool</span>
+                    </div>
+                    <p className="tech-item-desc">Next-generation frontend bundler with optimized production minification.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category 2: State Management & Storage */}
+              <div className="tech-stack-category">
+                <h4 className="tech-cat-title">
+                  <i className="fa-solid fa-database text-blue"></i> State Management & Local Storage
+                </h4>
+                <div className="tech-stack-grid">
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Zustand 5</span>
+                      <span className="tech-item-badge">State Engine</span>
+                    </div>
+                    <p className="tech-item-desc">Lightweight centralized state store for multi-term tracking.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">HTML5 LocalStorage</span>
+                      <span className="tech-item-badge">Client Storage</span>
+                    </div>
+                    <p className="tech-item-desc">100% on-device data persistence with zero external server dependencies.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category 3: Document & Computer Vision */}
+              <div className="tech-stack-category">
+                <h4 className="tech-cat-title">
+                  <i className="fa-solid fa-file-invoice text-red"></i> Document Ingestion & Computer Vision
+                </h4>
+                <div className="tech-stack-grid">
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Mozilla PDF.js 3.11</span>
+                      <span className="tech-item-badge">Document Parser</span>
+                    </div>
+                    <p className="tech-item-desc">Client-side binary parsing of Certificate of Registration (COR) PDFs.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Tesseract.js 7.0</span>
+                      <span className="tech-item-badge">WebAssembly OCR</span>
+                    </div>
+                    <p className="tech-item-desc">Zero-server optical character recognition for grade table screenshots.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">HTML5 Canvas API</span>
+                      <span className="tech-item-badge">Computer Vision</span>
+                    </div>
+                    <p className="tech-item-desc">Grayscale thresholding and adaptive contrast image preprocessing.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category 4: AI & Knowledge Engine */}
+              <div className="tech-stack-category">
+                <h4 className="tech-cat-title">
+                  <i className="fa-solid fa-robot text-purple"></i> Artificial Intelligence & Handbook Knowledge
+                </h4>
+                <div className="tech-stack-grid">
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Google Gemini API</span>
+                      <span className="tech-item-badge">LLM Engine</span>
+                    </div>
+                    <p className="tech-item-desc">Context-grounded advisor trained on Bicol University Student Handbook regulations.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">On-Device Keyword Index</span>
+                      <span className="tech-item-badge">Search Index</span>
+                    </div>
+                    <p className="tech-item-desc">Offline fallback handbook article retrieval system.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Category 5: Design System & Styling */}
+              <div className="tech-stack-category">
+                <h4 className="tech-cat-title">
+                  <i className="fa-solid fa-palette text-gold"></i> Design System & UI Engineering
+                </h4>
+                <div className="tech-stack-grid">
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">CSS3 Design Tokens</span>
+                      <span className="tech-item-badge">Design System</span>
+                    </div>
+                    <p className="tech-item-desc">Native custom properties with strict Dark and Light theme compliance.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">Lottie React</span>
+                      <span className="tech-item-badge">Animation</span>
+                    </div>
+                    <p className="tech-item-desc">Lightweight vector micro-interactions for grade computation feedback.</p>
+                  </div>
+                  <div className="tech-item-card">
+                    <div className="tech-item-header">
+                      <span className="tech-item-name">FontAwesome 6</span>
+                      <span className="tech-item-badge">Iconography</span>
+                    </div>
+                    <p className="tech-item-desc">Universal vector iconography system with semantic color tokens.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="guide-section">
+            <h3 className="guide-section-title">
               <i className="fa-solid fa-paper-plane text-gold"></i> Send Suggestions & Feedback to Developer
             </h3>
             <div
