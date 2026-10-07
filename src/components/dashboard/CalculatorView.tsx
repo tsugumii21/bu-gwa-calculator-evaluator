@@ -14,7 +14,24 @@ import { ImportSuccessModal } from '../modals/ImportSuccessModal';
 export const CalculatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
   const addSemester = useSemesterStore((s) => s.addSemester);
+  const computeAllSemesters = useSemesterStore((s) => s.computeAllSemesters);
   const stats = calculateCumulativeStats(semesters);
+
+  const [lastComputedAt, setLastComputedAt] = useState<number>(0);
+
+  const handleComputeAll = () => {
+    const hasAnyValidGrade = semesters.some((s) =>
+      s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
+    );
+
+    if (!hasAnyValidGrade) {
+      alert('Please enter at least one course grade rating before computing.');
+      return;
+    }
+
+    computeAllSemesters();
+    setLastComputedAt(Date.now());
+  };
 
   // Modals state
   const [isBulkPasteOpen, setIsBulkPasteOpen] = useState(false);
@@ -73,6 +90,7 @@ export const CalculatorView: React.FC = () => {
         onOpenBulkPaste={() => setIsBulkPasteOpen(true)}
         onOpenLatinHonors={() => setIsLatinHonorsOpen(true)}
         onOpenAchievements={() => setIsAchievementsOpen(true)}
+        onComputeAll={handleComputeAll}
       />
 
       {/* SEMESTERS CONTAINER */}
@@ -81,6 +99,7 @@ export const CalculatorView: React.FC = () => {
         onOpenScanCor={() => setIsCorScanOpen(true)}
         onOpenScanPhoto={() => setIsPhotoScanOpen(true)}
         onOpenLatinHonors={() => setIsLatinHonorsOpen(true)}
+        lastComputedAt={lastComputedAt}
       />
 
       {/* MODALS */}

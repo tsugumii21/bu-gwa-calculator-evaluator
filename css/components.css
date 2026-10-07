@@ -1361,3 +1361,40 @@
     margin-top: auto;
 }
 
+/* ==========================================================================
+   Bulk Computation Controls & Feedback
+   ========================================================================== */
+.btn-compute-all-toolbar {
+    background: linear-gradient(135deg, var(--bu-gold, #f59e0b), #ea580c) !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(245, 158, 11, 0.25) !important;
+}
+
+.btn-compute-all-toolbar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35) !important;
+}
+
+.compute-feedback-banner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #059669;
+    background: rgba(5, 150, 105, 0.1);
+    border: 1px solid rgba(5, 150, 105, 0.25);
+    border-radius: var(--radius-sm, 6px);
+    padding: 6px 12px;
+    margin-bottom: 10px;
+    animation: fadeIn 0.2s ease;
+}
+
+[data-theme="dark"] .compute-feedback-banner {
+    color: #34d399;
+    background: rgba(5, 150, 105, 0.16);
+    border-color: rgba(5, 150, 105, 0.35);
+}
+

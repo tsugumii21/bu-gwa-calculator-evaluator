@@ -153,7 +153,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                 onClick={handleTriggerCompute}
                 title="Compute GPA and Honor Qualification for this semester"
               >
-                <i className="fa-solid fa-calculator"></i> Compute GPA
+                <i className="fa-solid fa-calculator"></i> Compute Term GPA
               </button>
             )}
 

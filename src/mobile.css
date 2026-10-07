@@ -650,6 +650,15 @@ html, body {
         border-radius: var(--radius-sm) !important;
     }
 
+    #btn-compute-all-toolbar,
+    .btn-compute-all-toolbar {
+        grid-column: 1 / -1 !important;
+        min-height: 42px !important;
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px !important;
+    }
+
     #btn-export-pdf {
         grid-column: span 1 !important;
     }
@@ -1231,6 +1240,16 @@ html, body {
         font-size: 0.82rem;
     }
 
+    .sem-title-group .btn-compute-trigger {
+        min-height: 42px !important;
+        font-size: 0.84rem !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+
     .sem-result-pill {
         font-size: 0.78rem;
         padding: 4px 10px;
@@ -1393,16 +1412,26 @@ html, body {
 
     .sem-compute-all-btn {
         font-size: 0.74rem !important;
-        padding: 5px 10px !important;
-        height: 32px !important;
-        min-height: 32px !important;
+        padding: 6px 12px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        font-weight: 700 !important;
     }
 
     .sem-toggle-all-btn {
         font-size: 0.74rem !important;
-        padding: 5px 10px !important;
-        height: 32px !important;
-        min-height: 32px !important;
+        padding: 6px 10px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+    }
+
+    .compute-feedback-banner {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        font-size: 0.78rem !important;
+        padding: 8px 12px !important;
+        border-radius: var(--radius-sm, 6px) !important;
     }
 
     /* --- Subject table: Mobile Flex Card Layout (Fixes cut-off text & alignment!) --- */

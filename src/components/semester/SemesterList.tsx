@@ -7,6 +7,7 @@ interface SemesterListProps {
   onOpenScanCor: () => void;
   onOpenScanPhoto: () => void;
   onOpenLatinHonors?: () => void;
+  lastComputedAt?: number;
 }
 
 export const SemesterList: React.FC<SemesterListProps> = ({
@@ -14,10 +15,12 @@ export const SemesterList: React.FC<SemesterListProps> = ({
   onOpenScanCor,
   onOpenScanPhoto,
   onOpenLatinHonors,
+  lastComputedAt,
 }) => {
   const semesters = useSemesterStore((s) => s.semesters);
   const computeAllSemesters = useSemesterStore((s) => s.computeAllSemesters);
   const [collapsedMap, setCollapsedMap] = useState<Record<string, boolean>>({});
+  const [computeFeedback, setComputeFeedback] = useState<string | null>(null);
 
   const handleComputeAll = () => {
     const hasAnyValidGrade = semesters.some((s) =>
@@ -25,7 +28,7 @@ export const SemesterList: React.FC<SemesterListProps> = ({
     );
 
     if (!hasAnyValidGrade) {
-      alert('Please enter at least one course grade rating before computing overall GWA.');
+      alert('Please enter at least one course grade rating before computing.');
       return;
     }
 
@@ -38,10 +41,28 @@ export const SemesterList: React.FC<SemesterListProps> = ({
     });
     setCollapsedMap(nextMap);
 
-    if (onOpenLatinHonors) {
-      onOpenLatinHonors();
-    }
+    const validCount = semesters.filter((s) =>
+      s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
+    ).length;
+    setComputeFeedback(`Computed ${validCount} semester${validCount > 1 ? 's' : ''} • Cumulative GWA updated`);
+    setTimeout(() => setComputeFeedback(null), 3500);
   };
+
+  React.useEffect(() => {
+    if (lastComputedAt && lastComputedAt > 0) {
+      const nextMap: Record<string, boolean> = {};
+      semesters.forEach((s) => {
+        nextMap[s.id] = true;
+      });
+      setCollapsedMap(nextMap);
+
+      const validCount = semesters.filter((s) =>
+        s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
+      ).length;
+      setComputeFeedback(`Computed ${validCount} semester${validCount > 1 ? 's' : ''} • Cumulative GWA updated`);
+      setTimeout(() => setComputeFeedback(null), 3500);
+    }
+  }, [lastComputedAt, semesters]);
 
   // Helper: computed terms collapse by default; draft/uncomputed remain open
   const isSemCollapsed = (sem: (typeof semesters)[0]): boolean => {
@@ -108,10 +129,10 @@ export const SemesterList: React.FC<SemesterListProps> = ({
               type="button"
               className="btn btn-gold btn-sm sem-compute-all-btn"
               onClick={handleComputeAll}
-              title="Compute overall cumulative GWA and evaluate Latin Graduation Honors"
+              title="Compute all recorded semesters and calculate Cumulative GWA"
             >
               <i className="fa-solid fa-calculator"></i>
-              <span>Compute Overall GWA</span>
+              <span>Compute All Semesters</span>
             </button>
 
             {semesters.length > 1 && (
@@ -126,6 +147,13 @@ export const SemesterList: React.FC<SemesterListProps> = ({
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {computeFeedback && (
+        <div className="compute-feedback-banner">
+          <i className="fa-solid fa-circle-check"></i>
+          <span>{computeFeedback}</span>
         </div>
       )}
 

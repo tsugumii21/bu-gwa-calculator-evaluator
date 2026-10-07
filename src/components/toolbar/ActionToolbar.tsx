@@ -9,6 +9,7 @@ interface ActionToolbarProps {
   onOpenBulkPaste: () => void;
   onOpenLatinHonors: () => void;
   onOpenAchievements: () => void;
+  onComputeAll?: () => void;
 }
 
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
@@ -18,6 +19,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   onOpenBulkPaste,
   onOpenLatinHonors,
   onOpenAchievements,
+  onComputeAll,
 }) => {
   const { clearAll, semesters } = useSemesterStore();
   const [isClearAllModalOpen, setIsClearAllModalOpen] = useState(false);
@@ -34,6 +36,18 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   return (
     <div className="toolbar-card">
       <div className="toolbar-section toolbar-actions">
+        {semesters.length > 0 && onComputeAll && (
+          <button
+            type="button"
+            className="btn btn-gold btn-sm btn-compute-all-toolbar"
+            onClick={onComputeAll}
+            id="btn-compute-all-toolbar"
+            title="Compute all recorded semesters and calculate Cumulative GWA"
+          >
+            <i className="fa-solid fa-calculator"></i> Compute All Semesters
+          </button>
+        )}
+
         <button
           className="btn btn-gold btn-sm"
           onClick={onOpenLatinHonors}

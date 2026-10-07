@@ -992,6 +992,15 @@ html, body {
         border-radius: var(--radius-sm) !important;
     }
 
+    #btn-compute-all-toolbar,
+    .btn-compute-all-toolbar {
+        grid-column: 1 / -1 !important;
+        min-height: 42px !important;
+        font-size: 0.82rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px !important;
+    }
+
     /* Top Dual Buttons */
     #btn-add-semester, #btn-import-doc {
         grid-column: span 1 !important;
@@ -1027,6 +1036,33 @@ html, body {
         width: 100%;
         padding: 8px 12px;
         font-size: 0.82rem;
+    }
+
+    .sem-title-group .btn-compute-trigger {
+        min-height: 42px !important;
+        font-size: 0.84rem !important;
+        font-weight: 700 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 6px !important;
+    }
+
+    .sem-compute-all-btn {
+        font-size: 0.74rem !important;
+        padding: 6px 12px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        font-weight: 700 !important;
+    }
+
+    .compute-feedback-banner {
+        width: 100% !important;
+        box-sizing: border-box !important;
+        justify-content: center !important;
+        font-size: 0.78rem !important;
+        padding: 8px 12px !important;
+        border-radius: var(--radius-sm, 6px) !important;
     }
 
     .sem-result-pill {
