@@ -1,83 +1,100 @@
-// Bicol University GWA Calculator — Animation Registry & Random Picker
+import studentAnim from '../../assets/animations/student.json';
+import onlineTestAnim from '../../assets/animations/online-test.json';
+import onlineResultAnim from '../../assets/animations/online-result.json';
+import girlPhoneAnim from '../../assets/animations/girl-phone.json';
+import mathCrunchAnim from '../../assets/animations/math-crunch.json';
 
 export type AnimationCategory = 'compute' | 'scan' | 'success' | 'import' | 'empty';
 
 export interface AnimationEntry {
   id: string;
   name: string;
-  src: string; // URL or path to lottie json/dotlottie
+  src?: string;
+  data: object;
   category: AnimationCategory;
 }
 
-// Built-in SVG/Lottie fallback animations and LottieFiles references
+// 5 New Local Lottie Animations (100% offline, zero network requests)
 export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
   compute: [
     {
-      id: 'calc-crunch',
-      name: 'Calculator Computing',
-      src: 'https://assets2.lottiefiles.com/packages/lf20_m6cuL6.json',
+      id: 'math-crunch',
+      name: 'Calculating Academic Metrics',
+      data: mathCrunchAnim,
       category: 'compute',
     },
     {
-      id: 'student-study',
+      id: 'student-focus',
       name: 'Student Focusing',
-      src: 'https://assets9.lottiefiles.com/packages/lf20_1a8aoonq.json',
+      data: studentAnim,
       category: 'compute',
     },
     {
-      id: 'book-flipping',
-      name: 'Book Pages Flipping',
-      src: 'https://assets4.lottiefiles.com/packages/lf20_w51pcehl.json',
+      id: 'online-test',
+      name: 'Evaluating Academic Records',
+      data: onlineTestAnim,
       category: 'compute',
     },
     {
-      id: 'math-analytics',
-      name: 'Academic Data Math',
-      src: 'https://assets5.lottiefiles.com/packages/lf20_cbrbre30.json',
+      id: 'online-result',
+      name: 'Computing Honor Standing',
+      data: onlineResultAnim,
+      category: 'compute',
+    },
+    {
+      id: 'girl-phone',
+      name: 'Analyzing University Course Records',
+      data: girlPhoneAnim,
       category: 'compute',
     },
   ],
   scan: [
     {
-      id: 'scan-doc',
-      name: 'Document Scanner',
-      src: 'https://assets10.lottiefiles.com/packages/lf20_6sxyjyjj.json',
+      id: 'online-test',
+      name: 'Scanning Academic Document',
+      data: onlineTestAnim,
       category: 'scan',
     },
     {
-      id: 'scan-search',
-      name: 'Text Search Radar',
-      src: 'https://assets3.lottiefiles.com/packages/lf20_x62chJ.json',
+      id: 'girl-phone',
+      name: 'Processing Grade Screenshot',
+      data: girlPhoneAnim,
       category: 'scan',
     },
   ],
   success: [
     {
-      id: 'success-badge',
-      name: 'Academic Shield Achievement',
-      src: 'https://assets1.lottiefiles.com/packages/lf20_jbrw3hcz.json',
+      id: 'online-result',
+      name: 'Computation Complete',
+      data: onlineResultAnim,
       category: 'success',
     },
     {
-      id: 'confetti-pop',
-      name: 'Celebration Confetti',
-      src: 'https://assets6.lottiefiles.com/packages/lf20_rovf9gzu.json',
+      id: 'student-focus',
+      name: 'Academic Standing Verified',
+      data: studentAnim,
       category: 'success',
     },
   ],
   import: [
     {
-      id: 'upload-file',
-      name: 'Cloud Import',
-      src: 'https://assets8.lottiefiles.com/packages/lf20_q5pk6p1k.json',
+      id: 'math-crunch',
+      name: 'Batch Ingesting Semesters',
+      data: mathCrunchAnim,
+      category: 'import',
+    },
+    {
+      id: 'girl-phone',
+      name: 'Importing Course Data',
+      data: girlPhoneAnim,
       category: 'import',
     },
   ],
   empty: [
     {
-      id: 'empty-books',
-      name: 'Waiting for Courses',
-      src: 'https://assets3.lottiefiles.com/packages/lf20_kuhijlvx.json',
+      id: 'student-focus',
+      name: 'Awaiting Course Input',
+      data: studentAnim,
       category: 'empty',
     },
   ],

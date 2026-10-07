@@ -18,44 +18,11 @@ export const SemesterList: React.FC<SemesterListProps> = ({
   lastComputedAt,
 }) => {
   const semesters = useSemesterStore((s) => s.semesters);
-  const computeAllSemesters = useSemesterStore((s) => s.computeAllSemesters);
   const [collapsedMap, setCollapsedMap] = useState<Record<string, boolean>>({});
   const [computeFeedback, setComputeFeedback] = useState<string | null>(null);
 
-  const handleComputeAll = () => {
-    const hasAnyValidGrade = semesters.some((s) =>
-      s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
-    );
-
-    if (!hasAnyValidGrade) {
-      alert('Please enter at least one course grade rating before computing.');
-      return;
-    }
-
-    computeAllSemesters();
-
-    // Auto-collapse computed terms for clean summary overview
-    const nextMap: Record<string, boolean> = {};
-    semesters.forEach((s) => {
-      nextMap[s.id] = true;
-    });
-    setCollapsedMap(nextMap);
-
-    const validCount = semesters.filter((s) =>
-      s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
-    ).length;
-    setComputeFeedback(`Computed ${validCount} semester${validCount > 1 ? 's' : ''} • Cumulative GWA updated`);
-    setTimeout(() => setComputeFeedback(null), 3500);
-  };
-
   React.useEffect(() => {
     if (lastComputedAt && lastComputedAt > 0) {
-      const nextMap: Record<string, boolean> = {};
-      semesters.forEach((s) => {
-        nextMap[s.id] = true;
-      });
-      setCollapsedMap(nextMap);
-
       const validCount = semesters.filter((s) =>
         s.subjects?.some((sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade)))
       ).length;
@@ -63,6 +30,7 @@ export const SemesterList: React.FC<SemesterListProps> = ({
       setTimeout(() => setComputeFeedback(null), 3500);
     }
   }, [lastComputedAt, semesters]);
+
 
   // Helper: computed terms collapse by default; draft/uncomputed remain open
   const isSemCollapsed = (sem: (typeof semesters)[0]): boolean => {
@@ -125,16 +93,6 @@ export const SemesterList: React.FC<SemesterListProps> = ({
           </span>
 
           <div className="sem-list-controls">
-            <button
-              type="button"
-              className="btn btn-gold btn-sm sem-compute-all-btn"
-              onClick={handleComputeAll}
-              title="Compute all recorded semesters and calculate Cumulative GWA"
-            >
-              <i className="fa-solid fa-calculator"></i>
-              <span>Compute All Semesters</span>
-            </button>
-
             {semesters.length > 1 && (
               <button
                 type="button"
@@ -147,6 +105,7 @@ export const SemesterList: React.FC<SemesterListProps> = ({
               </button>
             )}
           </div>
+
         </div>
       )}
 

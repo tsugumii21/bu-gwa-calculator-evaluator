@@ -3,7 +3,8 @@ import Lottie from 'lottie-react';
 import { Loader2 } from 'lucide-react';
 
 interface LottieLoaderProps {
-  src: string;
+  src?: string;
+  data?: object;
   className?: string;
   loop?: boolean;
   autoplay?: boolean;
@@ -12,20 +13,27 @@ interface LottieLoaderProps {
 
 export const LottieLoader: React.FC<LottieLoaderProps> = ({
   src,
+  data,
   className = 'w-32 h-32',
   loop = true,
   autoplay = true,
   fallbackIcon,
 }) => {
-  const [animationData, setAnimationData] = useState<object | null>(null);
+  const [animationData, setAnimationData] = useState<object | null>(data || null);
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
+    if (data) {
+      setAnimationData(data);
+      return;
+    }
+
     let isMounted = true;
     setHasError(false);
 
     // If src is already a direct JSON object or local path
-    if (src.startsWith('http') || src.endsWith('.json')) {
+    if (src && (src.startsWith('http') || src.endsWith('.json'))) {
+
       fetch(src)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);

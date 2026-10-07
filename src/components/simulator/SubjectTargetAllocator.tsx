@@ -11,7 +11,11 @@ interface AllocatorItem {
   isLocked: boolean;
 }
 
-export const SubjectTargetAllocator: React.FC = () => {
+export interface SubjectTargetAllocatorProps {
+  onOpenInfo?: () => void;
+}
+
+export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ onOpenInfo }) => {
   const { semesters, updateSubject } = useSemesterStore();
 
   const [selectedSemId, setSelectedSemId] = useState<string>(
@@ -124,34 +128,58 @@ export const SubjectTargetAllocator: React.FC = () => {
 
   return (
     <div className="sim-panel" style={{ marginTop: '24px', padding: '20px' }}>
-      <div className="section-header" style={{ marginBottom: '16px' }}>
-        <h3 className="panel-title" style={{ fontSize: '1.15rem', margin: 0 }}>
-          <i className="fa-solid fa-bullseye text-primary" style={{ marginRight: '8px' }}></i>
-          Per-Subject Target Grade Allocator (Reverse Solver)
-        </h3>
-        <p className="section-desc" style={{ marginTop: '4px', marginBottom: 0, fontSize: '0.82rem' }}>
-          Lock expected grades in specific courses (GEs or PE) to solve required minimum grades in major subjects.
-        </p>
+      <div className="section-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h3 className="panel-title" style={{ fontSize: '1.15rem', margin: 0 }}>
+            <i className="fa-solid fa-bullseye text-primary" style={{ marginRight: '8px' }}></i>
+            Per-Subject Target Grade Allocator (Reverse Solver)
+          </h3>
+          <p className="section-desc" style={{ marginTop: '4px', marginBottom: 0, fontSize: '0.82rem' }}>
+            Lock expected grades in specific courses (GEs or PE) to solve required minimum grades in major subjects.
+          </p>
+        </div>
+        {onOpenInfo && (
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm"
+            onClick={onOpenInfo}
+            title="How does Target Grade Allocator work?"
+            style={{
+              width: '30px',
+              height: '30px',
+              borderRadius: '50%',
+              padding: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              marginTop: '2px',
+            }}
+          >
+            <i className="fa-solid fa-circle-question" style={{ fontSize: '0.9rem' }}></i>
+          </button>
+        )}
       </div>
 
       {/* Control Banner */}
       <div
+        className="allocator-control-banner"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           gap: '12px',
           marginBottom: '16px',
-          background: 'var(--color-bg-secondary)',
+          background: 'var(--card-header-bg, #f1f5f9)',
           padding: '12px 16px',
           borderRadius: '10px',
-          border: '1px solid var(--color-border)',
+          border: '1px solid var(--border-color, #e2e8f0)',
         }}
       >
-        <div>
-          <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px' }}>
+        <div className="allocator-target-group">
+          <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary, #0f172a)' }}>
             Target Term GPA
           </label>
-          <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+          <div className="allocator-target-row" style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
             <input
               type="number"
               step="0.01"
@@ -160,14 +188,14 @@ export const SubjectTargetAllocator: React.FC = () => {
               className="form-control form-control-sm"
               value={targetGpa}
               onChange={(e) => setTargetGpa(parseFloat(e.target.value) || 1.75)}
-              style={{ fontWeight: 700, width: '90px' }}
+              style={{ fontWeight: 700, width: '82px', height: '32px' }}
             />
-            <div style={{ display: 'flex', gap: '4px' }}>
+            <div className="allocator-preset-btns" style={{ display: 'flex', gap: '4px' }}>
               <button
                 type="button"
                 className={`btn btn-sm ${targetGpa === 1.25 ? 'btn-gold' : 'btn-secondary'}`}
                 onClick={() => setTargetGpa(1.25)}
-                style={{ padding: '3px 8px', fontSize: '0.72rem' }}
+                style={{ padding: '3px 8px', fontSize: '0.72rem', height: '32px' }}
               >
                 Summa (1.25)
               </button>
@@ -175,7 +203,7 @@ export const SubjectTargetAllocator: React.FC = () => {
                 type="button"
                 className={`btn btn-sm ${targetGpa === 1.45 ? 'btn-gold' : 'btn-secondary'}`}
                 onClick={() => setTargetGpa(1.45)}
-                style={{ padding: '3px 8px', fontSize: '0.72rem' }}
+                style={{ padding: '3px 8px', fontSize: '0.72rem', height: '32px' }}
               >
                 PL (1.45)
               </button>
@@ -183,7 +211,7 @@ export const SubjectTargetAllocator: React.FC = () => {
                 type="button"
                 className={`btn btn-sm ${targetGpa === 1.75 ? 'btn-gold' : 'btn-secondary'}`}
                 onClick={() => setTargetGpa(1.75)}
-                style={{ padding: '3px 8px', fontSize: '0.72rem' }}
+                style={{ padding: '3px 8px', fontSize: '0.72rem', height: '32px' }}
               >
                 DL (1.75)
               </button>
@@ -192,14 +220,15 @@ export const SubjectTargetAllocator: React.FC = () => {
         </div>
 
         {semesters.length > 0 && (
-          <div>
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px' }}>
+          <div className="allocator-semester-group">
+            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary, #0f172a)' }}>
               Active Semester
             </label>
             <select
               className="form-control form-control-sm"
               value={selectedSemId}
               onChange={(e) => setSelectedSemId(e.target.value)}
+              style={{ height: '32px', fontSize: '0.82rem' }}
             >
               {semesters.map((s) => (
                 <option key={s.id} value={s.id}>
@@ -213,6 +242,7 @@ export const SubjectTargetAllocator: React.FC = () => {
 
       {/* Calculation Ribbon */}
       <div
+        className="allocator-calc-ribbon"
         style={{
           padding: '12px 16px',
           borderRadius: '10px',
@@ -230,10 +260,10 @@ export const SubjectTargetAllocator: React.FC = () => {
               : 'rgba(59, 130, 246, 0.1)',
           border: `1px solid ${
             calculation.status === 'impossible'
-              ? 'var(--color-danger)'
+              ? 'var(--color-danger, #ef4444)'
               : calculation.status === 'guaranteed'
-              ? 'var(--color-success)'
-              : 'var(--color-primary)'
+              ? 'var(--color-success, #10b981)'
+              : 'var(--bu-azure, #2563eb)'
           }`,
         }}
       >
@@ -249,14 +279,14 @@ export const SubjectTargetAllocator: React.FC = () => {
             style={{ fontSize: '1.25rem' }}
           ></i>
           <div>
-            <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>
+            <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary, #0f172a)' }}>
               {calculation.status === 'impossible' && 'Mathematically Unreachable'}
               {calculation.status === 'guaranteed' && 'Target Already Guaranteed!'}
               {calculation.status === 'achievable' && 'Target Achievable!'}
               {calculation.status === 'all_locked_met' && 'All Subjects Locked — Goal Met!'}
               {calculation.status === 'all_locked_missed' && 'All Subjects Locked — Goal Missed'}
             </div>
-            <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
+            <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #475569)' }}>
               {calculation.status === 'impossible' &&
                 `Requires average of ${calculation.requiredGrade.toFixed(2)}, which exceeds BU maximum grade (1.00).`}
               {calculation.status === 'guaranteed' &&
@@ -273,17 +303,17 @@ export const SubjectTargetAllocator: React.FC = () => {
 
         {calculation.status === 'achievable' && (
           <div style={{ textAlign: 'right' }}>
-            <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--color-text-muted)' }}>
+            <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted, #94a3b8)', fontWeight: 600 }}>
               Required Grade
             </span>
-            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-primary)' }}>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--bu-azure, #2563eb)' }}>
               {calculation.requiredGrade.toFixed(2)}
             </div>
           </div>
         )}
       </div>
 
-      {/* Compact Course Rows */}
+      {/* Course Rows */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
         {items.map((item, index) => {
           const isNeededGrade = !item.isLocked && calculation.status === 'achievable';
@@ -294,100 +324,82 @@ export const SubjectTargetAllocator: React.FC = () => {
           return (
             <div
               key={item.id}
+              className="allocator-course-row"
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '8px 14px',
                 borderRadius: '8px',
-                background: item.isLocked ? 'rgba(245, 158, 11, 0.06)' : 'var(--color-surface)',
-                border: item.isLocked ? '1px solid rgba(245, 158, 11, 0.35)' : '1px solid var(--color-border)',
+                padding: '8px 12px',
+                background: item.isLocked ? 'rgba(245, 158, 11, 0.07)' : 'var(--card-bg, #ffffff)',
+                border: item.isLocked ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border-color, #e2e8f0)',
                 transition: 'all 0.15s ease',
               }}
             >
-              <div style={{ flex: '1 1 auto', minWidth: 0, paddingRight: '12px' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ fontWeight: 700, fontSize: '0.85rem', color: 'var(--color-primary)' }}>
+              {/* Row 1 Header Content */}
+              <div className="allocator-row-header">
+                <div className="allocator-course-badges">
+                  <span className="allocator-course-code">
                     {item.code}
                   </span>
-                  <span
-                    style={{
-                      fontSize: '0.7rem',
-                      padding: '1px 6px',
-                      borderRadius: '4px',
-                      background: 'var(--color-bg-secondary)',
-                      color: 'var(--color-text-muted)',
-                      fontWeight: 600,
-                    }}
-                  >
+                  <span className="allocator-units-badge">
                     {item.units}u
                   </span>
-                  <span
+                </div>
+
+                {/* Desktop course description */}
+                <span className="allocator-course-name desktop-only">
+                  {item.name}
+                </span>
+
+                {/* Right controls */}
+                <div className="allocator-row-controls">
+                  {item.isLocked ? (
+                    <select
+                      className="form-control form-control-sm allocator-grade-select"
+                      value={item.grade.toFixed(2)}
+                      onChange={(e) => updateItemGrade(index, parseFloat(e.target.value))}
+                      style={{ width: '74px', fontWeight: 700, fontSize: '0.82rem', height: '30px' }}
+                    >
+                      {GRADE_OPTIONS.filter((g) => !isNaN(parseFloat(g.value))).map((g) => (
+                        <option key={g.value} value={parseFloat(g.value).toFixed(2)}>
+                          {parseFloat(g.value).toFixed(2)}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <span className="allocator-grade-pill">
+                      {displayedGrade}
+                    </span>
+                  )}
+
+                  {/* Tactile Lock Button */}
+                  <button
+                    type="button"
+                    className="allocator-lock-btn"
+                    onClick={() => toggleLock(index)}
                     style={{
-                      fontSize: '0.8rem',
-                      color: 'var(--color-text-muted)',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
+                      width: '32px',
+                      height: '32px',
+                      borderRadius: '8px',
+                      border: `1px solid ${item.isLocked ? 'var(--bu-gold, #f59e0b)' : 'var(--border-color, #e2e8f0)'}`,
+                      background: item.isLocked ? 'rgba(245, 158, 11, 0.15)' : 'var(--card-header-bg, #f1f5f9)',
+                      color: item.isLocked ? 'var(--bu-gold, #f59e0b)' : 'var(--text-muted, #94a3b8)',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '0.82rem',
+                      transition: 'all 0.15s ease',
+                      flexShrink: 0,
                     }}
+                    title={item.isLocked ? 'Locked (Click to unlock)' : 'Unlocked (Click to lock expected grade)'}
                   >
-                    {item.name}
-                  </span>
+                    <i className={`fa-solid ${item.isLocked ? 'fa-lock' : 'fa-lock-open'}`}></i>
+                  </button>
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-                {item.isLocked ? (
-                  <select
-                    className="form-control form-control-sm"
-                    value={item.grade.toFixed(2)}
-                    onChange={(e) => updateItemGrade(index, parseFloat(e.target.value))}
-                    style={{ width: '74px', fontWeight: 700, fontSize: '0.82rem', height: '30px' }}
-                  >
-                    {GRADE_OPTIONS.filter((g) => !isNaN(parseFloat(g.value))).map((g) => (
-                      <option key={g.value} value={parseFloat(g.value).toFixed(2)}>
-                        {parseFloat(g.value).toFixed(2)}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '3px 8px',
-                      borderRadius: '6px',
-                      background: 'rgba(59, 130, 246, 0.12)',
-                      color: 'var(--color-primary)',
-                      fontWeight: 700,
-                      fontSize: '0.82rem',
-                    }}
-                  >
-                    {displayedGrade}
-                  </span>
-                )}
-
-                {/* Tactile Lock Pill Button */}
-                <button
-                  type="button"
-                  onClick={() => toggleLock(index)}
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    border: `1px solid ${item.isLocked ? 'var(--color-gold)' : 'var(--color-border)'}`,
-                    background: item.isLocked ? 'rgba(245, 158, 11, 0.15)' : 'var(--color-bg-secondary)',
-                    color: item.isLocked ? 'var(--color-gold)' : 'var(--color-text-muted)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.82rem',
-                    transition: 'all 0.15s ease',
-                  }}
-                  title={item.isLocked ? 'Locked (Click to unlock)' : 'Unlocked (Click to lock expected grade)'}
-                >
-                  <i className={`fa-solid ${item.isLocked ? 'fa-lock' : 'fa-lock-open'}`}></i>
-                </button>
+              {/* Row 2 on Mobile: Full Course Title */}
+              <div className="allocator-course-name mobile-only">
+                {item.name}
               </div>
             </div>
           );
@@ -395,10 +407,10 @@ export const SubjectTargetAllocator: React.FC = () => {
       </div>
 
       {activeSemester && (
-        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        <div className="allocator-apply-container" style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <button
             type="button"
-            className="btn btn-primary btn-sm"
+            className="btn btn-primary btn-sm allocator-apply-btn"
             onClick={handleApplyToActiveSemester}
             disabled={calculation.status === 'impossible'}
           >

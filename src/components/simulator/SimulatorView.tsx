@@ -5,6 +5,7 @@ import { calculateTargetGrade } from '../../core/honor-rules';
 import { HONOR_THRESHOLDS } from '../../core/constants';
 import { AcademicTrendChart } from '../charts/AcademicTrendChart';
 import { SubjectTargetAllocator } from './SubjectTargetAllocator';
+import { SimulatorInfoModal, SimulatorTopic } from './SimulatorInfoModal';
 
 export const SimulatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
@@ -17,6 +18,15 @@ export const SimulatorView: React.FC = () => {
   const [futureUnits, setFutureUnits] = useState<number>(21);
   const [anticipatedGrade, setAnticipatedGrade] = useState<number>(1.5);
   const [targetHonor, setTargetHonor] = useState<number | null>(null);
+
+  // Info Modal State
+  const [infoModalOpen, setInfoModalOpen] = useState(false);
+  const [infoTopic, setInfoTopic] = useState<SimulatorTopic>('what-if');
+
+  const openInfo = (topic: SimulatorTopic) => {
+    setInfoTopic(topic);
+    setInfoModalOpen(true);
+  };
 
   // Projected GWA Calculation
   const totalProjectedUnits = currentUnits + futureUnits;
@@ -39,9 +49,30 @@ export const SimulatorView: React.FC = () => {
 
   return (
     <div className="tab-content active" id="tab-simulator">
-      <div className="section-header">
-        <h2><i className="fa-solid fa-flask"></i> What-If Scenario Simulator</h2>
-        <p className="section-desc">Project your future GWA by simulating anticipated grades for remaining units.</p>
+      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+        <div>
+          <h2><i className="fa-solid fa-flask"></i> What-If Scenario Simulator</h2>
+          <p className="section-desc">Project your future GWA by simulating anticipated grades for remaining units.</p>
+        </div>
+        <button
+          type="button"
+          className="btn btn-secondary btn-sm"
+          onClick={() => openInfo('what-if')}
+          title="How does What-If Scenario Simulator work?"
+          style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            padding: 0,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexShrink: 0,
+            marginTop: '4px',
+          }}
+        >
+          <i className="fa-solid fa-circle-question" style={{ fontSize: '0.95rem' }}></i>
+        </button>
       </div>
 
       <div className="sim-grid">
@@ -179,10 +210,17 @@ export const SimulatorView: React.FC = () => {
       </div>
 
       {/* Per-Subject Target Allocator (Reverse Solver) */}
-      <SubjectTargetAllocator />
+      <SubjectTargetAllocator onOpenInfo={() => openInfo('allocator')} />
 
       {/* Multi-Semester Academic Trend & Latin Honor Trajectory */}
-      <AcademicTrendChart />
+      <AcademicTrendChart onOpenInfo={() => openInfo('trend')} />
+
+      {/* Dedicated Simulator & Suite Reference Modal */}
+      <SimulatorInfoModal
+        isOpen={infoModalOpen}
+        onClose={() => setInfoModalOpen(false)}
+        initialTopic={infoTopic}
+      />
     </div>
   );
 };

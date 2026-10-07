@@ -352,25 +352,14 @@ ${studentContext}
 
               {/* Close Button Only (API Key settings removed per user directive) */}
               <button
+                type="button"
+                className="modal-close-btn"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close modal"
-                style={{
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  border: '1px solid var(--border-color, #e2e8f0)',
-                  background: 'var(--card-bg, #ffffff)',
-                  color: 'var(--text-primary, #0f172a)',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '0.95rem',
-                  transition: 'all 0.15s ease',
-                }}
               >
                 <i className="fa-solid fa-xmark"></i>
               </button>
+
             </div>
 
             {/* Quick Action Chips Bar */}

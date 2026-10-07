@@ -10,6 +10,7 @@ import { AchievementsModal } from '../modals/AchievementsModal';
 import { CorScanModal } from '../scanner/CorScanModal';
 import { PhotoScanModal } from '../scanner/PhotoScanModal';
 import { ImportSuccessModal } from '../modals/ImportSuccessModal';
+import { ComputeModal } from '../animations/ComputeModal';
 
 export const CalculatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
@@ -18,6 +19,7 @@ export const CalculatorView: React.FC = () => {
   const stats = calculateCumulativeStats(semesters);
 
   const [lastComputedAt, setLastComputedAt] = useState<number>(0);
+  const [isComputeAllModalOpen, setIsComputeAllModalOpen] = useState(false);
 
   const handleComputeAll = () => {
     const hasAnyValidGrade = semesters.some((s) =>
@@ -29,9 +31,15 @@ export const CalculatorView: React.FC = () => {
       return;
     }
 
+    setIsComputeAllModalOpen(true);
+  };
+
+  const handleComputeAllComplete = () => {
+    setIsComputeAllModalOpen(false);
     computeAllSemesters();
     setLastComputedAt(Date.now());
   };
+
 
   // Modals state
   const [isBulkPasteOpen, setIsBulkPasteOpen] = useState(false);
@@ -136,6 +144,13 @@ export const CalculatorView: React.FC = () => {
         count={successInfo.count}
         semesterTitle={successInfo.title}
       />
+
+      <ComputeModal
+        isOpen={isComputeAllModalOpen}
+        onComplete={handleComputeAllComplete}
+        termTitle="All Semesters & Cumulative GWA"
+      />
     </div>
   );
+
 };

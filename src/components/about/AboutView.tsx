@@ -775,6 +775,142 @@ export const AboutView: React.FC = () => {
                 </div>
               </div>
             </div>
+
+            {/* IN-DEPTH SIMULATORS & TOOLBAR BUTTONS REFERENCE */}
+            <div className="guide-section" style={{ marginTop: '28px' }}>
+              <h3 className="guide-section-title">
+                <i className="fa-solid fa-calculator text-primary"></i> Simulation Modules &amp; Controls Reference
+              </h3>
+              <p className="guide-note">
+                Every calculation engine, forecasting simulator, and toolbar control in the Academic Suite serves a distinct role in your collegiate journey:
+              </p>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '14px', marginTop: '16px' }}>
+                {/* Card 1: What-If */}
+                <div style={{ padding: '16px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <i className="fa-solid fa-flask text-primary" style={{ fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div>
+                      <strong style={{ display: 'block', fontSize: '0.92rem', color: 'var(--text-primary)' }}>What-If Scenario Simulator</strong>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Degree-Wide Cumulative GWA Forecast</span>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '0 0 10px 0' }}>
+                    Forecasts your final cumulative graduation GWA by simulating remaining academic units and anticipated grade averages.
+                  </p>
+                  <div style={{ padding: '10px', borderRadius: '6px', background: 'var(--card-header-bg)', fontSize: '0.78rem', color: 'var(--text-primary)', marginBottom: '10px' }}>
+                    <strong>Why Latin Honor Pace (not PL/DL)?</strong> President&#39;s Lister (≤1.4500) and Dean&#39;s Lister (≤1.7500) are <em>single-semester</em> honors with individual grade caps and minimum 15 units. The What-If Simulator projects <em>4-year cumulative graduation GWA</em>, which is governed by Latin Honor standards (Summa ≤1.2500, Magna ≤1.4500, Cum Laude ≤1.7500).
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                    <strong>Target Honor Finder:</strong> Reverse-calculates the exact minimum grade needed in your remaining units to graduate with your desired Latin honor.
+                  </div>
+                </div>
+
+                {/* Card 2: Allocator */}
+                <div style={{ padding: '16px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(245, 158, 11, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <i className="fa-solid fa-bullseye text-gold" style={{ fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div>
+                      <strong style={{ display: 'block', fontSize: '0.92rem', color: 'var(--text-primary)' }}>Target Grade Allocator</strong>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Semestral Reverse Solver</span>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '0 0 10px 0' }}>
+                    Solves for the exact uniform grades you must attain in major subjects by locking in expected marks in General Education or Physical Education courses.
+                  </p>
+                  <ul style={{ margin: '0 0 10px 0', paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <li><strong>Lock Confident Courses:</strong> Lock 1.00 or 1.25 in minor/GE courses.</li>
+                    <li><strong>Dynamic Reverse Math:</strong> Computes the exact buffer required across unlocked major units.</li>
+                    <li><strong>1-Tap Apply:</strong> Push calculated target grades directly into the active semester sheet.</li>
+                  </ul>
+                </div>
+
+                {/* Card 3: Trend */}
+                <div style={{ padding: '16px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
+                    <div style={{ width: '36px', height: '36px', borderRadius: '8px', background: 'rgba(16, 185, 129, 0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <i className="fa-solid fa-chart-line text-success" style={{ fontSize: '1.1rem' }}></i>
+                    </div>
+                    <div>
+                      <strong style={{ display: 'block', fontSize: '0.92rem', color: 'var(--text-primary)' }}>Academic Trend &amp; Trajectory</strong>
+                      <span style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>Multi-Term SVG Visualization</span>
+                    </div>
+                  </div>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: '0 0 10px 0' }}>
+                    Visualizes semester-to-semester volatility against your cumulative GWA progression and BU honor benchmarks.
+                  </p>
+                  <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '0.78rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                    <li><strong>Blue Line:</strong> Term GPA reflecting term difficulty and volatility.</li>
+                    <li><strong>Orange Line:</strong> Cumulative GWA reflecting total degree stability.</li>
+                    <li><strong>Dashed Lines:</strong> Summa (≤1.20), Magna (≤1.45), and Cum Laude (≤1.75) target horizons.</li>
+                  </ul>
+                </div>
+              </div>
+
+              {/* Action Toolbar Reference Table */}
+              <div style={{ marginTop: '18px', padding: '16px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
+                <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '10px' }}>
+                  <i className="fa-solid fa-wrench text-primary" style={{ marginRight: '6px' }}></i> Action Controls &amp; Buttons Directory
+                </strong>
+                <div className="table-responsive">
+                  <table className="policy-table" style={{ fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '24%' }}>Button / Control</th>
+                        <th style={{ width: '26%' }}>Location</th>
+                        <th>Function &amp; Behavior</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>Add Semester</strong></td>
+                        <td>Toolbar / Top Bar</td>
+                        <td>Appends a new semester card with default course slots.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Multi-COR Queue</strong></td>
+                        <td>Toolbar</td>
+                        <td>Concurrently uploads and parses multiple PDF Certificate of Registration files.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Screenshot Buckets</strong></td>
+                        <td>Toolbar</td>
+                        <td>Ingests mobile grade screenshots in groups of up to 3 per term with OCR deduplication.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Compute GPA</strong></td>
+                        <td>Semester Card</td>
+                        <td>Computes term GPA and awards semestral honors (President&#39;s Lister or Dean&#39;s Lister).</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Compute All Semesters</strong></td>
+                        <td>Dashboard / Header</td>
+                        <td>Runs 2.7s calculation animation, evaluates all terms, and checks Latin Graduation Honors.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Expand / Collapse All</strong></td>
+                        <td>Semester Header</td>
+                        <td>Toggles accordion visibility across all recorded semester cards.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Export to PDF</strong></td>
+                        <td>Toolbar</td>
+                        <td>Generates an official-style, printable academic transcript report.</td>
+                      </tr>
+                      <tr>
+                        <td><strong>Clear All</strong></td>
+                        <td>Toolbar</td>
+                        <td>Resets recorded academic data with in-app confirmation modal protection.</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       )}

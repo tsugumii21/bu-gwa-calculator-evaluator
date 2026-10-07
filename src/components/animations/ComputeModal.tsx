@@ -64,7 +64,7 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
           boxShadow: 'var(--shadow-lg)',
         }}
       >
-        <LottieLoader src={animation.src} className="w-40 h-40" />
+        <LottieLoader data={animation.data} src={animation.src} className="w-40 h-40" />
 
         <h3
           style={{

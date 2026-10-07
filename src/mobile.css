@@ -187,6 +187,125 @@ html, body {
         padding: 12px !important;
     }
 
+    /* FIX 3B — Simulator Tab: Allocator & Clearance Refinements */
+    #tab-simulator {
+        padding-bottom: 96px !important;
+    }
+
+    .allocator-control-banner {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        padding: 12px !important;
+    }
+
+    .allocator-target-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .allocator-preset-btns {
+        display: flex !important;
+        gap: 4px !important;
+        flex: 1 1 auto !important;
+    }
+
+    .allocator-preset-btns .btn {
+        flex: 1 1 0 !important;
+        padding: 4px 2px !important;
+        font-size: 0.70rem !important;
+        justify-content: center !important;
+        text-align: center !important;
+        white-space: nowrap !important;
+    }
+
+    .allocator-course-row {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 6px !important;
+        padding: 10px 12px !important;
+        box-sizing: border-box !important;
+    }
+
+    .allocator-row-header {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+    }
+
+    .allocator-course-badges {
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .allocator-course-code {
+        font-weight: 700 !important;
+        font-size: 0.88rem !important;
+        color: var(--text-primary) !important;
+        white-space: nowrap !important;
+        letter-spacing: -0.2px !important;
+    }
+
+    .allocator-units-badge {
+        font-size: 0.68rem !important;
+        padding: 1px 6px !important;
+        border-radius: 4px !important;
+        background: var(--card-header-bg) !important;
+        color: var(--text-muted) !important;
+        font-weight: 700 !important;
+        white-space: nowrap !important;
+    }
+
+    .allocator-course-name.desktop-only {
+        display: none !important;
+    }
+
+    .allocator-course-name.mobile-only {
+        display: block !important;
+        font-size: 0.80rem !important;
+        color: var(--text-secondary) !important;
+        line-height: 1.35 !important;
+        word-break: break-word !important;
+        padding-left: 2px !important;
+    }
+
+    .allocator-row-controls {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .allocator-grade-pill {
+        display: inline-block !important;
+        padding: 3px 8px !important;
+        border-radius: 6px !important;
+        background: rgba(59, 130, 246, 0.12) !important;
+        color: var(--bu-azure) !important;
+        font-weight: 700 !important;
+        font-size: 0.85rem !important;
+        text-align: center !important;
+    }
+
+    .allocator-apply-container {
+        width: 100% !important;
+        margin-top: 14px !important;
+    }
+
+    .allocator-apply-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 10px 14px !important;
+        font-size: 0.85rem !important;
+        white-space: normal !important;
+        text-align: center !important;
+        line-height: 1.3 !important;
+    }
+
     /* FIX 4 — Policies Tab: Tables & Text Policy Containment */
     .guide-section {
         width: 100% !important;

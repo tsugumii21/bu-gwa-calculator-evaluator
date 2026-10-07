@@ -30,12 +30,19 @@ export const DashboardStrip: React.FC = () => {
     ? honorEval.description
     : "Click 'Compute GPA' to evaluate";
 
+  const isCumLaude = honorEval.level === 'cum-laude' || honorEval.label === 'Cum Laude';
+
   const honorBadgeClass =
     !hasComputedGrades || honorEval.level === 'pending'
       ? 'text-black-white'
       : honorEval.level === 'not-eligible'
         ? 'text-danger'
-        : 'text-gold';
+        : isCumLaude
+          ? 'text-blue'
+          : 'text-gold';
+
+  const honorIconClass = isCumLaude ? 'icon-blue' : 'icon-gold';
+
 
   // 3. Academic Standing
   const standingDisplay = allStats.totalCourses > 0 ? standingEval.label : 'Good Standing';
@@ -99,10 +106,11 @@ export const DashboardStrip: React.FC = () => {
             <i className="fa-solid fa-circle-question"></i>
           </button>
           <div className="card-icon-row">
-            <div className="icon-circle icon-gold">
+            <div className={`icon-circle ${honorIconClass}`}>
               <i className="fa-solid fa-medal"></i>
             </div>
           </div>
+
           <div className="card-content">
             <span className="summary-label">Honor Qualification</span>
             <span className={`summary-value honor-badge ${honorBadgeClass}`} id="honor-status">
