@@ -220,7 +220,7 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
                   type="button"
                   className="btn btn-secondary btn-sm"
                   onClick={() => fileInputRef.current?.click()}
-                  style={{ fontSize: '0.75rem', padding: '4px 10px', gap: '4px' }}
+                  style={{ fontSize: '0.75rem', padding: '4px 10px', gap: '4px', whiteSpace: 'nowrap', flexShrink: 0 }}
                 >
                   <i className="fa-solid fa-plus text-primary"></i> Add Another PDF
                 </button>

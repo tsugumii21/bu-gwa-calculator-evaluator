@@ -36,6 +36,18 @@ export const BuenoAiDrawer: React.FC = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [aiChatMessages, isAiLoading]);
 
+  // Lock body scroll and set modal-open class when AI drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('modal-open');
+    } else {
+      document.body.classList.remove('modal-open');
+    }
+    return () => {
+      document.body.classList.remove('modal-open');
+    };
+  }, [isOpen]);
+
   // Cooldown countdown timer
   useEffect(() => {
     if (cooldownRemaining <= 0) return;
@@ -227,7 +239,7 @@ ${studentContext}
             position: 'fixed',
             bottom: '24px',
             right: '24px',
-            zIndex: 900,
+            zIndex: 90,
             display: 'flex',
             alignItems: 'center',
             gap: '9px',
@@ -268,7 +280,7 @@ ${studentContext}
           style={{ display: 'flex', zIndex: 1000 }}
         >
           <div
-            className="modal-content animate__animated animate__fadeInUp animate__faster"
+            className="modal-content bueno-ai-modal animate__animated animate__fadeInUp animate__faster"
             onClick={(e) => e.stopPropagation()}
             style={{
               maxWidth: '560px',
