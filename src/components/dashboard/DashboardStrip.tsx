@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useSemesterStore } from '../../store';
-import { calculateCumulativeStats, calculateComputedCumulativeStats } from '../../core/gwa-engine';
-import { evaluateHonorStanding, evaluateAcademicStanding } from '../../core/honor-rules';
+import {
+  calculateCumulativeStats,
+  calculateComputedCumulativeStats,
+  calculateSemesterGWA,
+} from '../../core/gwa-engine';
+import {
+  evaluateHonorStanding,
+  evaluateAcademicStanding,
+  evaluateTermHonor,
+} from '../../core/honor-rules';
 import { InfoModal, type InfoModalType } from './InfoModal';
 
 export const DashboardStrip: React.FC = () => {
@@ -12,7 +20,7 @@ export const DashboardStrip: React.FC = () => {
   const computedStats = calculateComputedCumulativeStats(semesters);
   const computedCount = semesters.filter((s) => s.computed).length;
 
-  const honorEval = evaluateHonorStanding(computedStats);
+  const latinHonorEval = evaluateHonorStanding(computedStats);
   const standingEval = evaluateAcademicStanding(allStats);
 
   // 1. Cumulative GWA
@@ -24,28 +32,74 @@ export const DashboardStrip: React.FC = () => {
     ? `${computedStats.gradedUnits.toFixed(1)} units · ${computedCount} term${computedCount > 1 ? 's' : ''}`
     : 'Awaiting computation';
 
-  // 2. Honor Qualification
-  const honorDisplay = hasComputedGrades ? honorEval.label : 'Pending Evaluation';
-  const honorSubtext = hasComputedGrades
-    ? honorEval.description
-    : "Click 'Compute GPA' to evaluate";
+  // 2. Semestral Honor (PL / DL) — Evaluates latest computed term
+  const computedSemesters = semesters.filter((s) => s.computed);
+  const latestComputedSem =
+    computedSemesters.length > 0
+      ? computedSemesters[computedSemesters.length - 1]
+      : null;
 
-  const isCumLaude = honorEval.level === 'cum-laude' || honorEval.label === 'Cum Laude';
+  let termHonorLabel = 'Pending Evaluation';
+  let termHonorSubtext = "Click 'Compute GPA' to evaluate";
+  let termBadgeClass = 'text-black-white';
+  let termIconCircle = 'icon-gold';
+  let termIcon = 'fa-solid fa-crown';
 
-  const honorBadgeClass =
-    !hasComputedGrades || honorEval.level === 'pending'
+  if (latestComputedSem) {
+    const termGpa = calculateSemesterGWA(latestComputedSem);
+    const termEval = evaluateTermHonor(
+      termGpa,
+      latestComputedSem.subjects,
+      !!latestComputedSem.underload,
+    );
+
+    if (termEval.level === 'president') {
+      termHonorLabel = "President's Lister";
+      termHonorSubtext = `${latestComputedSem.title} · GPA ${termGpa.toFixed(4)}`;
+      termBadgeClass = 'text-gold';
+      termIconCircle = 'icon-gold';
+      termIcon = 'fa-solid fa-crown';
+    } else if (termEval.level === 'dean') {
+      termHonorLabel = "Dean's Lister";
+      termHonorSubtext = `${latestComputedSem.title} · GPA ${termGpa.toFixed(4)}`;
+      termBadgeClass = 'text-blue';
+      termIconCircle = 'icon-blue';
+      termIcon = 'fa-solid fa-medal';
+    } else {
+      termHonorLabel = 'Regular Standing';
+      termHonorSubtext = `${latestComputedSem.title} · GPA ${termGpa.toFixed(4)}`;
+      termBadgeClass = 'text-secondary';
+      termIconCircle = 'icon-blue';
+      termIcon = 'fa-solid fa-award';
+    }
+  }
+
+  // 3. Latin Graduation Honors — Evaluates cumulative graduation standing
+  const latinHonorDisplay = hasComputedGrades
+    ? latinHonorEval.label
+    : 'Pending Evaluation';
+  const latinHonorSubtext = hasComputedGrades
+    ? latinHonorEval.description
+    : 'Evaluates cumulative graduation GWA';
+
+  const isLatinCumLaude =
+    latinHonorEval.level === 'cum-laude' || latinHonorEval.label === 'Cum Laude';
+
+  const latinBadgeClass =
+    !hasComputedGrades || latinHonorEval.level === 'pending'
       ? 'text-black-white'
-      : honorEval.level === 'not-eligible'
+      : latinHonorEval.level === 'not-eligible'
         ? 'text-danger'
-        : isCumLaude
+        : isLatinCumLaude
           ? 'text-blue'
           : 'text-gold';
 
-  const honorIconClass = isCumLaude ? 'icon-blue' : 'icon-gold';
+  const latinIconCircle = isLatinCumLaude ? 'icon-blue' : 'icon-gold';
+  const latinIcon = isLatinCumLaude ? 'fa-solid fa-award' : 'fa-solid fa-crown';
 
-
-  // 3. Academic Standing
-  const standingDisplay = allStats.totalCourses > 0 ? standingEval.label : 'Good Standing';
+  // 4. Academic Standing
+  const standingDisplay =
+    allStats.totalCourses > 0 ? standingEval.label : 'Good Standing';
   const standingSubtext =
     allStats.failingCount === 0 && !allStats.hasInc
       ? '0 deficiencies detected'
@@ -58,8 +112,10 @@ export const DashboardStrip: React.FC = () => {
         ? 'text-gold'
         : 'text-danger';
 
-  // 4. Total Units
-  const unitsDisplay = allStats.totalUnits.toFixed(allStats.totalUnits % 1 === 0 ? 0 : 1);
+  // 5. Total Units
+  const unitsDisplay = allStats.totalUnits.toFixed(
+    allStats.totalUnits % 1 === 0 ? 0 : 1,
+  );
   const unitsSubtext = `${allStats.totalCourses} courses recorded`;
 
   return (
@@ -91,8 +147,8 @@ export const DashboardStrip: React.FC = () => {
           </div>
         </div>
 
-        {/* CARD 2: HONOR QUALIFICATION */}
-        <div className="summary-card" id="card-honor">
+        {/* CARD 2: SEMESTRAL HONOR (PL / DL) */}
+        <div className="summary-card" id="card-term-honor">
           <button
             className="info-help-btn"
             type="button"
@@ -100,27 +156,56 @@ export const DashboardStrip: React.FC = () => {
               e.stopPropagation();
               setModalType('honor');
             }}
-            title="Explain Honor Qualification"
-            aria-label="Honor Qualification Info"
+            title="Explain Semestral Honors (PL & DL)"
+            aria-label="Semestral Honors Info"
           >
             <i className="fa-solid fa-circle-question"></i>
           </button>
           <div className="card-icon-row">
-            <div className={`icon-circle ${honorIconClass}`}>
-              <i className="fa-solid fa-medal"></i>
+            <div className={`icon-circle ${termIconCircle}`}>
+              <i className={termIcon}></i>
             </div>
           </div>
 
           <div className="card-content">
-            <span className="summary-label">Honor Qualification</span>
-            <span className={`summary-value honor-badge ${honorBadgeClass}`} id="honor-status">
-              {honorDisplay}
+            <span className="summary-label">Semestral Honor (PL/DL)</span>
+            <span className={`summary-value honor-badge ${termBadgeClass}`} id="term-honor-status">
+              {termHonorLabel}
             </span>
-            <span className="summary-subtext" id="honor-subtext">{honorSubtext}</span>
+            <span className="summary-subtext" id="term-honor-subtext">{termHonorSubtext}</span>
           </div>
         </div>
 
-        {/* CARD 3: ACADEMIC STANDING */}
+        {/* CARD 3: LATIN GRADUATION HONORS */}
+        <div className="summary-card" id="card-latin-honor">
+          <button
+            className="info-help-btn"
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setModalType('latin-honor');
+            }}
+            title="Explain Latin Graduation Honors"
+            aria-label="Latin Honors Info"
+          >
+            <i className="fa-solid fa-circle-question"></i>
+          </button>
+          <div className="card-icon-row">
+            <div className={`icon-circle ${latinIconCircle}`}>
+              <i className={latinIcon}></i>
+            </div>
+          </div>
+
+          <div className="card-content">
+            <span className="summary-label">Latin Graduation Honors</span>
+            <span className={`summary-value honor-badge ${latinBadgeClass}`} id="latin-honor-status">
+              {latinHonorDisplay}
+            </span>
+            <span className="summary-subtext" id="latin-honor-subtext">{latinHonorSubtext}</span>
+          </div>
+        </div>
+
+        {/* CARD 4: ACADEMIC STANDING */}
         <div className="summary-card" id="card-standing">
           <button
             className="info-help-btn"
@@ -148,7 +233,7 @@ export const DashboardStrip: React.FC = () => {
           </div>
         </div>
 
-        {/* CARD 4: TOTAL UNITS */}
+        {/* CARD 5: TOTAL UNITS */}
         <div className="summary-card" id="card-units">
           <button
             className="info-help-btn"

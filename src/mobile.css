@@ -1244,6 +1244,10 @@ html, body {
         box-sizing: border-box !important;
     }
 
+    .dashboard-summary .summary-card:nth-child(5):last-child {
+        grid-column: span 2 !important;
+    }
+
     .summary-card {
         padding: 8px 10px !important;
         position: relative !important;

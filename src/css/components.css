@@ -494,9 +494,15 @@
 /* Dashboard Summary Cards */
 .dashboard-summary {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
     gap: 12px;
     margin-bottom: var(--space-lg);
+}
+
+@media (min-width: 1100px) {
+    .dashboard-summary {
+        grid-template-columns: repeat(5, 1fr);
+    }
 }
 
 .summary-card {

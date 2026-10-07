@@ -1,6 +1,6 @@
 import React from 'react';
 
-export type InfoModalType = 'gwa' | 'honor' | 'standing' | 'units' | null;
+export type InfoModalType = 'gwa' | 'honor' | 'latin-honor' | 'standing' | 'units' | null;
 
 interface InfoModalProps {
   type: InfoModalType;
@@ -37,7 +37,12 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
             )}
             {type === 'honor' && (
               <>
-                <i className="fa-solid fa-medal text-gold"></i> Semester Honor Qualification (PL &amp; DL)
+                <i className="fa-solid fa-crown text-gold"></i> Semestral Honor Qualification (PL &amp; DL)
+              </>
+            )}
+            {type === 'latin-honor' && (
+              <>
+                <i className="fa-solid fa-medal text-gold"></i> Graduation Latin Honors (Summa, Magna, Cum Laude)
               </>
             )}
             {type === 'standing' && (
@@ -154,7 +159,81 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
                   lineHeight: 1.45,
                 }}
               >
-                <strong>Essential Requirement (Art. VIII, Sec. 30):</strong> Candidate must carry a full regular academic load with zero failing marks (5.0) or unresolved INC grades.
+                <strong>Essential Requirement (Art. VIII, Sec. 28–29):</strong> Evaluated per single semester. Candidate must carry a regular academic load (minimum 15 units) with zero failing marks (5.0) and zero unremoved INC or DRP grades in that semester.
+              </div>
+            </div>
+          )}
+
+          {type === 'latin-honor' && (
+            <div className="achieve-section" style={{ marginBottom: 0 }}>
+              <div className="handbook-ref-badge handbook-ref-gold">
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Article VIII, Section 30 (Page 36)
+              </div>
+              <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
+                Graduation Latin Honors are conferred based on your overall <strong>Cumulative GWA across all 4 years</strong> of undergraduate study at Bicol University (BOR Res. 89 s. 2006):
+              </p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
+                <div
+                  className="standing-info-card"
+                  style={{
+                    background: 'var(--card-header-bg)',
+                    border: '1px solid var(--border-color)',
+                    borderLeft: '4px solid var(--bu-gold)',
+                  }}
+                >
+                  <strong style={{ color: 'var(--bu-gold)', fontSize: '0.92rem', display: 'block', marginBottom: '4px' }}>
+                    Summa Cum Laude
+                  </strong>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.45 }}>
+                    <div><strong>Cumulative GWA:</strong> 1.0000 – 1.2500</div>
+                    <div>Highest university academic distinction.</div>
+                  </div>
+                </div>
+                <div
+                  className="standing-info-card"
+                  style={{
+                    background: 'var(--card-header-bg)',
+                    border: '1px solid var(--border-color)',
+                    borderLeft: '4px solid var(--bu-orange)',
+                  }}
+                >
+                  <strong style={{ color: 'var(--bu-orange)', fontSize: '0.92rem', display: 'block', marginBottom: '4px' }}>
+                    Magna Cum Laude
+                  </strong>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.45 }}>
+                    <div><strong>Cumulative GWA:</strong> 1.2501 – 1.4500</div>
+                    <div>High university academic distinction.</div>
+                  </div>
+                </div>
+                <div
+                  className="standing-info-card"
+                  style={{
+                    background: 'var(--card-header-bg)',
+                    border: '1px solid var(--border-color)',
+                    borderLeft: '4px solid #3b82f6',
+                  }}
+                >
+                  <strong style={{ color: '#3b82f6', fontSize: '0.92rem', display: 'block', marginBottom: '4px' }}>
+                    Cum Laude
+                  </strong>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.45 }}>
+                    <div><strong>Cumulative GWA:</strong> 1.4501 – 1.7500</div>
+                    <div>University academic distinction.</div>
+                  </div>
+                </div>
+              </div>
+              <div
+                style={{
+                  padding: '9px 12px',
+                  background: 'rgba(234,88,12,0.06)',
+                  borderLeft: '4px solid var(--bu-orange)',
+                  borderRadius: '4px',
+                  fontSize: '0.80rem',
+                  color: 'var(--text-primary)',
+                  lineHeight: 1.45,
+                }}
+              >
+                <strong>Mandatory Graduation Criteria:</strong> Candidate must have completed at least 75% of academic credits at Bicol University, maintained regular semester loads without unexcused underloading, and must have ZERO failing marks (5.0) and zero unremoved INC grades throughout their entire academic residence.
               </div>
             </div>
           )}
