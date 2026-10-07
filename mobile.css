@@ -1789,6 +1789,66 @@ html, body {
     .citation-category {
         font-size: 0.78rem !important;
     }
+
+    /* Mobile Accordion Cards for Long About View Sections (≤768px) */
+    .accordion-toggle-all-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        padding: 5px 12px !important;
+        min-height: unset !important;
+        border-radius: 999px !important;
+        background: var(--card-header-bg, rgba(27, 42, 111, 0.08)) !important;
+        color: var(--text-primary) !important;
+        border: 1px solid var(--border-color) !important;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .accordion-toggle-all-btn:hover {
+        background: var(--bu-blue) !important;
+        color: #ffffff !important;
+    }
+
+    .accordion-card-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        cursor: pointer !important;
+        user-select: none !important;
+        width: 100% !important;
+    }
+
+    .accordion-chevron {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem !important;
+        color: var(--text-secondary) !important;
+        transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        margin-left: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .accordion-chevron.is-open {
+        transform: rotate(180deg) !important;
+        color: var(--bu-gold, #f59e0b) !important;
+    }
+
+    .accordion-card-body {
+        display: none !important;
+        animation: fadeIn 0.2s ease;
+    }
+
+    .accordion-card-body.is-expanded {
+        display: block !important;
+    }
+
+    .bento-card .accordion-card-body.is-expanded {
+        margin-top: 10px;
+    }
 }
 
 

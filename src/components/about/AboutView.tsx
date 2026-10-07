@@ -14,6 +14,50 @@ export const AboutView: React.FC = () => {
   const [sugMessage, setSugMessage] = useState('');
   const [sugStatus, setSugStatus] = useState<string | null>(null);
 
+  // Mobile accordion state (clauses 1-5, policies 1-8, capabilities 1-9)
+  const [openClauses, setOpenClauses] = useState<Set<number>>(new Set());
+  const [openPolicies, setOpenPolicies] = useState<Set<number>>(new Set());
+  const [openCapabilities, setOpenCapabilities] = useState<Set<number>>(new Set());
+
+  const toggleClause = (id: number) => {
+    setOpenClauses((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllClauses = () => {
+    setOpenClauses((prev) => (prev.size === 5 ? new Set() : new Set([1, 2, 3, 4, 5])));
+  };
+
+  const togglePolicy = (id: number) => {
+    setOpenPolicies((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllPolicies = () => {
+    setOpenPolicies((prev) => (prev.size === 8 ? new Set() : new Set([1, 2, 3, 4, 5, 6, 7, 8])));
+  };
+
+  const toggleCapability = (id: number) => {
+    setOpenCapabilities((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const toggleAllCapabilities = () => {
+    setOpenCapabilities((prev) => (prev.size === 9 ? new Set() : new Set([1, 2, 3, 4, 5, 6, 7, 8, 9])));
+  };
+
   const handleSuggestionSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!sugMessage.trim()) return;
@@ -221,24 +265,34 @@ export const AboutView: React.FC = () => {
                 >
                   <i className="fa-solid fa-scale-balanced" style={{ fontSize: '1.35rem' }}></i> Official Academic Disclaimer & Governance
                 </div>
-                <span
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    letterSpacing: '0.5px',
-                    textTransform: 'uppercase',
-                    padding: '4px 10px',
-                    borderRadius: 999,
-                    background: 'rgba(234, 88, 12, 0.12)',
-                    color: 'var(--bu-orange)',
-                    border: '1px solid rgba(234, 88, 12, 0.3)',
-                  }}
-                >
-                  <i className="fa-solid fa-shield-halved"></i> Statutory & Institutional Policy Notice
-                </span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    className="accordion-toggle-all-btn"
+                    onClick={toggleAllClauses}
+                  >
+                    <i className={`fa-solid ${openClauses.size === 5 ? 'fa-compress' : 'fa-expand'}`}></i>
+                    {openClauses.size === 5 ? 'Collapse All' : 'Expand All'}
+                  </button>
+                  <span
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      fontSize: '0.75rem',
+                      fontWeight: 700,
+                      letterSpacing: '0.5px',
+                      textTransform: 'uppercase',
+                      padding: '4px 10px',
+                      borderRadius: 999,
+                      background: 'rgba(234, 88, 12, 0.12)',
+                      color: 'var(--bu-orange)',
+                      border: '1px solid rgba(234, 88, 12, 0.3)',
+                    }}
+                  >
+                    <i className="fa-solid fa-shield-halved"></i> Statutory Notice
+                  </span>
+                </div>
               </div>
 
               <div
@@ -261,13 +315,21 @@ export const AboutView: React.FC = () => {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-landmark text-primary"></i>
-                    Clause I — Institutional Independence & Non-Affiliation
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    The <strong>Bicol University GWA Calculator & Academic Evaluator</strong> is an independent, non-commercial software project engineered by student software developers. It is <strong>not officially affiliated with, endorsed, sponsored, administered, or operated by Bicol University, the Board of Regents (BOR), or university administration</strong>. Any reference to "Bicol University", "BU", "iBU", campus names, or heraldic emblems is made strictly for nominative identification, educational reference, and student community public service.
-                  </p>
+                  <div
+                    className="accordion-card-header"
+                    onClick={() => toggleClause(1)}
+                  >
+                    <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: openClauses.has(1) ? 6 : 0, fontSize: '0.92rem' }}>
+                      <i className="fa-solid fa-landmark text-primary"></i>
+                      Clause I — Institutional Independence & Non-Affiliation
+                    </strong>
+                    <i className={`fa-solid fa-chevron-down accordion-chevron ${openClauses.has(1) ? 'is-open' : ''}`}></i>
+                  </div>
+                  <div className={`accordion-card-body ${openClauses.has(1) ? 'is-expanded' : ''}`}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      The <strong>Bicol University GWA Calculator & Academic Evaluator</strong> is an independent, non-commercial software project engineered by student software developers. It is <strong>not officially affiliated with, endorsed, sponsored, administered, or operated by Bicol University, the Board of Regents (BOR), or university administration</strong>. Any reference to "Bicol University", "BU", "iBU", campus names, or heraldic emblems is made strictly for nominative identification, educational reference, and student community public service.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Clause 2 */}
@@ -279,13 +341,21 @@ export const AboutView: React.FC = () => {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-stamp text-primary"></i>
-                    Clause II — Sole Certification Authority of the University Registrar (OUR) & College Deans
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    All numeric GWA calculations, President's Lister and Dean's Lister classifications, Latin graduation honor forecasts, and scholarship retention evaluations generated by this platform remain <strong>strictly advisory simulations for self-monitoring only</strong>. The sole, authoritative legal and institutional body empowered to certify academic grades, confer graduation honors, and issue official documents is the <strong>Bicol University Office of the University Registrar (OUR)</strong> in concurrence with respective College Deans. This web application does not replace, supersede, or modify the official student academic evaluation.
-                  </p>
+                  <div
+                    className="accordion-card-header"
+                    onClick={() => toggleClause(2)}
+                  >
+                    <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: openClauses.has(2) ? 6 : 0, fontSize: '0.92rem' }}>
+                      <i className="fa-solid fa-stamp text-primary"></i>
+                      Clause II — Sole Certification Authority of the University Registrar (OUR) & College Deans
+                    </strong>
+                    <i className={`fa-solid fa-chevron-down accordion-chevron ${openClauses.has(2) ? 'is-open' : ''}`}></i>
+                  </div>
+                  <div className={`accordion-card-body ${openClauses.has(2) ? 'is-expanded' : ''}`}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      All numeric GWA calculations, President's Lister and Dean's Lister classifications, Latin graduation honor forecasts, and scholarship retention evaluations generated by this platform remain <strong>strictly advisory simulations for self-monitoring only</strong>. The sole, authoritative legal and institutional body empowered to certify academic grades, confer graduation honors, and issue official documents is the <strong>Bicol University Office of the University Registrar (OUR)</strong> in concurrence with respective College Deans. This web application does not replace, supersede, or modify the official student academic evaluation.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Clause 3 */}
@@ -297,13 +367,21 @@ export const AboutView: React.FC = () => {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-triangle-exclamation text-primary"></i>
-                    Clause III — Anti-Falsification Policy & Prohibition of Document Misrepresentation
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    All generated outputs—including exported PDF academic worksheets and printable grade rosters—are personal planning aids and educational reference worksheets. <strong>Presenting, altering, submitting, or utilizing any graphic or output generated by this software as an Official Transcript of Records (OTR), certified Certificate of Registration (COR), or verified institutional document before scholarship boards, employers, government agencies, or university committees is strictly prohibited</strong> and constitutes academic dishonesty and falsification punishable under the Bicol University Student Code of Conduct, the Cybercrime Prevention Act of 2012 (RA 10175), and the Revised Penal Code of the Philippines.
-                  </p>
+                  <div
+                    className="accordion-card-header"
+                    onClick={() => toggleClause(3)}
+                  >
+                    <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: openClauses.has(3) ? 6 : 0, fontSize: '0.92rem' }}>
+                      <i className="fa-solid fa-triangle-exclamation text-primary"></i>
+                      Clause III — Anti-Falsification Policy & Prohibition of Document Misrepresentation
+                    </strong>
+                    <i className={`fa-solid fa-chevron-down accordion-chevron ${openClauses.has(3) ? 'is-open' : ''}`}></i>
+                  </div>
+                  <div className={`accordion-card-body ${openClauses.has(3) ? 'is-expanded' : ''}`}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      All generated outputs—including exported PDF academic worksheets and printable grade rosters—are personal planning aids and educational reference worksheets. <strong>Presenting, altering, submitting, or utilizing any graphic or output generated by this software as an Official Transcript of Records (OTR), certified Certificate of Registration (COR), or verified institutional document before scholarship boards, employers, government agencies, or university committees is strictly prohibited</strong> and constitutes academic dishonesty and falsification punishable under the Bicol University Student Code of Conduct, the Cybercrime Prevention Act of 2012 (RA 10175), and the Revised Penal Code of the Philippines.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Clause 4 */}
@@ -315,13 +393,21 @@ export const AboutView: React.FC = () => {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-shield-halved text-primary"></i>
-                    Clause IV — Absolute Limitation of Liability
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    Under no circumstances shall the developer, contributors, or hosting platforms be held legally or academically liable for any academic disqualifications, scholarship forfeitures, grade contestations, course load disputes, or curriculum misinterpretations arising from the use of or reliance on this calculator. Students maintain personal responsibility to review their official curriculum checklist and confirm all graduation requirements directly with their respective Department Chairperson and College Registrar.
-                  </p>
+                  <div
+                    className="accordion-card-header"
+                    onClick={() => toggleClause(4)}
+                  >
+                    <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: openClauses.has(4) ? 6 : 0, fontSize: '0.92rem' }}>
+                      <i className="fa-solid fa-shield-halved text-primary"></i>
+                      Clause IV — Absolute Limitation of Liability
+                    </strong>
+                    <i className={`fa-solid fa-chevron-down accordion-chevron ${openClauses.has(4) ? 'is-open' : ''}`}></i>
+                  </div>
+                  <div className={`accordion-card-body ${openClauses.has(4) ? 'is-expanded' : ''}`}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      Under no circumstances shall the developer, contributors, or hosting platforms be held legally or academically liable for any academic disqualifications, scholarship forfeitures, grade contestations, course load disputes, or curriculum misinterpretations arising from the use of or reliance on this calculator. Students maintain personal responsibility to review their official curriculum checklist and confirm all graduation requirements directly with their respective Department Chairperson and College Registrar.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Clause 5 */}
@@ -333,13 +419,21 @@ export const AboutView: React.FC = () => {
                     border: '1px solid var(--border-color)',
                   }}
                 >
-                  <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: 6, fontSize: '0.92rem' }}>
-                    <i className="fa-solid fa-lock text-primary"></i>
-                    Clause V — Zero-Knowledge Privacy Architecture & Philippine Data Privacy Act (RA 10173)
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
-                    This application operates on a <strong>100% client-side, zero-telemetry architecture</strong>. Uploaded Certificate of Registration (COR) PDF files, mobile screenshots, student names, course titles, and numeric grades are parsed entirely inside your browser's sandboxed local memory via client-side WebAssembly, Canvas, and Tesseract.js. No student credentials, portal passwords, or scholastic data are ever transmitted across external networks, saved to remote databases, or collected. The platform fully complies with Republic Act 10173 (Data Privacy Act of 2012).
-                  </p>
+                  <div
+                    className="accordion-card-header"
+                    onClick={() => toggleClause(5)}
+                  >
+                    <strong style={{ display: 'flex', alignItems: 'center', gap: 8, color: 'var(--text-primary)', marginBottom: openClauses.has(5) ? 6 : 0, fontSize: '0.92rem' }}>
+                      <i className="fa-solid fa-lock text-primary"></i>
+                      Clause V — Zero-Knowledge Privacy Architecture & Philippine Data Privacy Act (RA 10173)
+                    </strong>
+                    <i className={`fa-solid fa-chevron-down accordion-chevron ${openClauses.has(5) ? 'is-open' : ''}`}></i>
+                  </div>
+                  <div className={`accordion-card-body ${openClauses.has(5) ? 'is-expanded' : ''}`}>
+                    <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                      This application operates on a <strong>100% client-side, zero-telemetry architecture</strong>. Uploaded Certificate of Registration (COR) PDF files, mobile screenshots, student names, course titles, and numeric grades are parsed entirely inside your browser's sandboxed local memory via client-side WebAssembly, Canvas, and Tesseract.js. No student credentials, portal passwords, or scholastic data are ever transmitted across external networks, saved to remote databases, or collected. The platform fully complies with Republic Act 10173 (Data Privacy Act of 2012).
+                    </p>
+                  </div>
                 </div>
               </div>
 
@@ -689,115 +783,205 @@ export const AboutView: React.FC = () => {
       {activeSubtab === 'policies' && (
         <div className="about-subtab-content active" id="about-policies">
           <div className="guide-section">
-            <h3 className="guide-section-title">
-              <i className="fa-solid fa-book-bookmark text-orange"></i> Governing Bicol University Student Handbook Articles & Citations
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+              <h3 className="guide-section-title" style={{ margin: 0 }}>
+                <i className="fa-solid fa-book-bookmark text-orange"></i> Governing Bicol University Student Handbook Articles & Citations
+              </h3>
+              <button
+                type="button"
+                className="accordion-toggle-all-btn"
+                onClick={toggleAllPolicies}
+              >
+                <i className={`fa-solid ${openPolicies.size === 8 ? 'fa-compress' : 'fa-expand'}`}></i>
+                {openPolicies.size === 8 ? 'Collapse All' : 'Expand All'}
+              </button>
+            </div>
             <p className="guide-note">
               Every mathematical formula, honor threshold, and warning condition in this platform is directly codified from the official <strong>Bicol University Student Handbook (BOR Res. 89 s. 2006)</strong>:
             </p>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, marginTop: 14 }}>
               {/* Policy 1: GWA */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-blue">
-                  <i className="fa-solid fa-calculator"></i> Grading System & GWA Math
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(1)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-blue">
+                      <i className="fa-solid fa-calculator"></i> Grading System & GWA Math
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VI, Section 13–15 (Page 28)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(1) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VI, Section 13–15 (Page 28)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Defines weighted grade point average computation <code>GWA = ∑(Grade × Units) / ∑Units</code>, 4-decimal precision rounding, and non-numerical mark exclusions (INC/DRP) per BOR Res. 89 s. 2006. Passing mark is strictly 3.00.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(1) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Defines weighted grade point average computation <code>GWA = ∑(Grade × Units) / ∑Units</code>, 4-decimal precision rounding, and non-numerical mark exclusions (INC/DRP) per BOR Res. 89 s. 2006. Passing mark is strictly 3.00.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 2: Term Honors */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-gold">
-                  <i className="fa-solid fa-award"></i> Term Honors (PL & DL)
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(2)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-gold">
+                      <i className="fa-solid fa-award"></i> Term Honors (PL & DL)
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VIII, Section 28–29 (Page 34–35)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(2) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VIII, Section 28–29 (Page 34–35)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Establishes semester honor rolls: <strong>President's Lister</strong> requires GPA ≤ 1.4500 with no grade below 1.75; <strong>Dean's Lister</strong> requires GPA ≤ 1.7500 with no grade below 2.50. Both mandate regular load (min. 15 units) and zero INC or DRP.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(2) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Establishes semester honor rolls: <strong>President's Lister</strong> requires GPA ≤ 1.4500 with no grade below 1.75; <strong>Dean's Lister</strong> requires GPA ≤ 1.7500 with no grade below 2.50. Both mandate regular load (min. 15 units) and zero INC or DRP.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 3: Latin Honors */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-orange">
-                  <i className="fa-solid fa-medal"></i> Graduation Latin Honors
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(3)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-orange">
+                      <i className="fa-solid fa-medal"></i> Graduation Latin Honors
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VIII, Section 30 (Page 36)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(3) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VIII, Section 30 (Page 36)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Defines graduation honor ceilings: <strong>Summa Cum Laude</strong> (1.0000–1.2500), <strong>Magna Cum Laude</strong> (1.2501–1.4500), and <strong>Cum Laude</strong> (1.4501–1.7500). Mandates 75% BU residency, regular curriculum progression, zero failing marks (5.0), and no unexcused underloading.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(3) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Defines graduation honor ceilings: <strong>Summa Cum Laude</strong> (1.0000–1.2500), <strong>Magna Cum Laude</strong> (1.2501–1.4500), and <strong>Cum Laude</strong> (1.4501–1.7500). Mandates 75% BU residency, regular curriculum progression, zero failing marks (5.0), and no unexcused underloading.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 4: Underload */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-danger">
-                  <i className="fa-solid fa-triangle-exclamation"></i> Underload Disqualification
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(4)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-danger">
+                      <i className="fa-solid fa-triangle-exclamation"></i> Underload Disqualification
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VIII, Section 30 & Article XI
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(4) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VIII, Section 30 & Article XI
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Enrolling in fewer than the prescribed semester units permanently disqualifies a candidate from graduation Latin Honors. Exemptions are strictly limited to University Physician-certified illness, Dean-approved working student status, or curriculum phase-out.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(4) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Enrolling in fewer than the prescribed semester units permanently disqualifies a candidate from graduation Latin Honors. Exemptions are strictly limited to University Physician-certified illness, Dean-approved working student status, or curriculum phase-out.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 5: INC 1-Year Rule */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-amber">
-                  <i className="fa-solid fa-clock-rotate-left"></i> Incomplete (INC) 1-Year Rule
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(5)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-amber">
+                      <i className="fa-solid fa-clock-rotate-left"></i> Incomplete (INC) 1-Year Rule
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article IX, Section 4 (Page 38)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(5) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article IX, Section 4 (Page 38)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Incomplete marks must be satisfied within exactly <strong>one (1) calendar year</strong> from the end of the term incurred. Failure to complete requirements automatically converts the mark to 5.00 upon registrar audit and permanently removes Latin Honor eligibility.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(5) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Incomplete marks must be satisfied within exactly <strong>one (1) calendar year</strong> from the end of the term incurred. Failure to complete requirements automatically converts the mark to 5.00 upon registrar audit and permanently removes Latin Honor eligibility.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 6: Scholastic Delinquency */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-green">
-                  <i className="fa-solid fa-shield-halved"></i> Retention & Scholastic Standing
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(6)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-green">
+                      <i className="fa-solid fa-shield-halved"></i> Retention & Scholastic Standing
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VII, Section 21–24 (Page 31–32)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(6) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VII, Section 21–24 (Page 31–32)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Defines college retention status: <strong>Good Standing</strong> (0 fails), <strong>Academic Warning</strong> (25–49% units failed), <strong>Academic Probation</strong> (50–75% units failed, load capped at 75% next term), and <strong>Dismissal Risk</strong> (&gt;75% failed or 2 consecutive probations).
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(6) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Defines college retention status: <strong>Good Standing</strong> (0 fails), <strong>Academic Warning</strong> (25–49% units failed), <strong>Academic Probation</strong> (50–75% units failed, load capped at 75% next term), and <strong>Dismissal Risk</strong> (&gt;75% failed or 2 consecutive probations).
+                  </p>
+                </div>
               </div>
 
               {/* Policy 7: Official Dropping */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-azure">
-                  <i className="fa-solid fa-ban"></i> Official Course Dropping (DRP)
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(7)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-azure">
+                      <i className="fa-solid fa-ban"></i> Official Course Dropping (DRP)
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VII, Section 6 (Page 30)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(7) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VII, Section 6 (Page 30)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Dropping must be officially filed with approvals from Instructor, Department Chair, and College Dean before the midterm exam period. Dropping unofficially (abandoning attendance) automatically results in a failing grade of 5.00.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(7) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Dropping must be officially filed with approvals from Instructor, Department Chair, and College Dean before the midterm exam period. Dropping unofficially (abandoning attendance) automatically results in a failing grade of 5.00.
+                  </p>
+                </div>
               </div>
 
               {/* Policy 8: Shifting & Retention */}
               <div style={{ padding: 16, background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-                <div className="citation-category citation-cat-purple">
-                  <i className="fa-solid fa-arrow-right-arrow-left"></i> Program Shifting & Transfer
+                <div
+                  className="accordion-card-header"
+                  onClick={() => togglePolicy(8)}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <div className="citation-category citation-cat-purple">
+                      <i className="fa-solid fa-arrow-right-arrow-left"></i> Program Shifting & Transfer
+                    </div>
+                    <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
+                      Article VI, Section 11–12 (Page 26)
+                    </strong>
+                  </div>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(8) ? 'is-open' : ''}`}></i>
                 </div>
-                <strong style={{ display: 'block', fontSize: '0.88rem', marginBottom: 4, color: 'var(--text-primary)' }}>
-                  Article VI, Section 11–12 (Page 26)
-                </strong>
-                <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0, lineHeight: 1.5 }}>
-                  Cross-enrollment and internal degree shifting require meeting the destination college's minimum GWA cutoff (typically ≤ 2.25 or 2.00 in prerequisite subjects), dean endorsement, and university registrar clearance.
-                </p>
+                <div className={`accordion-card-body ${openPolicies.has(8) ? 'is-expanded' : ''}`}>
+                  <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
+                    Cross-enrollment and internal degree shifting require meeting the destination college's minimum GWA cutoff (typically ≤ 2.25 or 2.00 in prerequisite subjects), dean endorsement, and university registrar clearance.
+                  </p>
+                </div>
               </div>
             </div>
 
@@ -831,9 +1015,19 @@ export const AboutView: React.FC = () => {
       {activeSubtab === 'developer' && (
         <div className="about-subtab-content active" id="about-developer">
           <div className="guide-section">
-            <h3 className="guide-section-title">
-              <i className="fa-solid fa-layer-group text-gold"></i> Core Platform Capabilities & Feature Architecture
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 10, marginBottom: 14 }}>
+              <h3 className="guide-section-title" style={{ margin: 0 }}>
+                <i className="fa-solid fa-layer-group text-gold"></i> Core Platform Capabilities & Feature Architecture
+              </h3>
+              <button
+                type="button"
+                className="accordion-toggle-all-btn"
+                onClick={toggleAllCapabilities}
+              >
+                <i className={`fa-solid ${openCapabilities.size === 9 ? 'fa-compress' : 'fa-expand'}`}></i>
+                {openCapabilities.size === 9 ? 'Collapse All' : 'Expand All'}
+              </button>
+            </div>
             <p className="guide-note">
               Engineered exclusively for Bicol University students with a comprehensive suite of academic tools:
             </p>
@@ -842,203 +1036,275 @@ export const AboutView: React.FC = () => {
             <div className="capabilities-bento">
               {/* Row 1, Card 1: GWA Math (Span 2 Hero) */}
               <div className="bento-card bento-col-2 accent-blue">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-blue">
-                      <i className="fa-solid fa-calculator"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(1)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-blue">
+                        <i className="fa-solid fa-calculator"></i>
+                      </div>
+                      <span className="bento-category-pill pill-blue">
+                        <i className="fa-solid fa-circle-check"></i> Core Arithmetic
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-blue">
-                      <i className="fa-solid fa-circle-check"></i> Core Arithmetic
-                    </span>
+                    <h4>Dynamic 4-Decimal GWA Math Engine</h4>
                   </div>
-                  <h4>Dynamic 4-Decimal GWA Math Engine</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(1) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(1) ? 'is-expanded' : ''}`}>
                   <p>
                     Precision arithmetic engine computing exact semestral GPA and cumulative GWA to 4 decimal places per BU BOR Res. 89 s. 2006. Strict mathematical boundary separation isolates draft loads and non-numerical marks (INC/DRP).
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> BOR Res. 89 s. 2006</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> 4-Decimal Precision</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Draft Isolation</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> BOR Res. 89 s. 2006</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> 4-Decimal Precision</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Draft Isolation</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 1, Card 2: Ingestion Suite (Span 1) */}
               <div className="bento-card accent-red">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-red">
-                      <i className="fa-solid fa-file-pdf"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(2)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-red">
+                        <i className="fa-solid fa-file-pdf"></i>
+                      </div>
+                      <span className="bento-category-pill pill-red">
+                        <i className="fa-solid fa-shield"></i> Client Ingestion
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-red">
-                      <i className="fa-solid fa-shield"></i> Client Ingestion
-                    </span>
+                    <h4>Multi-COR & Screenshot OCR</h4>
                   </div>
-                  <h4>Multi-COR & Screenshot OCR</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(2) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(2) ? 'is-expanded' : ''}`}>
                   <p>
                     Multi-file PDF queue for one-click batch import, plus a multi-semester screenshot bucket OCR engine with client-side Tesseract.js and Canvas preprocessing.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> PDF Staging Queue</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Zero-Server OCR</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> PDF Staging Queue</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Zero-Server OCR</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 2, Card 3: Honors Lister (Span 1) */}
               <div className="bento-card accent-gold">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-gold">
-                      <i className="fa-solid fa-medal"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(3)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-gold">
+                        <i className="fa-solid fa-medal"></i>
+                      </div>
+                      <span className="bento-category-pill pill-gold">
+                        <i className="fa-solid fa-award"></i> Academic Honors
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-gold">
-                      <i className="fa-solid fa-award"></i> Academic Honors
-                    </span>
+                    <h4>Term Honors & Proximity Radar</h4>
                   </div>
-                  <h4>Term Honors & Proximity Radar</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(3) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(3) ? 'is-expanded' : ''}`}>
                   <p>
                     Real-time qualification checks for President's Lister (≤1.4500) and Dean's Lister (≤1.7500) with grade-cap safeguards and Latin honor point gap tracking.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> PL & DL Cutoffs</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Latin Point Gap</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> PL & DL Cutoffs</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Latin Point Gap</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 2, Card 4: Milestone Badges (Span 1) */}
               <div className="bento-card accent-green">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-green">
-                      <i className="fa-solid fa-shield-halved"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(4)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-green">
+                        <i className="fa-solid fa-shield-halved"></i>
+                      </div>
+                      <span className="bento-category-pill pill-green">
+                        <i className="fa-solid fa-trophy"></i> Progress Metrics
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-green">
-                      <i className="fa-solid fa-trophy"></i> Progress Metrics
-                    </span>
+                    <h4>Academic Milestone Badges</h4>
                   </div>
-                  <h4>Academic Milestone Badges</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(4) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(4) ? 'is-expanded' : ''}`}>
                   <p>
                     Gamified achievement tracking with distinct semantic badges: Zero Deficiencies (Emerald), Honors Pace (Gold), Consistent Evaluator (Flame), and Full Regular (Sapphire).
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> 4 Semantic Tints</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Live Progression</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> 4 Semantic Tints</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Live Progression</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 2, Card 5: Underload & Deficiencies (Span 1) */}
               <div className="bento-card accent-amber">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-amber">
-                      <i className="fa-solid fa-triangle-exclamation"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(5)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-amber">
+                        <i className="fa-solid fa-triangle-exclamation"></i>
+                      </div>
+                      <span className="bento-category-pill pill-amber">
+                        <i className="fa-solid fa-circle-exclamation"></i> Policy Safeguards
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-amber">
-                      <i className="fa-solid fa-circle-exclamation"></i> Policy Safeguards
-                    </span>
+                    <h4>Underload & Deficiency Watch</h4>
                   </div>
-                  <h4>Underload & Deficiency Watch</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(5) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(5) ? 'is-expanded' : ''}`}>
                   <p>
                     Automated guards flagging underloaded semesters (&lt;15 units), unremoved INCs nearing the 1-year calendar deadline, and failing marks that void honor qualification.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> 1-Year INC Watch</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Underload Alert</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> 1-Year INC Watch</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Underload Alert</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 3, Card 6: Simulator & Reverse Allocator (Span 2) */}
               <div className="bento-card bento-col-2 accent-orange">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-orange">
-                      <i className="fa-solid fa-flask"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(6)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-orange">
+                        <i className="fa-solid fa-flask"></i>
+                      </div>
+                      <span className="bento-category-pill pill-orange">
+                        <i className="fa-solid fa-sliders"></i> Reverse-Solver
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-orange">
-                      <i className="fa-solid fa-sliders"></i> Reverse-Solver
-                    </span>
+                    <h4>Scenario Simulator & Subject Target Allocator</h4>
                   </div>
-                  <h4>Scenario Simulator & Subject Target Allocator</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(6) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(6) ? 'is-expanded' : ''}`}>
                   <p>
                     Projects future cumulative GWA with a 0.05 step precision slider. Includes an intelligent reverse-solver: lock expected grades in GE/PE subjects to dynamically back-calculate the exact marks required in remaining majors.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> 0.05 Step Slider</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Target Grade Solver</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Course Locks</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> 0.05 Step Slider</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Target Grade Solver</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Course Locks</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 3, Card 7: Trend Visualizer (Span 1) */}
               <div className="bento-card accent-blue">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-blue">
-                      <i className="fa-solid fa-chart-line"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(7)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-blue">
+                        <i className="fa-solid fa-chart-line"></i>
+                      </div>
+                      <span className="bento-category-pill pill-blue">
+                        <i className="fa-solid fa-chart-simple"></i> Visual Analytics
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-blue">
-                      <i className="fa-solid fa-chart-simple"></i> Visual Analytics
-                    </span>
+                    <h4>Academic Trend Visualizer</h4>
                   </div>
-                  <h4>Academic Trend Visualizer</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(7) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(7) ? 'is-expanded' : ''}`}>
                   <p>
                     Zero-dependency lightweight SVG trajectory chart plotting semestral GPAs against running cumulative GWA alongside official Summa, Magna, and Cum Laude target horizons.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Pure SVG Chart</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Honor Baselines</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Pure SVG Chart</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Honor Baselines</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 4, Card 8: Scholarship Monitor (Span 1) */}
               <div className="bento-card accent-cyan">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-cyan">
-                      <i className="fa-solid fa-graduation-cap"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(8)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-cyan">
+                        <i className="fa-solid fa-graduation-cap"></i>
+                      </div>
+                      <span className="bento-category-pill pill-cyan">
+                        <i className="fa-solid fa-stamp"></i> Grant Compliance
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-cyan">
-                      <i className="fa-solid fa-stamp"></i> Grant Compliance
-                    </span>
+                    <h4>Scholarship Retention Monitor</h4>
                   </div>
-                  <h4>Scholarship Retention Monitor</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(8) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(8) ? 'is-expanded' : ''}`}>
                   <p>
                     Compliance benchmarking engine matching student academic standing against official maintenance criteria for DOST-SEI Merit, CHED Merit, UniFAST TES, and BU Athletic grants.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> DOST / CHED Presets</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Retention Check</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> DOST / CHED Presets</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Retention Check</span>
+                  </div>
                 </div>
               </div>
 
               {/* Row 4, Card 9: Bueño AI Handbook Advisor (Span 2 Hero Footer) */}
               <div className="bento-card bento-col-2 accent-purple">
-                <div>
-                  <div className="bento-top-row">
-                    <div className="feat-icon-badge badge-purple">
-                      <i className="fa-solid fa-robot"></i>
+                <div
+                  className="accordion-card-header"
+                  onClick={() => toggleCapability(9)}
+                >
+                  <div style={{ flex: 1 }}>
+                    <div className="bento-top-row">
+                      <div className="feat-icon-badge badge-purple">
+                        <i className="fa-solid fa-robot"></i>
+                      </div>
+                      <span className="bento-category-pill pill-purple">
+                        <i className="fa-solid fa-sparkles"></i> AI Academic Advisor
+                      </span>
                     </div>
-                    <span className="bento-category-pill pill-purple">
-                      <i className="fa-solid fa-sparkles"></i> AI Academic Advisor
-                    </span>
+                    <h4>Bueño AI Handbook Advisor & Intelligent Evaluation</h4>
                   </div>
-                  <h4>Bueño AI Handbook Advisor & Intelligent Evaluation</h4>
+                  <i className={`fa-solid fa-chevron-down accordion-chevron ${openCapabilities.has(9) ? 'is-open' : ''}`}></i>
+                </div>
+                <div className={`accordion-card-body ${openCapabilities.has(9) ? 'is-expanded' : ''}`}>
                   <p>
                     Intelligent assistant trained on the complete Bicol University Student Handbook. Features on-device handbook search, 1-click "Analyze My Grades" academic diagnostics, retention risk assessment, and safe rate-limited conversational guidance.
                   </p>
-                </div>
-                <div className="bento-chips">
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Complete Handbook Knowledge</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> 1-Click Transcript Diagnostic</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Offline Search</span>
-                  <span className="bento-chip"><i className="fa-solid fa-check"></i> Rate-Limited Safety</span>
+                  <div className="bento-chips">
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Complete Handbook Knowledge</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> 1-Click Transcript Diagnostic</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Offline Search</span>
+                    <span className="bento-chip"><i className="fa-solid fa-check"></i> Rate-Limited Safety</span>
+                  </div>
                 </div>
               </div>
             </div>

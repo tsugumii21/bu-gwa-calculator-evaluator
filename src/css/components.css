@@ -2207,3 +2207,29 @@
     color: var(--text-secondary);
 }
 
+/* ==========================================================================
+   About View Mobile Accordion Cards (Desktop Baseline: Always Visible)
+   ========================================================================== */
+.accordion-toggle-all-btn {
+    display: none;
+}
+
+.accordion-chevron {
+    display: none;
+}
+
+.accordion-card-body {
+    display: block;
+}
+
+.bento-card .accordion-card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex: 1;
+}
+
+.bento-card .accordion-card-body .bento-chips {
+    margin-top: auto;
+}
+
