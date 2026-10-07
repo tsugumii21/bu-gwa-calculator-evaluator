@@ -1155,6 +1155,8 @@ html, body {
         display: flex !important;
         flex-direction: column !important;
         gap: 3px !important;
+        width: auto !important;
+        box-sizing: border-box !important;
     }
 
     .subject-table td::before {
@@ -1185,50 +1187,73 @@ html, body {
         content: "CREDIT UNITS" !important;
     }
 
-    /* Row 1: Course Code (35%) & Course Description (65%) */
+    .subject-table td:nth-child(5)::before {
+        display: none !important;
+        content: none !important;
+        height: 0 !important;
+        margin: 0 !important;
+    }
+
+    /* Row 1: Course Code (38%) & Course Description (62%) */
     .subject-table td:nth-child(1) {
-        flex: 1 1 calc(35% - 4px) !important;
-        min-width: 95px !important;
+        flex: 1 1 calc(38% - 4px) !important;
+        min-width: 90px !important;
     }
 
     .subject-table td:nth-child(2) {
-        flex: 2 1 calc(65% - 4px) !important;
-        min-width: 140px !important;
+        flex: 1 1 calc(62% - 4px) !important;
+        min-width: 130px !important;
     }
 
     .subject-table td input.form-control-sm {
+        width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        height: 38px !important;
         padding: 6px 8px !important;
-        font-size: 0.85rem !important;
+        font-size: 0.88rem !important;
     }
 
-    /* Row 2: Grade Rating (36%), Credit Units (36%), Delete Button (Right) */
+    /* Row 2: Grade Rating (50%), Credit Units (50%), Delete Button (Fixed 38px) */
     .subject-table td:nth-child(3) {
-        flex: 1 1 36% !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        width: auto !important;
     }
 
     .subject-table td:nth-child(4) {
-        flex: 1 1 36% !important;
+        flex: 1 1 0 !important;
+        min-width: 0 !important;
+        width: auto !important;
     }
 
     .subject-table td:nth-child(5) {
-        flex: 0 0 auto !important;
-        margin-left: auto !important;
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        margin-left: 0 !important;
+        padding: 0 !important;
         display: flex !important;
-        align-items: flex-end !important;
+        align-self: flex-end !important;
         justify-content: flex-end !important;
     }
 
-    .subject-table td:nth-child(5) .btn {
-        width: 36px !important;
-        height: 36px !important;
-        min-width: 36px !important;
-        min-height: 36px !important;
+    .subject-table td:nth-child(5) .btn,
+    .subject-table td:nth-child(5) button {
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
         padding: 0 !important;
-        display: flex !important;
+        margin: 0 !important;
+        display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
-    }
-        justify-content: center !important;
+        border-radius: var(--radius-sm, 6px) !important;
+        font-size: 0.95rem !important;
+        line-height: 1 !important;
+        box-sizing: border-box !important;
     }
 
     .form-control-sm {
