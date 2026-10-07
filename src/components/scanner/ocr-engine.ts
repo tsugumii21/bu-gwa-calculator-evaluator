@@ -8,6 +8,9 @@ const KNOWN_BU_PREFIXES = [
   'IT ELECT',
   'GE ELECT',
   'FREE ELECT',
+  'PATHFIT',
+  'PATH FIT',
+  'PATH',
   'IT',
   'GEC',
   'CS',
@@ -30,6 +33,13 @@ const KNOWN_BU_PREFIXES = [
   'POL',
   'PSY',
   'ECON',
+  'CPE',
+  'ECE',
+  'CE',
+  'EE',
+  'ME',
+  'ARCH',
+  'IS',
 ];
 
 /**
@@ -147,15 +157,21 @@ export async function scanScreenshotCanvas(
 function healOcrLine(line: string): string {
   let clean = line.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
-  // Heal 17/1T misread for IT before subject numbers: "17120" -> "IT 120", "1T 120" -> "IT 120"
+  // Heal 17/1T misread for IT before subject numbers: "17120" -> "IT 120", "1T 120" -> "IT 120", "1T102" -> "IT 102"
   clean = clean.replace(/^(?:17|1T)\s*(\d{2,3}[A-Z]?)\b/i, 'IT $1');
   clean = clean.replace(/^(?:17|1T)\s*ELECT\b/i, 'IT ELECT');
+
+  // Heal GECT1 -> GEC 11, GECT(\d) -> GEC 1$1
+  clean = clean.replace(/^GEC\s*T(\d+)/i, 'GEC 1$1');
+
+  // Heal NSTP 1 at start where it should be NSTP 11
+  clean = clean.replace(/^NSTP\s+1\b/i, 'NSTP 11');
 
   // Heal IT 19 -> IT 119 (Bicol University curriculum code)
   clean = clean.replace(/\bIT\s+19\b/i, 'IT 119');
 
-  // Insert space between known prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121"
-  clean = clean.replace(/^(GEC|IT|CS|MATH|ENG|CHEM|BIO|PHYS|PE|NSTP)(\d+)/i, '$1 $2');
+  // Insert space between known prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121", "PATHFIT1" -> "PATHFit 1"
+  clean = clean.replace(/^(GEC|IT|CS|MATH|ENG|CHEM|BIO|PHYS|PE|NSTP|PATHFIT|PATH)(\d+)/i, '$1 $2');
 
   return clean;
 }
@@ -170,7 +186,7 @@ function normalizeUnits(val: string): number {
   if (num >= 10 && num <= 60 && num % 10 === 0) {
     return num / 10;
   }
-  if (num >= 1 && num <= 6) {
+  if (num >= 0 && num <= 6) {
     return num;
   }
   return 3.0;
@@ -226,16 +242,9 @@ function normalizeGrade(val: string): string {
 }
 
 /**
- * Parses raw OCR text into structured Subject records extracting strictly:
- * Code, Course (name), Units, Grade.
- *
- * Employs Right-to-Left Reverse Token Anchoring so numbers inside Course Titles
- * (e.g., "IT Elective 3", "Capstone Project 1", "Information Assurance Security 1")
- * never collide with table numeric columns.
- *
- * Strictly ignores: Lec Units, Lab Units, evaluation status dots, and Remarks (PASSED/FAILED).
+ * Desktop table row parser using Right-to-Left Reverse Token Anchoring.
  */
-export function parseOCRTextToSubjects(rawText: string): Subject[] {
+export function parseDesktopRowLayout(rawText: string): Subject[] {
   const lines = rawText.split('\n');
   const subjects: Subject[] = [];
 
@@ -281,8 +290,6 @@ export function parseOCRTextToSubjects(rawText: string): Subject[] {
 
     // Scenario A: 4 or more tokens (Units, Lec, Lab, Grade [Dot])
     if (tokens.length >= 4) {
-      // If there are 5 or more tokens and the last token is '0', '0.0', or 'o' (the green evaluation dot):
-      // Pop it so it does not shift the table columns!
       if (tokens.length >= 5) {
         const lastTokenStr = tokens[tokens.length - 1][0].trim().toLowerCase();
         if (lastTokenStr === '0' || lastTokenStr === '0.0' || lastTokenStr === 'o') {
@@ -301,21 +308,16 @@ export function parseOCRTextToSubjects(rawText: string): Subject[] {
       const lab = normalizeLabUnits(labToken[0]);
       let grade = normalizeGrade(gradeToken[0]);
 
-      // If grade token was a misread dot (0 or empty), fall back to labToken as the actual grade
       if (!grade || grade === '0' || grade === '0.0') {
         grade = normalizeGrade(labToken[0]);
       }
 
-      // BU Academic Validation: Total Units = Lecture Units + Lab Units
-      // If Total Units was misread as 'an' or less than Lec + Lab, compute sum
       if (lec + lab > 0 && (unitsToken[0] === 'an' || units < lec + lab)) {
         units = lec + lab;
       }
 
-      // Course name is everything between Code end and the first Units token
       const courseEndIdx = unitsToken.index ?? 0;
       let courseName = textAfterCode.substring(0, courseEndIdx).trim();
-      // Clean up any trailing unit tokens like " 3.0" if previously attached to description
       courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
       courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
 
@@ -356,34 +358,242 @@ export function parseOCRTextToSubjects(rawText: string): Subject[] {
 }
 
 /**
- * Deduplicates subjects across multiple overlapping screenshots (e.g. from 2-3 screenshots).
+ * Detects whether OCR text originates from the mobile iBU card-based interface.
+ */
+export function isMobileCardLayout(rawText: string): boolean {
+  return (
+    /\b(?:UNits|Units):\s*[0-9.]+/i.test(rawText) ||
+    /\bLec\s+Units:/i.test(rawText) ||
+    /\bLab\s+Units:/i.test(rawText)
+  );
+}
+
+const cardCodeRegex = /^([A-Z]{2,10}(?:\s+ELECT)?)\s*[-]?\s*(\d+[A-Z]?)\b/i;
+
+/**
+ * Mobile Card Parser for iBU portal screenshots where each course is rendered
+ * across multiple vertical lines with labels (Units, Lec Units, Lab Units, Status).
+ */
+export function parseMobileCardLayout(rawText: string): Subject[] {
+  const lines = rawText.split('\n').map((l) => l.trim()).filter(Boolean);
+  const subjects: Subject[] = [];
+
+  let currentCard: {
+    code: string;
+    headerLine: string;
+    codeEndIndex: number;
+    lines: string[];
+  } | null = null;
+
+  for (let i = 0; i < lines.length; i++) {
+    const rawLine = lines[i];
+    const healed = healOcrLine(rawLine);
+
+    const match = healed.match(cardCodeRegex);
+    let isHeader = false;
+    let codeStr = '';
+
+    if (match) {
+      const prefixStr = match[1].trim().toUpperCase().replace(/\s+/g, ' ');
+      if (KNOWN_BU_PREFIXES.some((p) => prefixStr.startsWith(p) || p.startsWith(prefixStr))) {
+        isHeader = true;
+        codeStr = `${match[1].trim()} ${match[2].trim()}`.toUpperCase().replace(/\s+/g, ' ');
+      }
+    }
+
+    if (isHeader) {
+      if (currentCard && (currentCard.code || currentCard.lines.length > 0)) {
+        subjects.push(finalizeMobileCard(currentCard));
+      }
+      currentCard = {
+        code: codeStr,
+        headerLine: healed,
+        codeEndIndex: match ? match[0].length : 0,
+        lines: [],
+      };
+      continue;
+    }
+
+    if (currentCard) {
+      currentCard.lines.push(rawLine);
+    }
+  }
+
+  if (currentCard && (currentCard.code || currentCard.lines.length > 0)) {
+    subjects.push(finalizeMobileCard(currentCard));
+  }
+
+  return subjects.filter((s) => s.code && (s.name || s.grade));
+}
+
+function finalizeMobileCard(card: {
+  code: string;
+  headerLine: string;
+  codeEndIndex: number;
+  lines: string[];
+}): Subject {
+  const afterCode = card.headerLine.substring(card.codeEndIndex).trim();
+  let grade = '';
+
+  const gradeMatches = [...afterCode.matchAll(/\b([1-5]\.\d+|[1-5]\d{1,2}|INC|DRP)\b/gi)];
+  if (gradeMatches.length > 0) {
+    grade = normalizeGrade(gradeMatches[0][0]);
+  } else if (/\bMe\b/i.test(afterCode)) {
+    grade = '1.1';
+  }
+
+  let courseName = '';
+  let units: number | null = null;
+  let lecUnits: number | null = null;
+  let labUnits: number | null = null;
+
+  for (const line of card.lines) {
+    const labMatch = line.match(/\bLab\s+Units:\s*([0-9.]+)/i);
+    if (labMatch) {
+      labUnits = normalizeLabUnits(labMatch[1]);
+      continue;
+    }
+
+    const lecMatch = line.match(/\bLec\s+Units:\s*([0-9.]+)/i);
+    if (lecMatch) {
+      lecUnits = normalizeUnits(lecMatch[1]);
+      continue;
+    }
+
+    const unitsMatch = line.match(/\b(?:UNits|Units):\s*([0-9.]+)/i);
+    if (unitsMatch) {
+      units = normalizeUnits(unitsMatch[1]);
+      continue;
+    }
+
+    if (/^(?:PASSED|FAILED|INCOMPLETE|DROPPED)/i.test(line)) {
+      continue;
+    }
+
+    if (!courseName && !line.includes('Faculty') && !line.includes('Evaluation') && line.length > 2) {
+      courseName = line.replace(/^[^\w]+|[^\w]+$/g, '').trim();
+    }
+  }
+
+  if (units === null) {
+    if (lecUnits !== null || labUnits !== null) {
+      units = (lecUnits || 0) + (labUnits || 0);
+    } else {
+      units = card.code.startsWith('NSTP') ? 0 : 3.0;
+    }
+  }
+
+  return {
+    code: card.code,
+    name: courseName || 'Imported Course',
+    units: units ?? 3.0,
+    grade: grade || '1.0',
+  };
+}
+
+/**
+ * Parses raw OCR text into structured Subject records.
+ * Automatically switches between Mobile Card Parser and Desktop Table Row Parser.
+ */
+export function parseOCRTextToSubjects(rawText: string): Subject[] {
+  if (isMobileCardLayout(rawText)) {
+    return parseMobileCardLayout(rawText);
+  }
+  return parseDesktopRowLayout(rawText);
+}
+
+function normalizeCode(code: string): string {
+  return code.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function normalizeTitle(name: string): string {
+  return name.toUpperCase().replace(/[^A-Z0-9]/g, '');
+}
+
+function scoreSubjectQuality(sub: Subject): number {
+  let score = 0;
+  const cleanCode = normalizeCode(sub.code);
+  if (cleanCode && cleanCode.length >= 4) score += 10;
+  if (/\b(?:11|12|13|14|15|101|102|103|1|2)\b/.test(sub.code)) score += 5;
+
+  if (sub.name && sub.name !== 'Imported Course' && sub.name.length > 3) {
+    score += 15;
+  }
+
+  if (typeof sub.units === 'number') {
+    if (sub.units > 0) score += 10;
+    else if (sub.units === 0 && cleanCode.startsWith('NSTP')) score += 10;
+  }
+
+  if (sub.grade && sub.grade !== '') {
+    score += 10;
+    if (sub.grade !== '1.0' && sub.grade !== '1') score += 5;
+  }
+
+  return score;
+}
+
+/**
+ * Deduplicates subjects across multiple overlapping screenshots (e.g. from 2-3 screenshots)
+ * using two-tier matching (Course Code + Course Name) and completeness scoring.
  */
 export function mergeMultiScreenshotResults(screenshotBatches: Subject[][]): Subject[] {
   const merged: Subject[] = [];
 
   for (const batch of screenshotBatches) {
     for (const subject of batch) {
-      const cleanCode = normalizeCode(subject.code);
-      if (!cleanCode) continue;
+      const codeKey = normalizeCode(subject.code);
+      const titleKey = normalizeTitle(subject.name);
 
-      const existingIndex = merged.findIndex(
-        (item) => normalizeCode(item.code) === cleanCode,
-      );
+      if (!codeKey && !titleKey) continue;
+
+      // Find match either by Code OR by Course Title
+      const existingIndex = merged.findIndex((item) => {
+        const itemCodeKey = normalizeCode(item.code);
+        const itemTitleKey = normalizeTitle(item.name);
+
+        const codeMatch = Boolean(codeKey && itemCodeKey && codeKey === itemCodeKey);
+        const titleMatch = Boolean(
+          titleKey &&
+          itemTitleKey &&
+          titleKey.length > 5 &&
+          itemTitleKey.length > 5 &&
+          titleKey === itemTitleKey
+        );
+
+        return codeMatch || titleMatch;
+      });
 
       if (existingIndex === -1) {
-        merged.push(subject);
+        merged.push({ ...subject });
       } else {
-        // Overlap row: keep the one with complete data
-        if (!merged[existingIndex].name && subject.name) {
-          merged[existingIndex].name = subject.name;
+        const existing = merged[existingIndex];
+        const existingScore = scoreSubjectQuality(existing);
+        const newScore = scoreSubjectQuality(subject);
+
+        if (newScore > existingScore) {
+          // Replace with higher quality card, keeping any missing fields from existing
+          merged[existingIndex] = {
+            code: subject.code || existing.code,
+            name: (subject.name && subject.name !== 'Imported Course') ? subject.name : existing.name,
+            units: (subject.units !== undefined && subject.units !== null) ? subject.units : existing.units,
+            grade: subject.grade || existing.grade,
+          };
+        } else {
+          // Keep existing, merge any missing fields from new subject
+          if ((!existing.name || existing.name === 'Imported Course') && subject.name) {
+            existing.name = subject.name;
+          }
+          if ((!existing.grade || existing.grade === '1.0') && subject.grade && subject.grade !== '1.0') {
+            existing.grade = subject.grade;
+          }
+          if ((existing.units === undefined || existing.units === null) && subject.units !== undefined) {
+            existing.units = subject.units;
+          }
         }
       }
     }
   }
 
   return merged;
-}
-
-function normalizeCode(code: string): string {
-  return code.toUpperCase().replace(/[^A-Z0-9]/g, '');
 }
