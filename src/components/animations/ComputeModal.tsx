@@ -15,14 +15,17 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
 }) => {
   const [animation, setAnimation] = useState<AnimationEntry | null>(null);
   const [progress, setProgress] = useState(0);
+  const onCompleteRef = React.useRef(onComplete);
+  onCompleteRef.current = onComplete;
 
   useEffect(() => {
     if (!isOpen) {
       setProgress(0);
+      setAnimation(null);
       return;
     }
 
-    // Pick random non-repeating animation on every open!
+    // Pick random non-repeating animation from the shuffle bag on open
     const anim = getRandomAnimation('compute');
     setAnimation(anim);
     setProgress(0);
@@ -37,7 +40,7 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
         if (next >= 100) {
           clearInterval(timer);
           setTimeout(() => {
-            onComplete();
+            onCompleteRef.current();
           }, 150);
           return 100;
         }
@@ -48,7 +51,7 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
     return () => {
       clearInterval(timer);
     };
-  }, [isOpen, onComplete]);
+  }, [isOpen]);
 
   if (!isOpen || !animation) return null;
 
@@ -64,7 +67,7 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
           boxShadow: 'var(--shadow-lg)',
         }}
       >
-        <LottieLoader data={animation.data} src={animation.src} className="w-40 h-40" />
+        <LottieLoader key={animation.id} data={animation.data} src={animation.src} className="w-40 h-40" />
 
         <h3
           style={{

@@ -33,14 +33,13 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
 
     // If src is already a direct JSON object or local path
     if (src && (src.startsWith('http') || src.endsWith('.json'))) {
-
       fetch(src)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
-        .then((data) => {
-          if (isMounted) setAnimationData(data);
+        .then((fetched) => {
+          if (isMounted) setAnimationData(fetched);
         })
         .catch(() => {
           if (isMounted) setHasError(true);
@@ -50,9 +49,11 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
     return () => {
       isMounted = false;
     };
-  }, [src]);
+  }, [src, data]);
 
-  if (hasError || !animationData) {
+  const activeData = data || animationData;
+
+  if (hasError || !activeData) {
     return (
       <div className={`flex flex-col items-center justify-center ${className}`}>
         {fallbackIcon || (
@@ -67,7 +68,7 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
 
   return (
     <div className={`flex items-center justify-center ${className}`}>
-      <Lottie animationData={animationData} loop={loop} autoplay={autoplay} />
+      <Lottie animationData={activeData} loop={loop} autoplay={autoplay} />
     </div>
   );
 };

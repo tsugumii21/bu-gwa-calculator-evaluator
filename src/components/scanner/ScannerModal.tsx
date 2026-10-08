@@ -140,7 +140,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
     onClose();
   };
 
-  const scanAnimation = getRandomAnimation('scan');
+  const scanAnimation = React.useMemo(() => getRandomAnimation('scan'), [isOpen]);
 
   return (
     <div
@@ -338,7 +338,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
           {/* ── PROCESSING SPINNER / LOTTIE ── */}
           {isProcessing && (
             <div style={{ padding: '24px 0', display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center' }}>
-              <LottieLoader data={scanAnimation.data} src={scanAnimation.src} className="w-32 h-32" />
+              <LottieLoader key={scanAnimation.id} data={scanAnimation.data} src={scanAnimation.src} className="w-32 h-32" />
 
               <span style={{ marginTop: 10, fontSize: '0.88rem', fontWeight: 700, color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <i className="fa-solid fa-spinner fa-spin text-gold"></i>
