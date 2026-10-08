@@ -3,6 +3,7 @@ import onlineTestAnim from '../../assets/animations/online-test.json';
 import onlineResultAnim from '../../assets/animations/online-result.json';
 import girlPhoneAnim from '../../assets/animations/girl-phone.json';
 import mathCrunchAnim from '../../assets/animations/math-crunch.json';
+import deskStudyAnim from '../../assets/animations/desk-study.json';
 
 export type AnimationCategory = 'compute' | 'scan' | 'success' | 'import' | 'empty';
 
@@ -14,7 +15,7 @@ export interface AnimationEntry {
   category: AnimationCategory;
 }
 
-// 5 New Local Lottie Animations (100% offline, zero network requests)
+// 6 Local Lottie Animations (100% offline, zero network requests)
 export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
   compute: [
     {
@@ -45,6 +46,12 @@ export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
       id: 'girl-phone',
       name: 'Analyzing University Course Records',
       data: girlPhoneAnim,
+      category: 'compute',
+    },
+    {
+      id: 'desk-study',
+      name: 'Evaluating Academic Trajectory',
+      data: deskStudyAnim,
       category: 'compute',
     },
   ],
