@@ -35,8 +35,11 @@ export const DashboardStrip: React.FC = () => {
   const gwaDisplay = hasComputedGrades
     ? computedStats.cumulativeGWA.toFixed(4)
     : '0.0000';
+  const formattedGradedUnits = computedStats.gradedUnits.toFixed(
+    computedStats.gradedUnits % 1 === 0 ? 0 : 1,
+  );
   const gwaSubtext = hasComputedGrades
-    ? `${computedStats.gradedUnits.toFixed(1)}u · ${computedCount} term${computedCount > 1 ? 's' : ''}`
+    ? `${formattedGradedUnits} units · ${computedCount} term${computedCount > 1 ? 's' : ''}`
     : 'Awaiting computation';
 
   // 2. Semestral Honor (PL / DL) — Evaluates latest computed term
