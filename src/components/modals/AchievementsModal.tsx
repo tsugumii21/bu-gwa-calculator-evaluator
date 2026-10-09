@@ -230,7 +230,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                       statusBadge = 'badge-close';
                     }
                   } else if (sem.underload) {
-                    statusTitle = 'Balanced Pace Bueño';
+                    statusTitle = 'Underloaded Term';
                     statusBadge = 'badge-warning';
                   } else if (hasFailOrInc) {
                     statusTitle = 'Academic Deficiency Detected';

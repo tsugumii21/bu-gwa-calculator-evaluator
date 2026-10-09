@@ -13,7 +13,7 @@ export const PoliciesView: React.FC = () => {
       {/* SECTION 1: OFFICIAL GRADING SCALE */}
       <div className="guide-section">
         <h3 className="guide-section-title"><i className="fa-solid fa-table-list text-primary"></i> Official Academic Grading Scale</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', background: 'rgba(37,99,235,0.1)', border: '1px solid rgba(37,99,235,0.25)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', color: 'var(--bu-azure)', fontWeight: 700, marginBottom: '14px' }}>
+        <div className="policy-citation-banner banner-blue">
           <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VI, Section 13–15 (Page 28) · BOR Res. 89 s. 2006
         </div>
         <p className="guide-note">Official grade ratings, percentage equivalents, and adjectival descriptions as defined in the Bicol University grading system:</p>
@@ -80,7 +80,7 @@ export const PoliciesView: React.FC = () => {
       {/* SECTION 2: SEMESTER ACADEMIC RECOGNITION CRITERIA TABLE */}
       <div className="guide-section">
         <h3 className="guide-section-title"><i className="fa-solid fa-star text-gold"></i> Semester Academic Recognition Criteria (PL & DL)</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', background: 'rgba(245,158,11,0.12)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', color: '#b45309', fontWeight: 700, marginBottom: '14px' }}>
+        <div className="policy-citation-banner banner-gold">
           <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII, Section 28–29 (Page 34–35)
         </div>
         <p className="guide-note">Official per-semester honor roll cutoffs and individual subject grade caps per Bicol University Academic Policies:</p>
@@ -96,13 +96,13 @@ export const PoliciesView: React.FC = () => {
             </thead>
             <tbody>
               <tr>
-                <td><strong style={{ color: '#b45309' }}>President's Lister (PL)</strong></td>
+                <td><strong className="honor-text-pl">President's Lister (PL)</strong></td>
                 <td><strong>1.0000 – 1.4500</strong></td>
                 <td><strong>Max 1.75</strong> (No subject below 1.75)</td>
                 <td>Full regular academic load, zero 5.0 or INC marks</td>
               </tr>
               <tr>
-                <td><strong style={{ color: 'var(--honor-cum)' }}>Dean's Lister (DL)</strong></td>
+                <td><strong className="honor-text-dl">Dean's Lister (DL)</strong></td>
                 <td><strong>1.4600 – 1.7500</strong></td>
                 <td><strong>Max 2.50</strong> (No subject below 2.50)</td>
                 <td>Full regular academic load, zero 5.0 or INC marks</td>
@@ -115,7 +115,7 @@ export const PoliciesView: React.FC = () => {
       {/* SECTION 3: LATIN GRADUATION HONORS CRITERIA TABLE */}
       <div className="guide-section">
         <h3 className="guide-section-title"><i className="fa-solid fa-graduation-cap text-gold"></i> Exact Bicol University Latin Graduation Honors Criteria</h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 14px', background: 'rgba(234,88,12,0.1)', border: '1px solid rgba(234,88,12,0.3)', borderRadius: 'var(--radius-sm)', fontSize: '0.82rem', color: 'var(--bu-orange)', fontWeight: 700, marginBottom: '14px' }}>
+        <div className="policy-citation-banner banner-orange">
           <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII, Section 30 (Page 36)
         </div>
         <p className="guide-note">Official graduation honor cutoffs and eligibility requirements per the Bicol University Student Handbook:</p>
@@ -130,17 +130,17 @@ export const PoliciesView: React.FC = () => {
             </thead>
             <tbody>
               <tr>
-                <td><strong style={{ color: 'var(--honor-summa)' }}>Summa Cum Laude</strong></td>
+                <td><strong className="honor-text-summa">Summa Cum Laude</strong></td>
                 <td><strong>1.0000 – 1.2500</strong></td>
                 <td>Full regular load every semester, zero 5.0 or INC marks</td>
               </tr>
               <tr>
-                <td><strong style={{ color: 'var(--honor-magna)' }}>Magna Cum Laude</strong></td>
+                <td><strong className="honor-text-magna">Magna Cum Laude</strong></td>
                 <td><strong>1.2501 – 1.4500</strong></td>
                 <td>Full regular load every semester, zero 5.0 or INC marks</td>
               </tr>
               <tr>
-                <td><strong style={{ color: 'var(--honor-cum)' }}>Cum Laude</strong></td>
+                <td><strong className="honor-text-cum">Cum Laude</strong></td>
                 <td><strong>1.4501 – 1.7500</strong></td>
                 <td>Full regular load every semester, zero 5.0 or INC marks</td>
               </tr>

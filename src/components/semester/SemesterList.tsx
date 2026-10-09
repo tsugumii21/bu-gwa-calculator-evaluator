@@ -32,18 +32,17 @@ export const SemesterList: React.FC<SemesterListProps> = ({
   }, [lastComputedAt, semesters]);
 
 
-  // Helper: computed terms collapse by default; draft/uncomputed remain open
+  // Semester cards remain expanded by default even after computation
   const isSemCollapsed = (sem: (typeof semesters)[0]): boolean => {
     if (collapsedMap[sem.id] !== undefined) {
       return collapsedMap[sem.id];
     }
-    return Boolean(sem.computed);
+    return false;
   };
 
   const toggleSemester = (id: string) => {
     setCollapsedMap((prev) => {
-      const sem = semesters.find((s) => s.id === id);
-      const current = prev[id] !== undefined ? prev[id] : Boolean(sem?.computed);
+      const current = prev[id] !== undefined ? prev[id] : false;
       return { ...prev, [id]: !current };
     });
   };

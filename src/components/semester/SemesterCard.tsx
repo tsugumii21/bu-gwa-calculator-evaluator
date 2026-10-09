@@ -30,7 +30,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     computeSemester,
   } = useSemesterStore();
 
-  const [localCollapsed, setLocalCollapsed] = useState<boolean>(() => Boolean(semester.computed));
+  const [localCollapsed, setLocalCollapsed] = useState<boolean>(false);
   const isCollapsed = collapsed !== undefined ? collapsed : localCollapsed;
 
   const handleToggleCollapse = () => {
@@ -89,7 +89,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
         pillClass = 'sem-pill-dl';
       }
     } else if (semester.underload) {
-      honorCode = 'Balanced Pace Bueño';
+      honorCode = 'Underloaded Term';
       pillClass = 'sem-pill-warning';
     } else if (hasFailOrInc) {
       honorCode = 'Good Academic Standing';
@@ -124,10 +124,6 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     setIsComputing(false);
     computeSemester(semester.id);
     setIsTermHonorOpen(true);
-    // Auto-collapse computed terms per user preference
-    if (!isCollapsed) {
-      handleToggleCollapse();
-    }
   };
 
   return (

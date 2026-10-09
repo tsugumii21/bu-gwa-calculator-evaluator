@@ -580,7 +580,7 @@ export const AboutView: React.FC = () => {
                   <div className="guide-mockup-slide active">
                     <div className="guide-mockup-info">
                       <h4>Step 2: Managing Semester Accordions & Grade Ingestion</h4>
-                      <p>Enter course details, select official grades (1.00 to 5.00, INC, or DRP), and set credit units. Click <strong>Compute GPA</strong> on individual cards to lock calculations, or click <strong>Compute Overall GWA</strong> in the list header to evaluate all semesters at once. Computed cards automatically collapse to save vertical screen real estate.</p>
+                      <p>Enter course details, select official grades (1.00 to 5.00, INC, or DRP), and set credit units. Click <strong>Compute GPA</strong> on individual cards to lock calculations, or click <strong>Compute Overall GWA</strong> in the list header to evaluate all semesters at once. Cards remain open after computation and can be toggled via Expand / Collapse controls.</p>
                     </div>
                     <div className="css-mockup-wrapper">
                       <div className="mockup-sem-card">
@@ -695,7 +695,7 @@ export const AboutView: React.FC = () => {
                         <i className="fa-solid fa-table-list text-primary"></i> 2. Accordions & Grading
                       </h4>
                       <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', lineHeight: 1.45, marginBottom: 14 }}>
-                        Input numeric marks and credit units. Semester cards collapse automatically once computed to keep your view compact and clean.
+                        Input numeric marks and credit units. Semester cards remain open after computation, with individual and global Collapse controls available.
                       </p>
                       <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
                         <span className="btn btn-gold btn-sm" style={{ fontSize: '0.75rem' }}><i className="fa-solid fa-calculator"></i> Compute GPA</span>

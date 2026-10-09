@@ -67,12 +67,12 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
     if (category === 'REGULAR') {
       if (semester.underload) {
         category = 'UNDERLOAD';
-        title = 'Balanced Pace Bueño';
+        title = 'Underloaded Term';
         badgeClass = 'card-amber';
         icon = 'fa-scale-balanced';
-        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Custom Load Term`;
+        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Underloaded Term`;
         headerIcon = 'fa-scale-balanced text-warning';
-        headerText = 'Balanced Load Term Summary';
+        headerText = 'Underloaded Term Summary';
       } else if (hasFailOrInc) {
         subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Disqualified due to 5.0 / INC grade`;
       }

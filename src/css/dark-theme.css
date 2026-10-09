@@ -115,6 +115,40 @@
     color: #f1f5f9;
 }
 
+/* Policy Guide Citation Banners in Dark Mode */
+[data-theme="dark"] .policy-citation-banner.banner-blue {
+    background: rgba(37, 99, 235, 0.18);
+    border-color: rgba(96, 165, 250, 0.35);
+    color: #93c5fd !important;
+}
+
+[data-theme="dark"] .policy-citation-banner.banner-gold {
+    background: rgba(245, 158, 11, 0.18);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #fde047 !important;
+}
+
+[data-theme="dark"] .policy-citation-banner.banner-orange {
+    background: rgba(234, 88, 12, 0.18);
+    border-color: rgba(251, 146, 60, 0.35);
+    color: #fdba74 !important;
+}
+
+/* Policy Table Honor Text in Dark Mode (High-contrast WCAG AAA) */
+[data-theme="dark"] .honor-text-pl,
+[data-theme="dark"] .honor-text-summa {
+    color: #fbbf24 !important;
+}
+
+[data-theme="dark"] .honor-text-dl,
+[data-theme="dark"] .honor-text-cum {
+    color: #60a5fa !important;
+}
+
+[data-theme="dark"] .honor-text-magna {
+    color: #fb923c !important;
+}
+
 /* ==========================================================================
    About Page: Hero Box, Feature Cards & Developer Section
    ========================================================================== */
