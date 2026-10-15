@@ -11,6 +11,9 @@ interface LottieLoaderProps {
   fallbackIcon?: React.ReactNode;
 }
 
+// In-memory cache for fetched animation JSONs (zero latency on repeat calculations)
+const lottieJsonCache = new Map<string, object>();
+
 export const LottieLoader: React.FC<LottieLoaderProps> = ({
   src,
   data,
@@ -19,7 +22,11 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
   autoplay = true,
   fallbackIcon,
 }) => {
-  const [animationData, setAnimationData] = useState<object | null>(data || null);
+  const [animationData, setAnimationData] = useState<object | null>(() => {
+    if (data) return data;
+    if (src && lottieJsonCache.has(src)) return lottieJsonCache.get(src)!;
+    return null;
+  });
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -28,17 +35,24 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
       return;
     }
 
+    if (!src) return;
+
+    if (lottieJsonCache.has(src)) {
+      setAnimationData(lottieJsonCache.get(src)!);
+      return;
+    }
+
     let isMounted = true;
     setHasError(false);
 
-    // If src is already a direct JSON object or local path
-    if (src && (src.startsWith('http') || src.endsWith('.json'))) {
+    if (src.startsWith('http') || src.includes('.json')) {
       fetch(src)
         .then((res) => {
           if (!res.ok) throw new Error(`HTTP ${res.status}`);
           return res.json();
         })
         .then((fetched) => {
+          lottieJsonCache.set(src, fetched);
           if (isMounted) setAnimationData(fetched);
         })
         .catch(() => {

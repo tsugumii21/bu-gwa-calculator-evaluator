@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   onConfirm,
   onCancel,
 }) => {
+  const dialogRef = useAccessibleDialog(isOpen, onCancel);
+
   if (!isOpen) return null;
 
   return (
@@ -30,6 +33,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
+      ref={dialogRef}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}

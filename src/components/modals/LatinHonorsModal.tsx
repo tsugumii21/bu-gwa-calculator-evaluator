@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSemesterStore } from '../../store';
 import { calculateCumulativeStats } from '../../core/gwa-engine';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 
 interface LatinHonorsModalProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
 }) => {
   const semesters = useSemesterStore((s) => s.semesters);
   const computeSemester = useSemesterStore((s) => s.computeSemester);
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
 
   if (!isOpen) return null;
 
@@ -35,6 +37,7 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title-latin"
+      ref={dialogRef}
       onClick={onClose}
     >
       <div

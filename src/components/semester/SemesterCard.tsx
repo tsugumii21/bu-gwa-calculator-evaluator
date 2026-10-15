@@ -230,11 +230,11 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
               <table className="subject-table">
                 <thead>
                   <tr>
-                    <th style={{ width: '22%' }}>Course Code (Optional)</th>
-                    <th style={{ width: '43%' }}>Course Description</th>
-                    <th style={{ width: '17%' }}>Grade Rating</th>
-                    <th style={{ width: '10%' }}>Credit Units</th>
-                    <th style={{ width: '8%', textAlign: 'center' }}>Action</th>
+                    <th scope="col" style={{ width: '22%' }}>Course Code (Optional)</th>
+                    <th scope="col" style={{ width: '43%' }}>Course Description</th>
+                    <th scope="col" style={{ width: '17%' }}>Grade Rating</th>
+                    <th scope="col" style={{ width: '10%' }}>Credit Units</th>
+                    <th scope="col" style={{ width: '8%', textAlign: 'center' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>

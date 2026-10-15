@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { LottieLoader } from './LottieLoader';
 import { getRandomAnimation, type AnimationEntry } from './animations';
 
@@ -8,6 +8,9 @@ interface ComputeModalProps {
   termTitle?: string;
 }
 
+const TOTAL_DURATION_MS = 2500;
+const TICK_INTERVAL_MS = 20;
+
 export const ComputeModal: React.FC<ComputeModalProps> = ({
   isOpen,
   onComplete,
@@ -15,72 +18,134 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
 }) => {
   const [animation, setAnimation] = useState<AnimationEntry | null>(null);
   const [progress, setProgress] = useState(0);
-  const onCompleteRef = React.useRef(onComplete);
+  const onCompleteRef = useRef(onComplete);
   onCompleteRef.current = onComplete;
+  const isFinishedRef = useRef(false);
+
+  const handleFinish = useCallback(() => {
+    if (isFinishedRef.current) return;
+    isFinishedRef.current = true;
+    onCompleteRef.current();
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
       setProgress(0);
       setAnimation(null);
+      isFinishedRef.current = false;
       return;
     }
 
-    // Pick random non-repeating animation from the shuffle bag on open
+    // Accessibility: Instant bypass for users with reduced motion preferences
+    const prefersReducedMotion =
+      typeof window !== 'undefined' &&
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (prefersReducedMotion) {
+      handleFinish();
+      return;
+    }
+
+    // Pick a non-consecutive animation from the shuffle bag
     const anim = getRandomAnimation('compute');
     setAnimation(anim);
     setProgress(0);
+    isFinishedRef.current = false;
 
-    const DURATION = 2700; // Exact 2.7 seconds requested
-    const INTERVAL = 30;
-    const increment = 100 / (DURATION / INTERVAL);
-
+    const startTime = performance.now();
     const timer = setInterval(() => {
-      setProgress((prev) => {
-        const next = prev + increment;
-        if (next >= 100) {
-          clearInterval(timer);
-          setTimeout(() => {
-            onCompleteRef.current();
-          }, 150);
-          return 100;
-        }
-        return next;
-      });
-    }, INTERVAL);
+      const elapsed = performance.now() - startTime;
+      const pct = Math.min(100, Math.round((elapsed / TOTAL_DURATION_MS) * 100));
+      setProgress(pct);
+
+      if (pct >= 100) {
+        clearInterval(timer);
+        setTimeout(handleFinish, 120);
+      }
+    }, TICK_INTERVAL_MS);
+
+    // Escape listener to skip immediately if in a hurry
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        clearInterval(timer);
+        handleFinish();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
 
     return () => {
       clearInterval(timer);
+      window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, handleFinish]);
 
   if (!isOpen || !animation) return null;
 
   return (
-    <div className="modal-overlay" role="dialog" aria-modal="true" style={{ zIndex: 1100 }}>
+    <div
+      className="modal-overlay"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Computing ${termTitle}`}
+      style={{ zIndex: 1100 }}
+      onClick={handleFinish}
+    >
       <div
         className="modal-content compute-modal-content animate__animated animate__zoomIn animate__faster"
         style={{
+          position: 'relative',
           maxWidth: 420,
           textAlign: 'center',
           alignItems: 'center',
           margin: 'auto',
           boxShadow: 'var(--shadow-lg)',
         }}
+        onClick={(e) => e.stopPropagation()}
       >
-        <LottieLoader key={animation.id} data={animation.data} src={animation.src} className="w-40 h-40" />
+        {/* Top-Right Corner Pill with ESC Badge (Desktop only) */}
+        <button
+          type="button"
+          onClick={handleFinish}
+          aria-label="Skip computation animation"
+          className="compute-skip-btn-desktop"
+        >
+          <span>Skip</span>
+          <kbd
+            style={{
+              fontSize: '0.62rem',
+              padding: '1px 5px',
+              borderRadius: 4,
+              background: 'var(--card-bg)',
+              border: '1px solid var(--border-color)',
+              color: 'var(--text-muted)',
+              fontWeight: 700,
+              fontFamily: 'monospace',
+              lineHeight: 1.2,
+            }}
+          >
+            ESC
+          </kbd>
+        </button>
+
+        <LottieLoader
+          key={animation.id}
+          data={animation.data}
+          src={animation.src}
+          className="w-36 h-36"
+        />
 
         <h3
           style={{
             fontFamily: 'var(--font-display)',
-            fontSize: '1.25rem',
+            fontSize: '1.2rem',
             fontWeight: 800,
-            marginTop: 12,
+            marginTop: 10,
             color: 'var(--text-primary)',
           }}
         >
           Computing {termTitle}
         </h3>
-        <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: 4 }}>
+        <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', marginTop: 4 }}>
           Applying Bicol University 4-decimal weighting engine...
         </p>
 
@@ -88,7 +153,7 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
         <div
           style={{
             width: '100%',
-            marginTop: 16,
+            marginTop: 14,
             background: 'var(--card-header-bg)',
             borderRadius: 10,
             height: 8,
@@ -100,15 +165,34 @@ export const ComputeModal: React.FC<ComputeModalProps> = ({
               background: 'linear-gradient(90deg, var(--bu-orange), var(--bu-gold))',
               height: '100%',
               borderRadius: 10,
-              transition: 'width 0.05s linear',
+              transition: 'width 0.04s linear',
               width: `${Math.min(100, Math.round(progress))}%`,
             }}
           />
         </div>
 
-        <span style={{ marginTop: 8, fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-muted)' }}>
-          {Math.min(100, Math.round(progress))}% · {animation.name}
-        </span>
+        {/* Footer Status Bar: Centered on desktop, space-between with Skip pill on mobile */}
+        <div className="compute-footer-status">
+          <span
+            style={{
+              fontSize: '0.74rem',
+              fontFamily: 'monospace',
+              color: 'var(--text-muted)',
+              textAlign: 'left',
+            }}
+          >
+            {Math.min(100, Math.round(progress))}% · {animation.name}
+          </span>
+          <button
+            type="button"
+            onClick={handleFinish}
+            aria-label="Skip animation"
+            className="compute-skip-btn-mobile"
+          >
+            <span>Skip</span>
+            <i className="fa-solid fa-angles-right" style={{ fontSize: '0.62rem' }}></i>
+          </button>
+        </div>
       </div>
     </div>
   );

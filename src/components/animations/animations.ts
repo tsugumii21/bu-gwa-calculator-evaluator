@@ -1,9 +1,8 @@
-import studentAnim from '../../assets/animations/student.json';
-import onlineTestAnim from '../../assets/animations/online-test.json';
-import onlineResultAnim from '../../assets/animations/online-result.json';
-import girlPhoneAnim from '../../assets/animations/girl-phone.json';
-import mathCrunchAnim from '../../assets/animations/math-crunch.json';
-import deskStudyAnim from '../../assets/animations/desk-study.json';
+import studentAnimUrl from '../../assets/animations/student.json?url';
+import onlineTestAnimUrl from '../../assets/animations/online-test.json?url';
+import girlPhoneAnimUrl from '../../assets/animations/girl-phone.json?url';
+import mathCrunchAnimUrl from '../../assets/animations/math-crunch.json?url';
+import deskStudyAnimUrl from '../../assets/animations/desk-study.json?url';
 
 export type AnimationCategory = 'compute' | 'scan' | 'success' | 'import' | 'empty';
 
@@ -11,47 +10,41 @@ export interface AnimationEntry {
   id: string;
   name: string;
   src?: string;
-  data: object;
+  data?: object;
   category: AnimationCategory;
 }
 
-// 6 Local Lottie Animations (100% offline, zero network requests)
+// 5 Local Lottie Animations loaded on demand via static URLs (zero main-bundle bloat)
 export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
   compute: [
     {
       id: 'math-crunch',
       name: 'Calculating Academic Metrics',
-      data: mathCrunchAnim,
+      src: mathCrunchAnimUrl,
       category: 'compute',
     },
     {
       id: 'student-focus',
       name: 'Student Focusing',
-      data: studentAnim,
+      src: studentAnimUrl,
       category: 'compute',
     },
     {
       id: 'online-test',
       name: 'Evaluating Academic Records',
-      data: onlineTestAnim,
-      category: 'compute',
-    },
-    {
-      id: 'online-result',
-      name: 'Computing Honor Standing',
-      data: onlineResultAnim,
+      src: onlineTestAnimUrl,
       category: 'compute',
     },
     {
       id: 'girl-phone',
       name: 'Analyzing University Course Records',
-      data: girlPhoneAnim,
+      src: girlPhoneAnimUrl,
       category: 'compute',
     },
     {
       id: 'desk-study',
       name: 'Evaluating Academic Trajectory',
-      data: deskStudyAnim,
+      src: deskStudyAnimUrl,
       category: 'compute',
     },
   ],
@@ -59,27 +52,21 @@ export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
     {
       id: 'online-test',
       name: 'Scanning Academic Document',
-      data: onlineTestAnim,
+      src: onlineTestAnimUrl,
       category: 'scan',
     },
     {
       id: 'girl-phone',
       name: 'Processing Grade Screenshot',
-      data: girlPhoneAnim,
+      src: girlPhoneAnimUrl,
       category: 'scan',
     },
   ],
   success: [
     {
-      id: 'online-result',
-      name: 'Computation Complete',
-      data: onlineResultAnim,
-      category: 'success',
-    },
-    {
       id: 'student-focus',
       name: 'Academic Standing Verified',
-      data: studentAnim,
+      src: studentAnimUrl,
       category: 'success',
     },
   ],
@@ -87,13 +74,13 @@ export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
     {
       id: 'math-crunch',
       name: 'Batch Ingesting Semesters',
-      data: mathCrunchAnim,
+      src: mathCrunchAnimUrl,
       category: 'import',
     },
     {
       id: 'girl-phone',
       name: 'Importing Course Data',
-      data: girlPhoneAnim,
+      src: girlPhoneAnimUrl,
       category: 'import',
     },
   ],
@@ -101,7 +88,7 @@ export const ANIMATION_REGISTRY: Record<AnimationCategory, AnimationEntry[]> = {
     {
       id: 'student-focus',
       name: 'Awaiting Course Input',
-      data: studentAnim,
+      src: studentAnimUrl,
       category: 'empty',
     },
   ],

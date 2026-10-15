@@ -14,27 +14,46 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
   onUpdate,
   onRemove,
 }) => {
+  const [localCode, setLocalCode] = React.useState(subject.code || '');
+  const [localName, setLocalName] = React.useState(subject.name || '');
+
+  React.useEffect(() => {
+    setLocalCode(subject.code || '');
+  }, [subject.code]);
+
+  React.useEffect(() => {
+    setLocalName(subject.name || '');
+  }, [subject.name]);
+
+  const rowIdentifier = subject.code ? subject.code : `Row ${index + 1}`;
+
   return (
     <tr>
       <td style={{ width: '22%' }}>
         <input
           type="text"
           className="form-control-sm"
-          value={subject.code}
+          value={localCode}
           placeholder="e.g. CS 111 (Optional)"
-          onChange={(e) => onUpdate('code', e.target.value)}
+          onChange={(e) => setLocalCode(e.target.value)}
+          onBlur={() => {
+            if (localCode !== subject.code) onUpdate('code', localCode);
+          }}
           autoComplete="off"
-          aria-label="Course Code (Optional)"
+          aria-label={`Course Code for ${rowIdentifier}`}
         />
       </td>
       <td style={{ width: '43%' }}>
         <input
           type="text"
           className="form-control-sm"
-          value={subject.name}
+          value={localName}
           placeholder="e.g. Computer Programming"
-          onChange={(e) => onUpdate('name', e.target.value)}
-          aria-label="Course Description"
+          onChange={(e) => setLocalName(e.target.value)}
+          onBlur={() => {
+            if (localName !== subject.name) onUpdate('name', localName);
+          }}
+          aria-label={`Course Description for ${rowIdentifier}`}
         />
       </td>
       <td style={{ width: '17%' }}>
@@ -46,7 +65,7 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           inputMode="decimal"
           onChange={(e) => onUpdate('grade', e.target.value)}
           autoComplete="off"
-          aria-label="Grade Rating"
+          aria-label={`Grade Rating for ${rowIdentifier}`}
         />
       </td>
       <td style={{ width: '10%' }}>
@@ -59,17 +78,18 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           step="0.5"
           inputMode="decimal"
           placeholder="e.g. 3"
-          onChange={(e) => onUpdate('units', parseFloat(e.target.value) || 0)}
-          aria-label="Credit Units"
+          onChange={(e) => onUpdate('units', Math.max(0, parseFloat(e.target.value) || 0))}
+          aria-label={`Credit Units for ${rowIdentifier}`}
         />
       </td>
       <td style={{ width: '8%', textAlign: 'center' }}>
         <button
           type="button"
           className="btn btn-danger btn-sm"
+          style={{ minWidth: 36, minHeight: 36, margin: 'auto' }}
           onClick={onRemove}
           title="Remove Subject"
-          aria-label={`Remove subject ${subject.code || index + 1}`}
+          aria-label={`Remove subject ${rowIdentifier}`}
         >
           <i className="fa-solid fa-xmark"></i>
         </button>

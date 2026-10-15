@@ -137,15 +137,17 @@ export async function scanScreenshotCanvas(
     },
   });
 
-  await worker.setParameters({
-    tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
-    preserve_interword_spaces: '1',
-  });
+  try {
+    await worker.setParameters({
+      tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+      preserve_interword_spaces: '1',
+    });
 
-  const { data } = await worker.recognize(canvas);
-  await worker.terminate();
-
-  return parseOCRTextToSubjects(data.text);
+    const { data } = await worker.recognize(canvas);
+    return parseOCRTextToSubjects(data.text);
+  } finally {
+    await worker.terminate();
+  }
 }
 
 /**

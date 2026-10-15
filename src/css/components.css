@@ -61,13 +61,7 @@
     font-size: 2.2rem;
     color: #ffffff;
     margin-bottom: var(--space-md);
-    box-shadow: 0 8px 20px rgba(234, 88, 12, 0.45);
-    animation: pulseGlow 3s infinite ease-in-out;
-}
-
-@keyframes pulseGlow {
-    0%, 100% { box-shadow: 0 8px 20px rgba(234, 88, 12, 0.45); transform: scale(1); }
-    50% { box-shadow: 0 12px 28px rgba(245, 158, 11, 0.65); transform: scale(1.04); }
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25);
 }
 
 .welcome-title {
@@ -76,15 +70,7 @@
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 6px;
-    background: linear-gradient(135deg, var(--bu-blue), var(--bu-azure));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-[data-theme="dark"] .welcome-title {
-    background: linear-gradient(135deg, #60a5fa, #93c5fd);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--text-primary);
 }
 
 .welcome-subtitle {
@@ -491,17 +477,136 @@
     color: var(--text-secondary);
 }
 
-/* Dashboard Summary Cards */
+/* Dashboard Summary Cards — 1-Hero + 4-Supporting Asymmetric Grid */
 .dashboard-summary {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-    gap: 10px;
+    gap: 12px;
     margin-bottom: var(--space-md);
 }
 
 @media (min-width: 1024px) {
     .dashboard-summary {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: 1.35fr 1fr 1fr;
+        grid-template-rows: auto auto;
+    }
+    #card-gwa.summary-card-hero {
+        grid-column: 1 / 2;
+        grid-row: 1 / 3;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 20px 22px;
+        min-height: 152px;
+    }
+    #card-gwa .hero-header-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        width: 100%;
+    }
+    #card-gwa .hero-icon-circle {
+        width: 32px;
+        height: 32px;
+        border-radius: var(--radius-sm);
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        color: var(--bu-azure);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+    #card-gwa .hero-label {
+        font-size: 0.70rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--text-secondary);
+        margin: 0;
+        padding-right: 28px;
+        line-height: 1.2;
+    }
+    #card-gwa .hero-body {
+        margin: 6px 0 2px 0;
+        text-align: left;
+        width: 100%;
+    }
+    #card-gwa .summary-value.hero-gwa-val {
+        font-family: var(--font-display);
+        font-size: 2.35rem;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        line-height: 1.05;
+        color: var(--text-primary);
+        text-align: left;
+        display: block;
+        margin: 0;
+    }
+    #card-gwa .hero-footer {
+        width: 100%;
+        text-align: left;
+    }
+    #card-gwa .hero-footer .summary-subtext {
+        font-size: 0.74rem;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-align: left;
+    }
+}
+
+@media (max-width: 1023px) {
+    #card-gwa.summary-card-hero {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 12px 14px;
+        gap: 4px;
+    }
+    #card-gwa .hero-header-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+    }
+    #card-gwa .hero-icon-circle {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
+        background: rgba(59, 130, 246, 0.12);
+        border: 1px solid rgba(59, 130, 246, 0.28);
+        color: var(--bu-azure);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 0.8rem;
+    }
+    #card-gwa .hero-label {
+        font-size: 0.65rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        color: var(--text-secondary);
+        margin: 0;
+        padding-right: 22px;
+    }
+    #card-gwa .summary-value.hero-gwa-val {
+        font-family: var(--font-display);
+        font-size: 1.35rem;
+        font-weight: 800;
+        line-height: 1.15;
+        color: var(--text-primary);
+        text-align: left;
+        display: block;
+        margin: 2px 0 0 0;
+    }
+    #card-gwa .hero-footer .summary-subtext {
+        font-size: 0.70rem;
+        color: var(--text-secondary);
+        text-align: left;
     }
 }
 
@@ -516,32 +621,44 @@
     gap: 11px;
     min-height: 68px;
     box-shadow: var(--shadow-sm);
-    transition: var(--transition-normal);
-}
-
-.summary-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-md);
 }
 
 .icon-circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--radius-sm);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     flex-shrink: 0;
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
 }
 
-.icon-blue { background: rgba(27, 42, 111, 0.1); color: var(--bu-blue); }
-.icon-gold { background: rgba(245, 158, 11, 0.15); color: var(--bu-gold); }
-.icon-green { background: rgba(16, 185, 129, 0.15); color: var(--color-success); }
-.icon-purple { background: rgba(124, 58, 237, 0.15); color: #7c3aed; }
-.icon-orange { background: rgba(234, 88, 12, 0.15); color: var(--bu-orange); }
+.icon-circle.is-honor {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: var(--bu-gold);
+}
 
-[data-theme="dark"] .icon-blue { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
+.icon-blue,
+.icon-gold,
+.icon-green,
+.icon-purple,
+.icon-orange {
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+}
+
+.icon-gold.is-honor,
+.icon-blue.is-honor {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.35);
+    color: var(--bu-gold);
+}
 
 .card-content {
     display: flex;
@@ -736,7 +853,7 @@
 .semester-card.is-collapsed {
     margin-bottom: 10px;
     box-shadow: var(--shadow-sm);
-    transition: margin-bottom 0.2s ease, box-shadow 0.2s ease;
+    transition: box-shadow 0.2s ease;
 }
 
 .semester-card.is-collapsed:hover {
@@ -970,6 +1087,13 @@
     justify-content: center;
     transition: var(--transition-fast);
     z-index: 10;
+    pointer-events: auto;
+}
+
+.info-help-btn::before {
+    content: '';
+    position: absolute;
+    inset: -14px; /* Expands 20px to 48px accessible touch surface */
     pointer-events: auto;
 }
 
@@ -1251,6 +1375,45 @@
 
 .compute-modal-content {
     padding: 28px;
+    position: relative;
+}
+
+/* Compute Modal Skip Controls (Desktop Default) */
+.compute-skip-btn-desktop {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    font-size: 0.74rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-full, 9999px);
+    cursor: pointer;
+    transition: all 0.15s ease;
+    box-shadow: var(--shadow-sm);
+    z-index: 10;
+}
+
+.compute-skip-btn-desktop:hover {
+    border-color: var(--bu-azure);
+    color: var(--text-primary);
+}
+
+.compute-footer-status {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.compute-skip-btn-mobile {
+    display: none !important;
 }
 
 /* Scanned Subjects Preview Cards in Scanner Modal */
@@ -1694,13 +1857,18 @@
 }
 
 .accordion-panel {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 220ms cubic-bezier(0.16, 1, 0.3, 1);
     background: var(--card-header-bg);
 }
 
+.accordion-item.active .accordion-panel {
+    grid-template-rows: 1fr;
+}
+
 .accordion-content {
+    overflow: hidden;
     padding: 14px 18px;
     font-size: 0.88rem;
     color: var(--text-secondary);

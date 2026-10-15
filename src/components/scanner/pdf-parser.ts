@@ -1,12 +1,10 @@
-// Bicol University GWA Calculator — Client-Side PDF COR Parser
-// Exact logic from legacy js/import-export.js using Unit Anchor Backwards Search
-
 import * as pdfjsLib from 'pdfjs-dist';
+import pdfWorker from 'pdfjs-dist/build/pdf.worker.min.js?url';
 import type { Subject } from '../../types';
 
-// Use standard CDN worker fallback
+// Use localized offline worker bundled by Vite (100% offline resilience)
 if (typeof window !== 'undefined' && !pdfjsLib.GlobalWorkerOptions.workerSrc) {
-  pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker || `${import.meta.env.BASE_URL}pdf.worker.min.js`;
 }
 
 export interface PdfCorParseResult {
@@ -19,12 +17,12 @@ export interface PdfCorParseResult {
  * Replicates 100% of the extraction logic from js/import-export.js.
  */
 export async function parsePdfCOR(file: File): Promise<PdfCorParseResult> {
-  const arrayBuffer = await file.arrayBuffer();
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdfDoc = await loadingTask.promise;
 
-  const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-  const pdfDoc = await loadingTask.promise;
-
-  let extractedText = '';
+    let extractedText = '';
 
   for (let pageNum = 1; pageNum <= pdfDoc.numPages; pageNum++) {
     const page = await pdfDoc.getPage(pageNum);
@@ -52,7 +50,11 @@ export async function parsePdfCOR(file: File): Promise<PdfCorParseResult> {
     extractedText += pageText + '\n';
   }
 
-  return extractCORSubjectsFromText(extractedText);
+    return extractCORSubjectsFromText(extractedText);
+  } catch (err) {
+    console.error('Failed to parse PDF COR document:', err);
+    return { semesterTitle: 'Scanned COR (Parse Failed)', subjects: [] };
+  }
 }
 
 /**

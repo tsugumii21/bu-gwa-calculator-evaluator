@@ -9,7 +9,7 @@
 @import "./css/tabs.css";
 @import "./css/dark-theme.css";
 @import "./css/print.css";
-@import "./mobile.css";
+@import "./css/mobile.css";
 
 /* Tabular numbers for numeric grades */
 .tabular-nums {

@@ -997,6 +997,43 @@ html, body {
         max-width: min(340px, calc(100vw - 32px)) !important;
     }
 
+    /* Hide top-right skip button on mobile to keep illustration 100% unobstructed */
+    .compute-skip-btn-desktop {
+        display: none !important;
+    }
+
+    /* Move skip button below progress bar on mobile */
+    .compute-footer-status {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+        gap: 8px !important;
+    }
+
+    .compute-skip-btn-mobile {
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 5px !important;
+        padding: 4px 10px !important;
+        font-size: 0.74rem !important;
+        font-weight: 600 !important;
+        color: var(--text-secondary) !important;
+        background: var(--card-header-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-full, 9999px) !important;
+        cursor: pointer !important;
+        min-height: 28px !important;
+        flex-shrink: 0 !important;
+        box-shadow: var(--shadow-sm) !important;
+    }
+
+    .compute-skip-btn-mobile:active {
+        background: var(--border-color) !important;
+        color: var(--text-primary) !important;
+    }
+
     /* --- Welcome screen (Compact Floating Modal) --- */
     .welcome-screen {
         align-items: center;

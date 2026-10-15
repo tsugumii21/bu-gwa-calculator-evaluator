@@ -20,6 +20,7 @@ export const CalculatorView: React.FC = () => {
 
   const [lastComputedAt, setLastComputedAt] = useState<number>(0);
   const [isComputeAllModalOpen, setIsComputeAllModalOpen] = useState(false);
+  const [alertMessage, setAlertMessage] = useState<string | null>(null);
 
   const handleComputeAll = () => {
     const hasAnyValidGrade = semesters.some((s) =>
@@ -27,7 +28,8 @@ export const CalculatorView: React.FC = () => {
     );
 
     if (!hasAnyValidGrade) {
-      alert('Please enter at least one course grade rating before computing.');
+      setAlertMessage('Please enter at least one course grade rating before computing.');
+      setTimeout(() => setAlertMessage(null), 4000);
       return;
     }
 
@@ -89,6 +91,29 @@ export const CalculatorView: React.FC = () => {
 
       {/* DASHBOARD SUMMARY CARDS */}
       <DashboardStrip />
+
+      {alertMessage && (
+        <div
+          role="alert"
+          aria-live="polite"
+          style={{
+            background: 'rgba(239, 68, 68, 0.12)',
+            border: '1px solid var(--color-danger)',
+            color: 'var(--color-danger)',
+            borderRadius: 'var(--radius-md)',
+            padding: '12px 16px',
+            marginBottom: 'var(--space-md)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            fontSize: '0.88rem',
+            fontWeight: 600,
+          }}
+        >
+          <i className="fa-solid fa-circle-exclamation"></i>
+          <span>{alertMessage}</span>
+        </div>
+      )}
 
       {/* TOOLBAR */}
       <ActionToolbar

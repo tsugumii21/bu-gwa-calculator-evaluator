@@ -143,35 +143,65 @@ export function evaluateTermHonor(
   subjects: Subject[],
   hasUnderload: boolean,
 ): TermHonorEvaluation {
-  // Determine highest (worst) numeric grade and check for fail/INC
-  let lowestGradeInSem = 1.0;
-  let hasFailOrInc = false;
+  if (!subjects || subjects.length === 0) {
+    return {
+      level: 'none',
+      label: 'Pending',
+      reason: 'No courses recorded in this semester',
+    };
+  }
+
+  let worstNumericGrade = -1;
+  let hasDeficiency = false;
+  let gradedUnits = 0;
+  let activeCompletedUnits = 0;
 
   subjects.forEach((sub) => {
+    const rawGrade = (sub.grade || '').trim().toUpperCase();
+    const units = Math.max(0, parseFloat(String(sub.units)) || 0);
+
+    if (rawGrade === 'DRP') return;
+
+    activeCompletedUnits += units;
+
     const num = parseFloat(sub.grade);
+    const isValidNumber = !isNaN(num) && num >= 1.0 && num <= 5.0;
+
     if (
-      sub.grade === '5.0' ||
-      sub.grade === '5.00' ||
-      num === 5.0 ||
-      sub.grade === 'INC'
+      rawGrade === '5.0' ||
+      rawGrade === '5.00' ||
+      rawGrade === '4.0' ||
+      rawGrade === '4.00' ||
+      (isValidNumber && (num === 5.0 || num === 4.0)) ||
+      rawGrade === 'INC'
     ) {
-      hasFailOrInc = true;
+      hasDeficiency = true;
     }
-    if (!isNaN(num) && num > lowestGradeInSem) {
-      lowestGradeInSem = num;
+
+    if (isValidNumber && units > 0) {
+      gradedUnits += units;
+      if (worstNumericGrade === -1 || num > worstNumericGrade) {
+        worstNumericGrade = num;
+      }
     }
   });
 
-  // Calculate total semester units for the "has units" check
-  const semUnits = subjects.reduce(
-    (sum, sub) => sum + (parseFloat(String(sub.units)) || 0),
-    0,
-  );
+  // Zero-grade defense: If no valid grades are entered or GPA is zero, do not award honors
+  if (gradedUnits === 0 || semesterGPA <= 0 || worstNumericGrade === -1) {
+    return {
+      level: 'none',
+      label: 'Pending',
+      reason: 'Awaiting course grade entries to evaluate term honors',
+    };
+  }
 
-  // Eligible path: has units, no fail/INC, not underloaded
-  if (semUnits > 0 && !hasFailOrInc && !hasUnderload) {
+  // Underload defense: Less than 15 active completed units in a regular term
+  const isEffectiveUnderload = hasUnderload || (activeCompletedUnits < 15 && activeCompletedUnits > 0);
+
+  // Eligible path: has valid graded units, zero deficiencies (5.0, 4.0, INC), full regular load
+  if (!hasDeficiency && !isEffectiveUnderload) {
     // President's Lister: GPA ≤ 1.4500 and no grade > 1.75
-    if (semesterGPA <= 1.45 && lowestGradeInSem <= 1.75) {
+    if (semesterGPA <= 1.45 && worstNumericGrade <= 1.75) {
       return {
         level: 'president',
         label: "President's Lister",
@@ -180,7 +210,7 @@ export function evaluateTermHonor(
     }
 
     // Dean's Lister: GPA ≤ 1.7500 and no grade > 2.50
-    if (semesterGPA <= 1.75 && lowestGradeInSem <= 2.5) {
+    if (semesterGPA <= 1.75 && worstNumericGrade <= 2.5) {
       return {
         level: 'dean',
         label: "Dean's Lister",
@@ -189,28 +219,20 @@ export function evaluateTermHonor(
     }
   }
 
-  // Not qualified — build a human-readable reason
-  if (hasUnderload) {
+  // Not qualified — build specific reason
+  if (isEffectiveUnderload) {
     return {
       level: 'none',
       label: 'Not Eligible',
-      reason: 'Custom/underloaded term disqualifies from term honors',
+      reason: 'Underloaded term (< 15 units or custom load) disqualifies from term honors',
     };
   }
 
-  if (hasFailOrInc) {
+  if (hasDeficiency) {
     return {
       level: 'none',
       label: 'Not Eligible',
-      reason: 'Disqualified due to 5.0 or INC grade',
-    };
-  }
-
-  if (semUnits === 0) {
-    return {
-      level: 'none',
-      label: 'Not Eligible',
-      reason: 'No enrolled units in this semester',
+      reason: 'Disqualified due to 5.00 failure, 4.00 conditional, or unremoved INC mark',
     };
   }
 

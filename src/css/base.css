@@ -55,3 +55,31 @@ textarea.form-control,
     from { opacity: 0; transform: translateY(8px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* ==========================================================================
+   WCAG 2.4.7 Focus-Visible System
+   ========================================================================== */
+:focus-visible {
+    outline: 2px solid var(--bu-azure) !important;
+    outline-offset: 2px !important;
+}
+
+button:focus:not(:focus-visible),
+input:focus:not(:focus-visible),
+select:focus:not(:focus-visible) {
+    outline: none;
+}
+
+/* ==========================================================================
+   WCAG 2.3.3 / Emil Motion Craft — Prefers Reduced Motion
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}

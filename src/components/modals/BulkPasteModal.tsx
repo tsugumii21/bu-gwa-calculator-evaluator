@@ -40,35 +40,33 @@ export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
       const trimmed = line.trim();
       if (!trimmed) return;
 
-      let code = '';
-      let name = '';
-      let units = 3;
-      let grade = '1.50';
+      const parseRow = (lineStr: string, delim: string): Subject => {
+        const parts = lineStr.split(delim).map((p) => p.trim());
+        if (parts.length >= 4) {
+          const codeVal = parts[0];
+          const gradeVal = parts[parts.length - 1];
+          const unitsVal = Math.max(0, parseFloat(parts[parts.length - 2]) || 3);
+          const nameVal = parts.slice(1, -2).join(` ${delim} `);
+          return { code: codeVal, name: nameVal, units: unitsVal, grade: gradeVal };
+        }
+        if (parts.length === 3) {
+          return { code: parts[0], name: parts[1], units: Math.max(0, parseFloat(parts[2]) || 3), grade: '1.50' };
+        }
+        if (parts.length === 2) {
+          return { code: parts[0], name: parts[1], units: 3, grade: '1.50' };
+        }
+        return { code: parts[0], name: 'Imported Course', units: 3, grade: '1.50' };
+      };
 
-      if (trimmed.includes('-')) {
-        const parts = trimmed.split('-');
-        code = parts[0] ? parts[0].trim() : '';
-        name = parts[1] ? parts[1].trim() : '';
-        if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
-        if (parts[3]) grade = parts[3].trim();
-      } else if (trimmed.includes('\t')) {
-        const parts = trimmed.split('\t');
-        code = parts[0] ? parts[0].trim() : '';
-        name = parts[1] ? parts[1].trim() : '';
-        if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
-        if (parts[3]) grade = parts[3].trim();
+      if (trimmed.includes('\t')) {
+        newSubjects.push(parseRow(trimmed, '\t'));
       } else if (trimmed.includes(',')) {
-        const parts = trimmed.split(',');
-        code = parts[0] ? parts[0].trim() : '';
-        name = parts[1] ? parts[1].trim() : '';
-        if (parts[2]) units = parseFloat(parts[2].trim()) || 3;
-        if (parts[3]) grade = parts[3].trim();
+        newSubjects.push(parseRow(trimmed, ','));
+      } else if (trimmed.includes('-')) {
+        newSubjects.push(parseRow(trimmed, '-'));
       } else {
-        code = trimmed;
-        name = 'Imported Course';
+        newSubjects.push({ code: trimmed, name: 'Imported Course', grade: '1.50', units: 3 });
       }
-
-      newSubjects.push({ code, name, grade, units });
     });
 
     if (newSubjects.length > 0) {

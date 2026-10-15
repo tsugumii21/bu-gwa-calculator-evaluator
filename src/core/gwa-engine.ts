@@ -3,26 +3,28 @@
 import type { Semester, CumulativeStats, Subject } from '../types';
 
 /**
- * Returns true if the grade string represents a numeric grade
- * (as opposed to 'INC' or 'DRP').
+ * Returns true if the grade string represents a valid numeric grade (1.00 - 5.00).
  */
 export function isGradeNumeric(grade: string): boolean {
-  return !isNaN(parseFloat(grade));
+  if (!grade || grade.trim() === '') return false;
+  const num = parseFloat(grade.trim());
+  return !isNaN(num) && num >= 1.0 && num <= 5.0;
 }
 
 /**
  * Parse a grade string into a number.
- * Returns `null` for non-numeric grades like 'INC' or 'DRP'.
+ * Returns `null` for non-numeric marks ('INC', 'DRP') or out-of-bound values.
  */
 export function parseGrade(grade: string): number | null {
-  const num = parseFloat(grade);
-  return isNaN(num) ? null : num;
+  if (!grade || grade.trim() === '') return null;
+  const num = parseFloat(grade.trim());
+  return !isNaN(num) && num >= 1.0 && num <= 5.0 ? num : null;
 }
 
 /**
  * Calculate the GWA for a single semester.
  * Formula: sum(grade × units) / sum(graded units)
- * Only includes subjects with numeric grades and units > 0.
+ * Only includes subjects with valid numeric grades (1.00 - 5.00) and units > 0.
  */
 export function calculateSemesterGWA(semester: Semester): number {
   let totalGradePoints = 0;
@@ -31,9 +33,10 @@ export function calculateSemesterGWA(semester: Semester): number {
   if (!semester || !semester.subjects) return 0;
 
   semester.subjects.forEach((sub) => {
-    const numGrade = parseFloat(sub.grade);
-    const units = parseFloat(String(sub.units)) || 0;
-    if (!isNaN(numGrade) && units > 0) {
+    if (sub.grade === 'DRP' || sub.grade === 'INC') return;
+    const numGrade = parseGrade(sub.grade);
+    const units = Math.max(0, parseFloat(String(sub.units)) || 0);
+    if (numGrade !== null && units > 0) {
       totalGradePoints += numGrade * units;
       totalUnits += units;
     }
@@ -43,14 +46,15 @@ export function calculateSemesterGWA(semester: Semester): number {
 }
 
 /**
- * Calculate the total enrolled units for a semester (all subjects).
+ * Calculate the total completed/earned enrolled units for a semester.
+ * Officially dropped courses ('DRP') are excluded from completed load.
  */
 export function calculateSemesterUnits(semester: Semester): number {
   if (!semester || !semester.subjects) return 0;
-  return semester.subjects.reduce(
-    (sum, sub) => sum + (parseFloat(String(sub.units)) || 0),
-    0,
-  );
+  return semester.subjects.reduce((sum, sub) => {
+    if (sub.grade === 'DRP') return sum;
+    return sum + Math.max(0, parseFloat(String(sub.units)) || 0);
+  }, 0);
 }
 
 /**
@@ -70,18 +74,25 @@ export function calculateSemesterStats(subjects: Subject[] = []): {
   let hasInc = false;
 
   (subjects || []).forEach((sub) => {
-    const numGrade = parseFloat(sub.grade);
-    const units = parseFloat(String(sub.units)) || 0;
+    const rawGrade = (sub.grade || '').trim().toUpperCase();
+    const units = Math.max(0, parseFloat(String(sub.units)) || 0);
+
+    if (rawGrade === 'DRP') return;
+
     if (units > 0) {
       totalUnits += units;
-      if (!isNaN(numGrade)) {
+      const numGrade = parseGrade(sub.grade);
+
+      if (numGrade !== null) {
         totalGradePoints += numGrade * units;
         gradedUnits += units;
-        if (numGrade === 5.0 || sub.grade === '5.0' || sub.grade === '5.00') {
+        // 4.00 (Conditional) and 5.00 (Failure) are active academic deficiencies
+        if (numGrade === 5.0 || numGrade === 4.0 || rawGrade === '5.0' || rawGrade === '5.00' || rawGrade === '4.0' || rawGrade === '4.00') {
           hasFailingGrade = true;
         }
       }
-      if (sub.grade === 'INC') {
+
+      if (rawGrade === 'INC') {
         hasInc = true;
       }
     }
@@ -93,13 +104,6 @@ export function calculateSemesterStats(subjects: Subject[] = []): {
 
 /**
  * Build cumulative statistics across ALL semesters.
- *
- * - totalUnits: sum of all units for subjects with units > 0
- * - gradedUnits: sum of units for subjects with numeric grades and units > 0
- * - totalPoints: sum of (numericGrade × units) for graded subjects
- * - cumulativeGWA: totalPoints / gradedUnits (or 0 if no graded units)
- * - Failing grade detection: grade === '5.0' || '5.00' || parseFloat(grade) === 5.0
- * - INC detection: grade === 'INC'
  */
 export function calculateCumulativeStats(semesters: Semester[]): CumulativeStats {
   let totalPoints = 0;
@@ -115,22 +119,42 @@ export function calculateCumulativeStats(semesters: Semester[]): CumulativeStats
     if (sem.underload) hasUnderload = true;
 
     if (sem.subjects) {
+      // Check semester active completed load for underload (< 15 units in regular term)
+      const semActiveUnits = sem.subjects.reduce((sum, s) => {
+        if (s.grade === 'DRP') return sum;
+        return sum + Math.max(0, parseFloat(String(s.units)) || 0);
+      }, 0);
+      if (sem.subjects.length > 0 && semActiveUnits < 15 && semActiveUnits > 0) {
+        hasUnderload = true;
+      }
+
       sem.subjects.forEach((sub) => {
         totalCourses++;
-        const numGrade = parseFloat(sub.grade);
-        const units = parseFloat(String(sub.units)) || 0;
+        const rawGrade = (sub.grade || '').trim().toUpperCase();
+        const units = Math.max(0, parseFloat(String(sub.units)) || 0);
 
-        if (sub.grade === '5.0' || sub.grade === '5.00' || numGrade === 5.0) {
+        if (rawGrade === 'DRP') return;
+
+        const numGrade = parseGrade(sub.grade);
+
+        if (
+          rawGrade === '5.0' ||
+          rawGrade === '5.00' ||
+          rawGrade === '4.0' ||
+          rawGrade === '4.00' ||
+          (numGrade !== null && (numGrade === 5.0 || numGrade === 4.0))
+        ) {
           hasFailingGrade = true;
           failingCount++;
         }
-        if (sub.grade === 'INC') {
+
+        if (rawGrade === 'INC') {
           hasInc = true;
         }
 
         if (units > 0) {
           totalUnits += units;
-          if (!isNaN(numGrade)) {
+          if (numGrade !== null) {
             totalPoints += numGrade * units;
             gradedUnits += units;
           }
@@ -156,8 +180,6 @@ export function calculateCumulativeStats(semesters: Semester[]): CumulativeStats
 
 /**
  * Build cumulative statistics for ONLY computed (locked-in) semesters.
- * Identical logic to `calculateCumulativeStats`, but filters to
- * semesters where `semester.computed === true`.
  */
 export function calculateComputedCumulativeStats(semesters: Semester[]): CumulativeStats {
   let totalPoints = 0;
@@ -175,22 +197,41 @@ export function calculateComputedCumulativeStats(semesters: Semester[]): Cumulat
     if (sem.underload) hasUnderload = true;
 
     if (sem.subjects) {
+      const semActiveUnits = sem.subjects.reduce((sum, s) => {
+        if (s.grade === 'DRP') return sum;
+        return sum + Math.max(0, parseFloat(String(s.units)) || 0);
+      }, 0);
+      if (sem.subjects.length > 0 && semActiveUnits < 15 && semActiveUnits > 0) {
+        hasUnderload = true;
+      }
+
       sem.subjects.forEach((sub) => {
         totalCourses++;
-        const numGrade = parseFloat(sub.grade);
-        const units = parseFloat(String(sub.units)) || 0;
+        const rawGrade = (sub.grade || '').trim().toUpperCase();
+        const units = Math.max(0, parseFloat(String(sub.units)) || 0);
 
-        if (sub.grade === '5.0' || sub.grade === '5.00' || numGrade === 5.0) {
+        if (rawGrade === 'DRP') return;
+
+        const numGrade = parseGrade(sub.grade);
+
+        if (
+          rawGrade === '5.0' ||
+          rawGrade === '5.00' ||
+          rawGrade === '4.0' ||
+          rawGrade === '4.00' ||
+          (numGrade !== null && (numGrade === 5.0 || numGrade === 4.0))
+        ) {
           hasFailingGrade = true;
           failingCount++;
         }
-        if (sub.grade === 'INC') {
+
+        if (rawGrade === 'INC') {
           hasInc = true;
         }
 
         if (units > 0) {
           totalUnits += units;
-          if (!isNaN(numGrade)) {
+          if (numGrade !== null) {
             totalPoints += numGrade * units;
             gradedUnits += units;
           }

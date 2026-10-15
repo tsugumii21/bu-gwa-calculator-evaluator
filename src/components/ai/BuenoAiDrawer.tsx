@@ -12,11 +12,9 @@ export const BuenoAiDrawer: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState('');
 
-  // API Key read securely from environment or system config
+  // API Key read securely from client session storage (never compiled into public bundle)
   const geminiApiKey =
-    (import.meta.env.VITE_GEMINI_API_KEY as string) ||
-    localStorage.getItem('bu_gemini_api_key') ||
-    '';
+    typeof window !== 'undefined' ? localStorage.getItem('bu_gemini_api_key') || '' : '';
 
   const [aiChatMessages, setAiChatMessages] = useState<{ sender: 'user' | 'ai'; text: string }[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -157,15 +155,33 @@ ${studentContext}
     // Append user message
     setAiChatMessages((prev) => [...prev, { sender: 'user', text: trimmed }]);
 
-    // Online Gemini API check
+    // Offline Handbook Search Engine when no API key is provided
     if (!geminiApiKey) {
-      setAiChatMessages((prev) => [
-        ...prev,
-        {
-          sender: 'ai',
-          text: `Bueño AI is configured for full online consultation. Please supply the Gemini API key in the environment to begin live handbook reasoning.`,
-        },
-      ]);
+      const q = trimmed.toLowerCase();
+      const matched = BU_HANDBOOK_KNOWLEDGE.filter((p) =>
+        p.keywords.some((k) => q.includes(k.toLowerCase())) ||
+        p.title.toLowerCase().includes(q) ||
+        p.summary.toLowerCase().includes(q)
+      );
+
+      if (matched.length > 0) {
+        const best = matched[0];
+        setAiChatMessages((prev) => [
+          ...prev,
+          {
+            sender: 'ai',
+            text: `📘 **${best.title}** (${best.handbookReference})\n\n${best.summary}\n\n*Full Policy:* ${best.details}`,
+          },
+        ]);
+      } else {
+        setAiChatMessages((prev) => [
+          ...prev,
+          {
+            sender: 'ai',
+            text: `Bueño AI is operating in **100% Offline Mode**. I found no exact handbook match for "${trimmed}".\n\nTry asking about:\n• *Grading System*\n• *President's Lister / Dean's Lister*\n• *Latin Honors (Summa, Magna, Cum Laude)*\n• *Removal of INC or 4.00*\n• *Dropping courses or Underloading*`,
+          },
+        ]);
+      }
       return;
     }
 
