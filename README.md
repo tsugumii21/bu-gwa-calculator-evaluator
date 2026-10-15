@@ -8,10 +8,11 @@ An independent, client-side academic evaluation platform engineered exclusively 
 [![React](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Vitest](https://img.shields.io/badge/Vitest-5.0-6E9F18?style=for-the-badge&logo=vitest&logoColor=white)](https://vitest.dev/)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Zustand](https://img.shields.io/badge/Zustand-5.0-443e38?style=for-the-badge)](https://github.com/pmndrs/zustand)
 [![Tesseract.js](https://img.shields.io/badge/Tesseract.js-OCR-5c2d91?style=for-the-badge)](https://tesseract.projectnaptha.com/)
-[![PDF.js](https://img.shields.io/badge/PDF.js-Client--Side-e65100?style=for-the-badge)](https://mozilla.github.io/pdf.js/)
+[![PDF.js](https://img.shields.io/badge/PDF.js-Offline_Worker-e65100?style=for-the-badge)](https://mozilla.github.io/pdf.js/)
 [![BOR Res. 89](https://img.shields.io/badge/BOR_Res._89,_s._2006-Compliant-059669?style=for-the-badge)](public/BU-Student-Handbook.pdf)
 [![Data Privacy](https://img.shields.io/badge/RA_10173-Zero_Telemetry-0284c7?style=for-the-badge)](https://privacy.gov.ph/)
 
@@ -19,8 +20,8 @@ An independent, client-side academic evaluation platform engineered exclusively 
   <a href="https://tsugumii21.github.io/bu-gwa-calculator-evaluator/"><strong>🌐 Launch Live Web App</strong></a> •
   <a href="#-key-platform-capabilities"><strong>✨ Explore Features</strong></a> •
   <a href="#-official-academic-policy-governance"><strong>📖 Handbook Policies</strong></a> •
-  <a href="#-statutory--institutional-governance-disclaimer"><strong>⚖️ Official Disclaimer</strong></a> •
-  <a href="#-local-development--setup"><strong>🚀 Local Setup</strong></a>
+  <a href="#-technical-architecture--tech-stack"><strong>🛠️ Architecture</strong></a> •
+  <a href="#-statutory--institutional-governance-disclaimer"><strong>⚖️ Official Disclaimer</strong></a>
 </p>
 
 </div>
@@ -41,7 +42,6 @@ An independent, client-side academic evaluation platform engineered exclusively 
 - [Technical Architecture & Tech Stack](#-technical-architecture--tech-stack)
 - [Codebase Structure](#-codebase-structure)
 - [Statutory & Institutional Governance Disclaimer](#-statutory--institutional-governance-disclaimer)
-- [Local Development & Setup](#-local-development--setup)
 - [Author & Academic Credits](#-author--academic-credits)
 - [License & Intellectual Property](#-license--intellectual-property)
 
@@ -52,10 +52,12 @@ An independent, client-side academic evaluation platform engineered exclusively 
 The **Bicol University GWA Calculator & Academic Evaluator** bridges the gap between raw grades and actionable graduation roadmaps for Bueño students. Unlike generic GPA calculators, this platform is deeply codified with the specific administrative resolutions of Bicol University, including 4-decimal precision arithmetic, President's and Dean's Lister semester honor thresholds, Latin graduation honor brackets, unexcused underload disqualifications, and the 1-year Incomplete (INC) expiration rule.
 
 ### Core Highlights:
-- **100% Client-Side & Zero-Knowledge**: No student credentials, course marks, or PDF transcripts ever leave the user's browser. Zero remote tracking, zero databases.
-- **Multi-Modal Document Ingestion**: Ingests multi-term Certificate of Registration (COR) PDFs concurrently or scans iBU grade sheets via in-browser Tesseract.js OCR.
+- **100% Client-Side & Zero-Knowledge**: No student credentials, course marks, or PDF transcripts ever leave the user's browser. Zero remote tracking, zero external databases.
+- **Strict Academic Safeguards**: Grade 4.00 (Conditional) and 5.00 are codified as active academic deficiencies; empty terms never award honors on 0.00 GPA; dropped (`DRP`) courses deduct from evaluated load.
+- **Multi-Modal Ingestion with Local Worker**: Ingests multi-term Certificate of Registration (COR) PDFs via a localized client-side Mozilla PDF worker or scans grade sheets via client-side WebAssembly Tesseract.js OCR.
 - **Scenario Simulation Engine**: Predicts future cumulative standing with 0.05 step precision and reverse-solves required target grades across remaining major courses.
-- **Embedded AI Handbook Advisor**: Offers offline Student Handbook search, one-click transcript audits, and conversational academic counseling.
+- **High-Performance & Accessible UI**: Debounced input architecture (eliminates `localStorage` keystroke thrashing), zero-reflow CSS grid accordions, WCAG 2.1 AA high-contrast tokens, and keyboard-accessible dialog traps.
+- **Embedded AI Handbook Advisor**: Offers on-device Student Handbook keyword search, one-click transcript audits, and conversational academic guidance.
 
 ---
 
@@ -63,14 +65,16 @@ The **Bicol University GWA Calculator & Academic Evaluator** bridges the gap bet
 
 | Capability | Module | Key Features & Implementation |
 |---|---|---|
-| **Dynamic 4-Decimal GWA Engine** | Core Math | Computes exact semestral GPA and Cumulative GWA to 4 decimal places per BOR Res. 89 s. 2006. Strict mathematical boundary separation isolates draft loads and non-numerical marks (`INC`, `DRP`). |
-| **Multi-COR PDF Staging Queue** | Client Ingestion | Concurrent multi-file PDF queue with text extraction via `pdfjs-dist`. Allows inline term renaming, course unit audit, and single-click batch ingestion into individual semesters. |
-| **Multi-Semester Screenshot Bucket OCR** | In-Browser Vision | Upload up to 3 images per semester bucket for tall grade sheets. Employs adaptive bilinear Canvas scaling, automatic dark-mode inversion, and Tesseract.js optical character recognition. |
-| **Term Honors & Latin Proximity Radar** | Honor Evaluation | Evaluates President's Lister ($\le 1.4500$) and Dean's Lister ($\le 1.7500$) semester standing with individual grade ceilings ($1.75$ and $2.50$), alongside live Latin Honor point gap distance tracking. |
-| **Underload & Deficiency Safeguards** | Policy Guards | Automatically detects underloaded semesters ($<15$ units), unremoved `INC` marks nearing the 1-year calendar deadline, and failing grades (`5.00`) that void Latin Honor eligibility. |
-| **Simulator & Subject Target Allocator** | Reverse-Solver | Projects future cumulative GWA with a 0.05 step precision slider. Features an intelligent reverse-solver: lock expected grades in GE/PE courses to dynamically solve required marks in remaining majors. |
-| **Academic Trend Visualizer** | Analytics | Lightweight zero-dependency SVG trajectory chart graphing semestral GPAs against running cumulative GWA alongside official Summa, Magna, and Cum Laude benchmark horizons. |
-| **Bueño AI Handbook Advisor** | AI Assistant | Trained on the complete BU Student Handbook. Features on-device handbook search index, 1-click "Analyze My Grades" academic diagnostics, and optional rate-limited Google Gemini API integration. |
+| **Dynamic 4-Decimal GWA Engine** | Core Math | Computes exact semestral GPA and Cumulative GWA to 4 decimal places per BOR Res. 89 s. 2006. Validates official grades (1.00–5.00, INC, DRP), clamps units $\ge 0$, deducts dropped load, and enforces zero-grade defenses (unassigned courses stay `Pending`). |
+| **Academic Deficiency & Honor Guards** | Policy Guards | Treats grade 4.00 (Conditional Failure) and 5.00 as active academic deficiencies (`hasDeficiency = true`), disqualifying candidates from Latin Honors until cleared. Enforces underload checks ($<15$ units) and 1-year INC expiration rules. |
+| **Automated Testing Suite (Vitest)** | Quality Assurance | Rigorous unit test matrix in `src/core/__tests__/` covering arithmetic rounding, honor thresholds, 4.00 deficiency disqualifications, and load deductions (12/12 passing). |
+| **Multi-COR PDF Staging Queue** | Client Ingestion | Concurrent multi-file PDF queue powered by a localized Mozilla PDF worker (`public/pdf.worker.min.js`). 100% offline, zero external CDN dependencies, inline term renaming, and one-click batch import. |
+| **Multi-Semester Screenshot Bucket OCR** | In-Browser Vision | Upload up to 3 images per semester bucket for tall mobile grade sheets. Features adaptive Canvas preprocessing, dark-mode inversion, and Tesseract.js WebAssembly OCR with automatic worker termination cleanup. |
+| **Modern Left-Aligned KPI Hero Anchor** | Dashboard Strip | Asymmetric 1-Hero + 4-Supporting metric strip. Cumulative Degree GWA is anchored on the left with 2.35rem display typography, accompanied by distinct Semestral Honor (Term) and Latin Honor (Graduation) tracking. |
+| **Calibrated Compute Celebration Modal** | Micro-Animations | 2.5s Lottie computation celebration with in-memory JSON caching (0ms repeat latency), on-demand asset chunks, and adaptive controls: top-right `<kbd>ESC</kbd>` pill on desktop, unobtrusive bottom pill on mobile, and 0ms bypass on reduced motion. |
+| **Simulator & Subject Target Allocator** | Reverse-Solver | Projects future cumulative GWA with a 0.05 step precision slider. Reverse-solves uniform grades required in majors by locking expected marks in General Education and PE subjects. |
+| **Academic Trend Visualizer** | Analytics | Lightweight zero-dependency SVG trajectory chart graphing semestral GPAs against running cumulative GWA alongside official Summa, Magna, and Cum Laude target horizons. |
+| **Bueño AI Handbook Advisor** | AI Assistant | Trained on the complete BU Student Handbook. Features on-device handbook search index, 1-click "Analyze My Grades" academic diagnostics, and offline fallback guidance. |
 | **Scholarship Retention Monitor** | Compliance Engine | Automated compliance engine benchmarking student standing against official maintenance criteria for DOST-SEI Merit, CHED Merit, UniFAST TES, and BU Athletic grants. |
 
 ---
@@ -88,10 +92,10 @@ Every formula, honor threshold, and warning condition in this platform is direct
 | **1.75** | Satisfactory | 89 – 91% | Dean's Lister Baseline Limit |
 | **2.00 – 2.75** | Fair to Good | 77 – 88% | Credited Passing Range |
 | **3.00** | Passing | 75 – 76% | Minimum Passing Mark |
-| **4.00** | Conditional Failure | 70 – 74% | Subject to Removal Exam |
+| **4.00** | Conditional Failure | 70 – 74% | Active Deficiency; Disqualifies from Honors until cleared |
 | **5.00** | Failed | Below 70% | Permanent Honor Disqualification |
 | **INC** | Incomplete | — | Must be completed within 1 calendar year or becomes 5.00 |
-| **DRP** | Officially Dropped | — | Dropped with Dean approval before midterm exam |
+| **DRP** | Officially Dropped | — | Dropped with Dean approval before midterm; excluded from GPA |
 
 ### 2. Semestral Term Honors (Article VIII, Sec. 28–29)
 * **President's Lister (PL)**: Semestral GPA $\le 1.4500$, carried at least 15 academic units, no single grade below $1.75$, and zero `INC` or `DRP` marks.
@@ -101,7 +105,7 @@ Every formula, honor threshold, and warning condition in this platform is direct
 * **Summa Cum Laude**: Cumulative GWA of **1.0000 – 1.2500** (no grade lower than $2.00$).
 * **Magna Cum Laude**: Cumulative GWA of **1.2501 – 1.4500** (no grade lower than $2.25$).
 * **Cum Laude**: Cumulative GWA of **1.4501 – 1.7500** (no grade lower than $2.50$).
-* **Mandatory Prerequisites**: At least 75% residency in Bicol University, completed degree within prescribed regular years, zero failing marks (`5.00`), and zero unexcused underloading across all semesters enrolled.
+* **Mandatory Prerequisites**: At least 75% residency in Bicol University, completed degree within prescribed regular years, zero failing marks (`5.00`), zero unresolved `4.00` conditional marks, and zero unexcused underloading across all semesters enrolled.
 
 ---
 
@@ -117,9 +121,10 @@ Every formula, honor threshold, and warning condition in this platform is direct
         ┌─────────────────────────────────────┐                 ┌─────────────────────────────────────┐
         │        Document & Image OCR         │                 │         Client-Side Engine          │
         ├─────────────────────────────────────┤                 ├─────────────────────────────────────┤
-        │ • pdfjs-dist (COR PDF Parsing)      │                 │ • React 19 + TypeScript 5.8         │
-        │ • Tesseract.js (Screenshot OCR)     │                 │ • Zustand 5 (Local Persistence)     │
+        │ • pdfjs-dist (Local PDF Worker)     │                 │ • React 19 + TypeScript 5.8         │
+        │ • Tesseract.js (WASM Screenshot OCR)│                 │ • Zustand 5 (Local Persistence)     │
         │ • Canvas 2D (Bilinear Preprocessing)│                 │ • Tailwind CSS v4 + Design Tokens   │
+        │ • Memory Leak Safe Termination      │                 │ • Debounced Keystroke Storage       │
         └──────────────────┬──────────────────┘                 └──────────────────┬──────────────────┘
                            │                                                       │
                            └───────────────────────────┬───────────────────────────┘
@@ -130,20 +135,22 @@ Every formula, honor threshold, and warning condition in this platform is direct
                                       │ • gwa-engine.ts (4-Decimal GWA) │
                                       │ • honor-rules.ts (Latin Radar)  │
                                       │ • handbook-knowledge.ts (RAG)   │
+                                      │ • Vitest Automated Test Suites  │
                                       └─────────────────────────────────┘
 ```
 
 | Layer | Technologies |
 |---|---|
 | **Core Framework** | React 19, TypeScript 5.8, Node.js |
-| **Build & Bundler** | Vite 6, Rollup Code Splitting |
-| **State Management** | Zustand 5 with `persist` middleware (`localStorage`) |
-| **Styling & Theming** | Tailwind CSS v4, Custom Semantic CSS Variables, Dual Light/Dark Modes |
-| **Document Processing** | `pdfjs-dist` (Client-side WebWorker PDF Text Extraction) |
+| **Build & Bundler** | Vite 6, Rollup Dynamic Asset Chunking (`?url`) |
+| **Testing** | Vitest 5.0 (Automated arithmetic & policy test suites) |
+| **State Management** | Zustand 5 with `persist` middleware (`localStorage` with input debouncing) |
+| **Styling & Theming** | Tailwind CSS v4, Modular CSS (`base`, `components`, `mobile`, `dark-theme`), WCAG AA Tokens |
+| **Document Processing** | `pdfjs-dist` (Client-side Local WebWorker PDF Text Extraction) |
 | **Computer Vision / OCR** | `tesseract.js` (WebAssembly OCR Engine), HTML5 Canvas 2D Bilinear Filters |
-| **Typography & Icons** | Google Fonts (*Outfit*, *Inter*, *Playfair Display*, *Space Mono*), Font Awesome 6 Pro |
-| **Animations** | `lottie-web` JSON Vector Animations |
-| **AI Advisor (Optional)** | Built-in Offline Search Index + Google Gemini 1.5 Flash API (Rate-Limited) |
+| **Typography & Icons** | Google Fonts (*Outfit*, *Inter*, *Space Mono*), Font Awesome 6 Pro |
+| **Animations** | `lottie-web` JSON Vector Animations with in-memory caching |
+| **Accessibility (a11y)** | Keyboard Focus Trapping (`useAccessibleDialog`), ARIA live regions, `:focus-visible` |
 
 ---
 
@@ -153,26 +160,30 @@ Every formula, honor threshold, and warning condition in this platform is direct
 BU-GWA Calculator/
 ├── public/
 │   ├── BU-Student-Handbook.pdf       # Official Bicol University Student Handbook
-│   ├── animations/                   # Lottie compute & loader animations
+│   ├── pdf.worker.min.js             # Localized Mozilla PDF.js worker
 │   └── images/                       # University seals, emblems & logos
 ├── src/
 │   ├── main.tsx                      # Application bootstrap & DOM root
 │   ├── App.tsx                       # AppShell controller & tab routing
-│   ├── index.css                     # Global reset, typography & design tokens
-│   ├── mobile.css                    # Responsive layouts & mobile overrides
+│   ├── index.css                     # Global design token orchestrator
+│   ├── hooks/
+│   │   └── useAccessibleDialog.ts    # Accessible modal focus trap & Escape listener
 │   ├── core/
 │   │   ├── constants.ts              # Grading scales, honor criteria & scholarship presets
-│   │   ├── gwa-engine.ts             # Pure mathematical functions for GPA, GWA & units
+│   │   ├── gwa-engine.ts             # Pure mathematical calculations for GPA, GWA & units
 │   │   ├── honor-rules.ts            # Latin honor solvers & target grade reverse-solver
-│   │   └── handbook-knowledge.ts     # Curated BU Student Handbook RAG search index
+│   │   ├── handbook-knowledge.ts     # Curated BU Student Handbook RAG search index
+│   │   └── __tests__/                # Vitest automated test suites
+│   │       ├── gwa-engine.test.ts    # Arithmetic & bounds validation tests
+│   │       └── honor-rules.test.ts   # BOR Res. 89 academic honor tests
 │   ├── store/
 │   │   └── index.ts                  # Zustand state persistence for semesters & settings
 │   ├── types/
 │   │   └── index.ts                  # Strict TypeScript domain interfaces
 │   ├── components/
 │   │   ├── layout/                   # AppHeader, DesktopNav, WelcomeScreen, ThemeToggle
-│   │   ├── dashboard/                # MetricCard, DashboardStrip, CalculatorView
-│   │   ├── semester/                 # SemesterCard (Collapsible), SubjectRow, GradeSelect
+│   │   ├── dashboard/                # MetricCard, DashboardStrip (KPI Hero), CalculatorView
+│   │   ├── semester/                 # SemesterCard (Collapsible), SubjectRow (Debounced)
 │   │   ├── scanner/                  # CorScanModal, PhotoScanModal, ocr-engine, pdf-parser
 │   │   ├── simulator/                # SimulatorView, SubjectTargetAllocator
 │   │   ├── charts/                   # AcademicTrendChart (Pure SVG)
@@ -180,9 +191,18 @@ BU-GWA Calculator/
 │   │   ├── ai/                       # BuenoAiDrawer (Handbook Advisor & Diagnostic)
 │   │   ├── scholarship/              # ScholarshipView (DOST, CHED, TES monitor)
 │   │   ├── policies/                 # PoliciesView (Grading table & handbook articles)
-│   │   └── about/                    # AboutView (Overview, Guide, Policies, Developer)
+│   │   └── about/                    # Modular About Controller & Subcomponents
+│   │       ├── AboutView.tsx         # Clean subtab controller
+│   │       ├── AboutOverview.tsx     # Hero overview, brand logo, & legal notice
+│   │       ├── AboutGuide.tsx        # Interactive ingestion & simulator guide
+│   │       ├── AboutPolicies.tsx     # Codified BOR Res. 89 policy citations
+│   │       └── AboutDeveloper.tsx    # Architecture bento & feedback form
 │   └── css/
-│       ├── components.css            # Component styles & Linear-style bento grid
+│       ├── base.css                  # Global resets, :focus-visible, reduced-motion
+│       ├── variables.css             # High-contrast light/dark CSS tokens
+│       ├── dark-theme.css            # Dark mode overrides & contrast calibrators
+│       ├── components.css            # Component styles & KPI metric card layout
+│       ├── mobile.css                # Breakpoint-specific mobile ergonomics
 │       └── print.css                 # Clean printable transcript stylesheet
 ├── package.json
 ├── tsconfig.json
@@ -209,44 +229,6 @@ Under no circumstances shall the developer, contributors, or hosting platforms b
 
 ### Clause V — Zero-Knowledge Privacy Architecture & Philippine Data Privacy Act (RA 10173)
 This application operates on a **100% client-side, zero-telemetry architecture**. Uploaded Certificate of Registration (COR) PDF files, mobile screenshots, student names, course titles, and numeric grades are parsed entirely inside your browser's sandboxed local memory via client-side WebAssembly, Canvas, and Tesseract.js. No student credentials, portal passwords, or scholastic data are ever transmitted across external networks, saved to remote databases, or collected. The platform fully complies with Republic Act 10173 (Data Privacy Act of 2012).
-
----
-
-## 🚀 Local Development & Setup
-
-### Prerequisites
-- [Node.js](https://nodejs.org/) (Version 18.0 or later recommended)
-- [npm](https://www.npmjs.com/) (Version 9.0 or later)
-
-### Steps
-
-1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/tsugumii21/bu-gwa-calculator-evaluator.git
-   cd bu-gwa-calculator-evaluator
-   ```
-
-2. **Install Dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Start Local Development Server**:
-   ```bash
-   npm run dev
-   ```
-   *Vite will launch the local development server (typically at `http://localhost:5173/`).*
-
-4. **Build for Production**:
-   ```bash
-   npm run build
-   ```
-   *Compiles TypeScript and creates optimized minified assets inside the `dist/` directory.*
-
-5. **Preview Production Build**:
-   ```bash
-   npm run preview
-   ```
 
 ---
 
