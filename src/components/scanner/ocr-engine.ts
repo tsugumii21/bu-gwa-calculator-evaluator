@@ -312,14 +312,25 @@ export async function scanScreenshotCanvas(
 function healOcrLine(line: string): string {
   let clean = line.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
-  // 1. Heal NSTP variations: sans-serif 11 misread as TM, TN, NM, TH, TI, II, ll, 1T, 1I, 1
-  clean = clean.replace(/^NSTP\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I|1)\b/i, 'NSTP 11');
-  clean = clean.replace(/^NSTP\s*(?:12|1Z|T2|N2|TZ)\b/i, 'NSTP 12');
+  // 1. Heal NSTP variations: sans-serif 11 misread as TM, TN, NM, TH, TI, II, ll, 1T, 1I, 1M, IM, 1
+  clean = clean.replace(/^NSTP\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I|1M|IM|1)\b/i, 'NSTP 11');
+  clean = clean.replace(/^NSTP\s*(?:12|1Z|T2|N2|TZ|2M|ZM)\b/i, 'NSTP 12');
 
   // 2. Heal GEC variations:
+  // Heal missing course number before known Bicol University general education subjects
+  clean = clean.replace(/^GEC\s+(?=Understanding)/i, 'GEC 11 ');
+  clean = clean.replace(/^GEC\s+(?=Readings)/i, 'GEC 12 ');
+  clean = clean.replace(/^GEC\s+(?=The Contemporary|Contemporary)/i, 'GEC 13 ');
+  clean = clean.replace(/^GEC\s+(?=Mathematics|Math)/i, 'GEC 14 ');
+  clean = clean.replace(/^GEC\s+(?=Purposive)/i, 'GEC 15 ');
+  clean = clean.replace(/^GEC\s+(?=Art)/i, 'GEC 16 ');
+  clean = clean.replace(/^GEC\s+(?=Science)/i, 'GEC 17 ');
+  clean = clean.replace(/^GEC\s+(?=Ethics)/i, 'GEC 18 ');
+  clean = clean.replace(/^GEC\s+(?=Living)/i, 'GEC 20.1 ');
+
   // GEC 1-9 -> GEC 11-19 (leading 1 dropped by OCR in sans-serif)
   clean = clean.replace(/^GEC\s*([1-9])\b/i, 'GEC 1$1');
-  clean = clean.replace(/^GEC\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I)\b/i, 'GEC 11');
+  clean = clean.replace(/^GEC\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I|1M|IM)\b/i, 'GEC 11');
   clean = clean.replace(/^GECT([0-9]+)\b/i, 'GEC 1$1');
   clean = clean.replace(/^GEC\s*1A\b/i, 'GEC 14');
   clean = clean.replace(/^GEC\s*1S\b/i, 'GEC 15');
@@ -451,15 +462,42 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
 
     if (ignorePatterns.some((pattern) => pattern.test(cleanLine))) return;
 
+    let code = '';
+    let textAfterCode = '';
+
     const codeMatch = cleanLine.match(BU_COURSE_CODE_REGEX);
-    if (!codeMatch) return;
+    if (codeMatch && isValidBUCoursePrefix(codeMatch[1].trim())) {
+      code = formatCourseCode(codeMatch[1], codeMatch[2]);
+      const codeEndIdx = cleanLine.indexOf(codeMatch[0]) + codeMatch[0].length;
+      textAfterCode = cleanLine.substring(codeEndIdx).trim();
+    } else {
+      // Resilient fallback: Line starts with a known prefix but OCR completely dropped the digits
+      // e.g. "GEC Understanding the Self 3.0 3.0 0.0 1.4"
+      const prefixMatch = cleanLine.match(/^([A-Za-z]{2,8}(?:[- ](?:ELECT|ELEC|[A-Za-z]{2,6}))?)\s+([A-Za-z].*)$/i);
+      if (prefixMatch && isValidBUCoursePrefix(prefixMatch[1].trim())) {
+        const rawPrefix = prefixMatch[1].trim();
+        const rest = prefixMatch[2].trim();
+        if (/^Understanding/i.test(rest)) code = 'GEC 11';
+        else if (/^Readings/i.test(rest)) code = 'GEC 12';
+        else if (/^The Contemporary|Contemporary/i.test(rest)) code = 'GEC 13';
+        else if (/^Mathematics|Math/i.test(rest)) code = 'GEC 14';
+        else if (/^Purposive/i.test(rest)) code = 'GEC 15';
+        else if (/^Art/i.test(rest)) code = 'GEC 16';
+        else if (/^Science/i.test(rest)) code = 'GEC 17';
+        else if (/^Ethics/i.test(rest)) code = 'GEC 18';
+        else if (/^Living/i.test(rest)) code = 'GEC 20.1';
+        else if (/^Intro/i.test(rest)) code = 'IT 101';
+        else if (/^Computer Prog/i.test(rest)) code = 'IT 102';
+        else if (/^Physics/i.test(rest)) code = 'Phys 1';
+        else if (/^Movement/i.test(rest)) code = 'PATHFit 1';
+        else if (/^CWTS|LTS|ROTC/i.test(rest)) code = 'NSTP 11';
+        else code = rawPrefix.toUpperCase();
 
-    const prefix = codeMatch[1].trim();
-    if (!isValidBUCoursePrefix(prefix)) return;
-
-    const code = formatCourseCode(codeMatch[1], codeMatch[2]);
-    const codeEndIdx = cleanLine.indexOf(codeMatch[0]) + codeMatch[0].length;
-    let textAfterCode = cleanLine.substring(codeEndIdx).trim();
+        textAfterCode = rest;
+      } else {
+        return;
+      }
+    }
 
     // Strip trailing remarks (e.g. PASSED, FASSTO, PASSO, PEE, BA, PARE, VEST, BST, INE, Led, tel, etc.)
     textAfterCode = textAfterCode

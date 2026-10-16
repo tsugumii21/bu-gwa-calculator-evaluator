@@ -138,6 +138,33 @@ PATHFit1                  Movement Competency Training                          
     expect(subjects[6].code).toBe('PATHFit 1');
   });
 
+  it('parses real raw Tesseract output from Image 2 (cropped) where GEC number is omitted and NSTP reads as 1M', () => {
+    const raw = `
+Code                                                   Course                                              units               Lec Units                 Lab Units               Grade                 Remarks
+IT 101                    Introduction to Computing                                                 30              20                       10                       1.6             PASSED
+IT 102                   Computer Programming 1                                                  30              20                       10                       1.5             PASSED
+Phys 1               Physics for Computing                                            30           30                   00                   1.1           PASSED
+GEC        Understanding the Self                        30      30          00          1.4      PASSED
+GEC 14        Mathematics in the Modern World                 30      30          00          1.3     PASSED
+PATHFit 1     Movement Competency Training            20 20       00       1.0 PASSED
+NSTP 1M             CWTS/LTS/ROTC                                                 00           00                   00                   1.1           PASSED
+    `;
+
+    const subjects = parseDesktopRowLayout(raw);
+    expect(subjects.length).toBe(7);
+    expect(subjects[0].code).toBe('IT 101');
+    expect(subjects[1].code).toBe('IT 102');
+    expect(subjects[2].code).toBe('Phys 1');
+    expect(subjects[3].code).toBe('GEC 11');
+    expect(subjects[3].name).toBe('Understanding the Self');
+    expect(subjects[3].grade).toBe('1.4');
+    expect(subjects[4].code).toBe('GEC 14');
+    expect(subjects[5].code).toBe('PATHFit 1');
+    expect(subjects[6].code).toBe('NSTP 11');
+    expect(subjects[6].grade).toBe('1.1');
+    expect(subjects[6].units).toBe(0);
+  });
+
   it('correctly routes desktop table through parseOCRTextToSubjects without falling into mobile parser', () => {
     const raw = `
 Code Course Units Lec Units Lab Units Grade Remarks
