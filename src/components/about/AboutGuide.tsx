@@ -20,6 +20,7 @@ const ACTION_CONTROLS: ActionControlItem[] = [
 export const AboutGuide: React.FC = () => {
   const [desktopStep, setDesktopStep] = useState(0);
   const [mobileStep, setMobileStep] = useState(0);
+  const [isDirOpen, setIsDirOpen] = useState(false);
 
   return (
     <div className="about-subtab-content active" id="about-guide">
@@ -364,56 +365,76 @@ export const AboutGuide: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Toolbar Reference Directory */}
+          {/* Action Toolbar Reference Directory (Collapsible Accordion) */}
           <div className="action-directory-container">
-            <strong className="action-directory-title">
-              <i className="fa-solid fa-wrench text-primary" style={{ marginRight: '6px' }}></i> Action Controls &amp; Buttons Directory
-            </strong>
+            <button
+              type="button"
+              className="action-dir-header"
+              onClick={() => setIsDirOpen((prev) => !prev)}
+              aria-expanded={isDirOpen}
+              aria-controls="action-dir-content"
+            >
+              <div className="action-dir-title-group">
+                <span className="action-dir-title">
+                  <i className="fa-solid fa-wrench text-primary"></i> Action Controls &amp; Buttons Directory
+                </span>
+                <span className="action-dir-count-badge">8 Core Controls</span>
+                <span className="action-dir-subtitle desktop-only">• Toolbar, Semester Cards &amp; Header</span>
+              </div>
+              <div className="action-dir-toggle-pill">
+                <span>{isDirOpen ? 'Hide Directory' : 'View Directory'}</span>
+                <i className={`fa-solid fa-chevron-down action-dir-chevron ${isDirOpen ? 'is-open' : ''}`}></i>
+              </div>
+            </button>
 
-            {/* Desktop Table View (>768px) */}
-            <div className="desktop-only table-responsive">
-              <table className="policy-table action-dir-table" style={{ fontSize: '0.8rem' }}>
-                <thead>
-                  <tr>
-                    <th style={{ width: '28%' }}>Button / Control</th>
-                    <th style={{ width: '24%' }}>Location</th>
-                    <th>Function &amp; Behavior</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {ACTION_CONTROLS.map((ctrl) => (
-                    <tr key={ctrl.name}>
-                      <td>
-                        <strong>
-                          <i className={`fa-solid ${ctrl.icon} text-primary`} style={{ marginRight: '8px' }}></i>
-                          {ctrl.name}
-                        </strong>
-                      </td>
-                      <td>
-                        <span className="action-loc-badge">{ctrl.location}</span>
-                      </td>
-                      <td>{ctrl.desc}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Mobile Card View (<=768px) */}
-            <div className="mobile-only action-dir-mobile">
-              {ACTION_CONTROLS.map((ctrl) => (
-                <div key={ctrl.name} className="action-dir-card">
-                  <div className="action-dir-card-header">
-                    <span className="action-dir-card-name">
-                      <i className={`fa-solid ${ctrl.icon} text-primary`}></i>
-                      {ctrl.name}
-                    </span>
-                    <span className="action-loc-badge">{ctrl.location}</span>
-                  </div>
-                  <p className="action-dir-card-desc">{ctrl.desc}</p>
+            {isDirOpen && (
+              <div className="action-dir-body" id="action-dir-content">
+                {/* Desktop Table View (>768px) */}
+                <div className="desktop-only table-responsive" style={{ marginTop: '12px' }}>
+                  <table className="policy-table action-dir-table" style={{ fontSize: '0.8rem' }}>
+                    <thead>
+                      <tr>
+                        <th style={{ width: '28%' }}>Button / Control</th>
+                        <th style={{ width: '24%' }}>Location</th>
+                        <th>Function &amp; Behavior</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {ACTION_CONTROLS.map((ctrl) => (
+                        <tr key={ctrl.name}>
+                          <td>
+                            <strong>
+                              <i className={`fa-solid ${ctrl.icon} text-primary`} style={{ marginRight: '8px' }}></i>
+                              {ctrl.name}
+                            </strong>
+                          </td>
+                          <td>
+                            <span className="action-loc-badge">{ctrl.location}</span>
+                          </td>
+                          <td>{ctrl.desc}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-              ))}
-            </div>
+
+                {/* Mobile Card View (<=768px) */}
+                <div className="mobile-only action-dir-mobile" style={{ marginTop: '12px' }}>
+                  {ACTION_CONTROLS.map((ctrl) => (
+                    <div key={ctrl.name} className="action-dir-card">
+                      <div className="action-dir-card-header">
+                        <span className="action-dir-card-name">
+                          <i className={`fa-solid ${ctrl.icon} text-primary`}></i>
+                          {ctrl.name}
+                        </span>
+                        <span className="action-loc-badge">{ctrl.location}</span>
+                      </div>
+                      <p className="action-dir-card-desc">{ctrl.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

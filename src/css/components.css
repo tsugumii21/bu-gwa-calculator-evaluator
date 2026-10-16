@@ -2982,23 +2982,124 @@
     display: block;
 }
 .mobile-only {
-    display: none;
+    display: none !important;
 }
 
-/* Action Controls & Buttons Directory */
+/* Action Controls & Buttons Directory (Collapsible Accordion) */
 .action-directory-container {
     margin-top: 18px;
-    padding: 16px;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: var(--radius-md);
+    overflow: hidden;
+    transition: var(--transition-fast);
 }
 
-.action-directory-title {
-    display: block;
-    font-size: 0.9rem;
+.action-dir-header {
+    width: 100%;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--card-bg);
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s ease;
+    gap: 12px;
+}
+
+.action-dir-header:hover {
+    background: var(--card-header-bg, rgba(27, 42, 111, 0.04));
+}
+
+.action-dir-header:focus-visible {
+    outline: 2px solid var(--bu-azure);
+    outline-offset: -2px;
+}
+
+.action-dir-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.action-dir-title {
+    font-size: 0.92rem;
+    font-weight: 700;
     color: var(--text-primary);
-    margin-bottom: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+}
+
+.action-dir-count-badge {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgba(37, 99, 235, 0.1);
+    color: var(--bu-azure);
+    border: 1px solid rgba(37, 99, 235, 0.2);
+}
+
+[data-theme="dark"] .action-dir-count-badge {
+    background: rgba(59, 130, 246, 0.2);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.action-dir-subtitle {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.action-dir-toggle-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    padding: 5px 12px;
+    border-radius: 999px;
+    background: var(--card-header-bg, rgba(27, 42, 111, 0.06));
+    border: 1px solid var(--border-color);
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.action-dir-header:hover .action-dir-toggle-pill {
+    color: var(--bu-blue);
+    border-color: var(--bu-blue);
+}
+
+[data-theme="dark"] .action-dir-toggle-pill {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+}
+
+[data-theme="dark"] .action-dir-header:hover .action-dir-toggle-pill {
+    color: var(--bu-azure);
+    border-color: var(--bu-azure);
+}
+
+.action-dir-chevron {
+    font-size: 0.75rem;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-dir-chevron.is-open {
+    transform: rotate(180deg);
+}
+
+.action-dir-body {
+    padding: 4px 18px 18px 18px;
+    border-top: 1px solid var(--border-color);
+    background: var(--card-bg);
+    animation: fadeIn 0.2s ease;
 }
 
 .action-loc-badge {
@@ -3021,10 +3122,9 @@
     border-color: rgba(59, 130, 246, 0.2);
 }
 
+/* Guard: Hide mobile cards on desktop */
 .action-dir-mobile {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: none;
 }
 
 .action-dir-card {
@@ -3061,5 +3161,6 @@
     margin: 0;
     line-height: 1.45;
 }
+
 
 

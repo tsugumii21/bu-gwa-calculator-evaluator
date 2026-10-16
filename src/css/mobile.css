@@ -514,10 +514,20 @@ html, body {
 
     /* Action Controls & Buttons Directory Mobile Cards (<=768px) */
     .action-directory-container {
-        padding: 14px 12px !important;
+        padding: 0 !important;
         margin-top: 14px !important;
         width: 100% !important;
         box-sizing: border-box !important;
+        overflow: hidden !important;
+    }
+
+    .action-dir-header {
+        padding: 12px 14px !important;
+        min-height: 48px !important;
+    }
+
+    .action-dir-body {
+        padding: 0 12px 14px 12px !important;
     }
 
     .action-dir-mobile {
