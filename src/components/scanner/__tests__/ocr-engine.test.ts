@@ -283,6 +283,24 @@ Lab Units: 0.0
     expect(subjects[1].grade).toBe('1.2');
     expect(subjects[1].units).toBe(0);
   });
+
+  it('strictly rejects phantom taskbar noise like BIR TE and out-of-range grades', () => {
+    const raw = `
+Code Course Units Lec Units Lab Units Grade Remarks
+NSTP 11 CWTS/LTS/ROTC 0.0 0.0 0.0 1.2 PASSED
+IT 101 Introduction to Computing 3.0 2.0 1.0 2.0 PASSED
+IT 102 Computer Programming 1 3.0 2.0 1.0 2.0 PASSED
+Phys 1 Physics for Computing 3.0 3.0 0.0 1.5 PASSED
+GEC 11 Understanding the Self 3.0 3.0 0.0 1.5 PASSED
+GEC 14 Mathematics in the Modern World 3.0 3.0 0.0 1.7 PASSED
+PATHFit 1 Movement Competency Training 2.0 2.0 0.0 1.1 PASSED
+BIR TE Soa ati TT TT TT mm Toa WR \\ Be Bi 5) LT) TEE Tel 06 1
+    `;
+
+    const subjects = parseDesktopRowLayout(raw);
+    expect(subjects.length).toBe(7);
+    expect(subjects.some((s) => s.code.includes('BIR'))).toBe(false);
+  });
 });
 
 

@@ -63,10 +63,9 @@ export const KNOWN_BU_PREFIXES = [
 
 export function isValidBUCoursePrefix(prefix: string): boolean {
   const norm = prefix.trim().toUpperCase().replace(/\s+/g, ' ');
-  if (KNOWN_BU_PREFIXES.some((p) => norm.startsWith(p) || p.startsWith(norm))) {
-    return true;
-  }
-  return /^[A-Z]{2,6}(?:[- ](?:ELECT|ELEC|[A-Z]{2,4}))?$/.test(norm);
+  return KNOWN_BU_PREFIXES.some(
+    (p) => norm === p || norm.startsWith(p + ' ') || norm.startsWith(p + '-')
+  );
 }
 
 export function formatCourseCode(prefix: string, num: string): string {
@@ -172,7 +171,8 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
       if (hasBrowserChrome) {
         // Full desktop capture with tabs/URL bar/bookmarks — crop them out
         cropTop = Math.floor(image.naturalHeight * 0.35);
-        cropBottom = Math.floor(image.naturalHeight * 0.05);
+        // Crop bottom 9% to cleanly eliminate Windows/macOS taskbars (~52px)
+        cropBottom = Math.floor(image.naturalHeight * 0.09);
       }
       // Otherwise: already a clean crop/zoom of the table — keep 100%
     }
@@ -429,7 +429,8 @@ function normalizeGrade(val: string): string {
     }
   }
 
-  return clean;
+  // Not a valid academic grade in the Philippine / BU grading scale (1.00 - 5.00)
+  return '';
 }
 
 /**
@@ -451,6 +452,9 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
     /Registration/i,
     /Ask\s+Gemini/i,
     /All\s+Bookmarks/i,
+    /Search/i,
+    /localhost/i,
+    /\b(?:ENG|US|PM|AM)\b.*\b\d{1,2}:\d{2}\b/i,
   ];
 
   // Regex matching candidate unit/grade tokens at column positions
@@ -555,6 +559,9 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
         grade = normalizeGrade(labToken[0]);
       }
 
+      // Valid grade guard: Reject phantom taskbar rows that don't have a valid academic grade
+      if (!grade) return;
+
       if (code.toUpperCase().startsWith('NSTP')) {
         units = 0;
       } else if (
@@ -572,6 +579,9 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
       courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
 
+      // Skip if course name contains obvious OCR noise (e.g. backslashes, taskbar fragments)
+      if (/\\|[|~_{}]|\b(?:TT\s+TT|Soa\s+ati|Toa\s+WR)\b/i.test(courseName)) return;
+
       subjects.push({
         code,
         name: courseName || 'Imported Course',
@@ -587,6 +597,9 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       const unitsToken = two[0];
       const gradeToken = two[1];
 
+      const grade = normalizeGrade(gradeToken[0]);
+      if (!grade) return;
+
       let units = normalizeUnits(unitsToken[0]);
       if (code.toUpperCase().startsWith('NSTP')) {
         units = 0;
@@ -597,12 +610,14 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       ) {
         units = 3;
       }
-      const grade = normalizeGrade(gradeToken[0]);
 
       const courseEndIdx = unitsToken.index ?? 0;
       let courseName = textAfterCode.substring(0, courseEndIdx).trim();
       courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
       courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
+
+      // Skip if course name contains obvious OCR noise
+      if (/\\|[|~_{}]|\b(?:TT\s+TT|Soa\s+ati|Toa\s+WR)\b/i.test(courseName)) return;
 
       subjects.push({
         code,
