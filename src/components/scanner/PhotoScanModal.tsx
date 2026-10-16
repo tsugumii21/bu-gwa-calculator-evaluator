@@ -337,7 +337,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
       <div className="modal-content animate__animated animate__zoomIn animate__faster">
         <div className="modal-header">
           <h3 id="photo-modal-title">
-            <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Screenshots / Photos by Semester
+            <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Images / Photos by Semester
           </h3>
           <button
             className="modal-close-btn"

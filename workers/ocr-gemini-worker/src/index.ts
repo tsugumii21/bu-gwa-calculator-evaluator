@@ -33,34 +33,16 @@ Rules:
 4. If a grade is marked as PASSED but has a numerical rating column (like 1.0 - 3.0), extract the numerical rating as "grade".
 5. Return ONLY raw JSON without markdown code fences or conversational text.`;
 
-/**
- * Modern Google Gemini models ordered by quota tier and task size.
- */
 function getModelOrder(imageCount?: number): string[] {
-  if (typeof imageCount === 'number' && imageCount >= 9) {
-    // Large bulk scans (9+ images): start with high-capacity workhorse (1500 RPD)
-    return [
-      'gemini-1.5-flash',
-      'gemini-2.0-flash-lite',
-      'gemini-2.5-flash-lite',
-      'gemini-2.5-flash',
-    ];
-  }
-  if (typeof imageCount === 'number' && imageCount >= 4) {
-    // Medium multi-semester batches (4-8 images)
-    return [
-      'gemini-2.0-flash-lite',
-      'gemini-1.5-flash',
-      'gemini-2.5-flash-lite',
-      'gemini-2.5-flash',
-    ];
-  }
-  // Standard / quick scans (1-3 images): start with ultra-fast lite model
+  // Modern models cascade: starts with gemini-3.8-flash recommended by Google,
+  // falling back through other available tiers
   return [
-    'gemini-2.5-flash-lite',
-    'gemini-2.0-flash-lite',
-    'gemini-1.5-flash',
+    'gemini-3.8-flash',
+    'gemini-3.5-flash',
+    'gemini-2.0-flash',
     'gemini-2.5-flash',
+    'gemini-2.5-flash-lite',
+    'gemini-1.5-flash',
   ];
 }
 

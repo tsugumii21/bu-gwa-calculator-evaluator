@@ -87,9 +87,9 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           className="btn btn-secondary btn-sm"
           onClick={onOpenScanPhoto}
           id="btn-scan-ss"
-          title="Scan mobile screenshots of grade sheet with OCR"
+          title="Scan mobile screenshots or photos of grade sheet with OCR"
         >
-          <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Screenshots
+          <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Image
         </button>
 
         <button

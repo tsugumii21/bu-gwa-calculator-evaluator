@@ -121,19 +121,31 @@ export const DashboardStrip: React.FC = () => {
   const latinIcon = isLatinCumLaude ? 'fa-solid fa-award' : 'fa-solid fa-crown';
 
   // 4. Academic Standing
-  const standingDisplay =
-    allStats.totalCourses > 0 ? standingEval.label : 'Good Standing';
-  const standingSubtext =
-    allStats.failingCount === 0 && !allStats.hasInc
+  const hasAcademicData = allStats.totalCourses > 0 && hasComputedGrades;
+  const standingDisplay = hasAcademicData ? standingEval.label : 'Pending';
+  const standingSubtext = hasAcademicData
+    ? allStats.failingCount === 0 && !allStats.hasInc
       ? '0 deficiencies'
-      : standingEval.description;
+      : standingEval.description
+    : allStats.totalCourses === 0
+      ? 'Evaluates deficiencies'
+      : "Click 'Compute GPA'";
 
-  const standingBadgeClass =
-    standingEval.level === 'good'
+  const standingBadgeClass = !hasAcademicData
+    ? 'text-black-white'
+    : standingEval.level === 'good'
       ? 'text-success'
       : standingEval.level === 'warning'
         ? 'text-gold'
         : 'text-danger';
+
+  const standingIconClass = !hasAcademicData
+    ? ''
+    : standingEval.level === 'good'
+      ? 'icon-green'
+      : standingEval.level === 'warning'
+        ? 'icon-gold'
+        : 'icon-danger';
 
   // 5. Total Units
   const unitsDisplay = allStats.totalUnits.toFixed(
@@ -245,7 +257,7 @@ export const DashboardStrip: React.FC = () => {
             <i className="fa-solid fa-circle-question"></i>
           </button>
           <div className="card-icon-row">
-            <div className="icon-circle icon-green">
+            <div className={`icon-circle ${standingIconClass}`}>
               <i className="fa-solid fa-shield-halved"></i>
             </div>
           </div>

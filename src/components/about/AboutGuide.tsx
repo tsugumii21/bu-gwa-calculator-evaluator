@@ -9,7 +9,7 @@ interface ActionControlItem {
 const ACTION_CONTROLS: ActionControlItem[] = [
   { name: 'Add Semester', location: 'Toolbar / Top Bar', desc: 'Appends a new semester card with default course slots.', icon: 'fa-calendar-plus' },
   { name: 'Multi-COR Queue', location: 'Toolbar', desc: 'Concurrently uploads and parses multiple PDF Certificate of Registration files.', icon: 'fa-file-pdf' },
-  { name: 'Screenshot Buckets', location: 'Toolbar', desc: 'Ingests mobile grade screenshots in groups of up to 3 per term with OCR deduplication.', icon: 'fa-images' },
+  { name: 'Scan Image', location: 'Toolbar', desc: 'Ingests mobile grade sheet photos or screenshots by semester with AI Vision OCR.', icon: 'fa-camera' },
   { name: 'Compute GPA', location: 'Semester Card', desc: 'Computes term GPA and awards semestral honors (President\'s Lister or Dean\'s Lister).', icon: 'fa-calculator' },
   { name: 'Compute All Semesters', location: 'Dashboard / Header', desc: 'Evaluates all terms instantaneously and checks Latin Graduation Honors.', icon: 'fa-bolt' },
   { name: 'Expand / Collapse All', location: 'Semester Header', desc: 'Toggles accordion visibility across all recorded semester cards.', icon: 'fa-up-down' },
@@ -77,13 +77,13 @@ export const AboutGuide: React.FC = () => {
               <div className="guide-mockup-slide active">
                 <div className="guide-mockup-info">
                   <h4>Step 1: Setup & Smart Ingestion Queue</h4>
-                  <p>Build your academic records manually via <strong>Add Semester</strong>, or speed up ingestion with our batch tools: the <strong>Multi-COR PDF Staging Queue</strong> lets you upload and import multiple semesters at once; the <strong>Screenshot Bucket OCR</strong> lets you group up to 3 mobile grade sheet photos per semester with automatic image preprocessing; or use <strong>Bulk Paste</strong> for raw schedule blocks.</p>
+                  <p>Build your academic records manually via <strong>Add Semester</strong>, or speed up ingestion with our batch tools: the <strong>Multi-COR PDF Staging Queue</strong> lets you upload and import multiple semesters at once; the <strong>Scan Image OCR</strong> lets you group mobile grade sheet photos or screenshots per semester with automatic image preprocessing; or use <strong>Bulk Paste</strong> for raw schedule blocks.</p>
                 </div>
                 <div className="css-mockup-wrapper">
                   <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                     <div className="btn btn-primary btn-sm"><i className="fa-solid fa-plus"></i> Add Semester</div>
                     <div className="btn btn-secondary btn-sm"><i className="fa-solid fa-file-pdf text-danger"></i> Multi-COR Queue</div>
-                    <div className="btn btn-secondary btn-sm"><i className="fa-solid fa-camera text-primary"></i> Screenshot Buckets</div>
+                    <div className="btn btn-secondary btn-sm"><i className="fa-solid fa-camera text-primary"></i> Scan Image</div>
                     <div className="btn btn-secondary btn-sm"><i className="fa-solid fa-paste"></i> Bulk Paste</div>
                   </div>
                 </div>

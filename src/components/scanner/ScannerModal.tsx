@@ -245,7 +245,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
                 setExtractedSubjects([]);
               }}
             >
-              <i className="fa-solid fa-image"></i> Scan Screenshots (Max 3)
+              <i className="fa-solid fa-image"></i> Scan Images (Max 3)
             </button>
             <button
               type="button"

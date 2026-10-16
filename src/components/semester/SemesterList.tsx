@@ -76,7 +76,7 @@ export const SemesterList: React.FC<SemesterListProps> = ({
             <i className="fa-solid fa-file-pdf text-danger"></i> Scan COR (PDF)
           </button>
           <button className="btn btn-secondary btn-sm" onClick={onOpenScanPhoto}>
-            <i className="fa-solid fa-camera text-primary"></i> Scan Screenshots
+            <i className="fa-solid fa-camera text-primary"></i> Scan Image
           </button>
         </div>
       </div>

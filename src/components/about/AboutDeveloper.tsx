@@ -400,6 +400,13 @@ export const AboutDeveloper: React.FC = () => {
                 </div>
                 <p className="tech-item-desc">Next-generation frontend bundler with optimized production minification.</p>
               </div>
+              <div className="tech-item-card">
+                <div className="tech-item-header">
+                  <span className="tech-item-name">Vitest 5.0</span>
+                  <span className="tech-item-badge">Test Suite</span>
+                </div>
+                <p className="tech-item-desc">Automated unit test suite verifying BU GWA calculation and academic honor bounds.</p>
+              </div>
             </div>
           </div>
 
@@ -426,12 +433,26 @@ export const AboutDeveloper: React.FC = () => {
             </div>
           </div>
 
-          {/* Category 3: Document & Computer Vision */}
+          {/* Category 3: Document Ingestion & Computer Vision */}
           <div className="tech-stack-category">
             <h4 className="tech-cat-title">
               <i className="fa-solid fa-file-invoice text-red"></i> Document Ingestion & Computer Vision
             </h4>
             <div className="tech-stack-grid">
+              <div className="tech-item-card">
+                <div className="tech-item-header">
+                  <span className="tech-item-name">Gemini AI Vision</span>
+                  <span className="tech-item-badge">Multi-Model OCR</span>
+                </div>
+                <p className="tech-item-desc">High-precision transcript table extraction cascading across Gemini 3.8 Flash, 3.5 Flash, and Lite models.</p>
+              </div>
+              <div className="tech-item-card">
+                <div className="tech-item-header">
+                  <span className="tech-item-name">Cloudflare Workers</span>
+                  <span className="tech-item-badge">Edge Proxy</span>
+                </div>
+                <p className="tech-item-desc">Serverless edge gateway managing CORS, rate limit shielding, and multi-project API key rotation.</p>
+              </div>
               <div className="tech-item-card">
                 <div className="tech-item-header">
                   <span className="tech-item-name">Mozilla PDF.js 3.11</span>
@@ -442,16 +463,16 @@ export const AboutDeveloper: React.FC = () => {
               <div className="tech-item-card">
                 <div className="tech-item-header">
                   <span className="tech-item-name">Tesseract.js 7.0</span>
-                  <span className="tech-item-badge">WebAssembly OCR</span>
+                  <span className="tech-item-badge">WASM Failover</span>
                 </div>
-                <p className="tech-item-desc">Zero-server optical character recognition for grade table screenshots.</p>
+                <p className="tech-item-desc">Zero-server WebAssembly OCR engine providing 100% offline fallback when network is unavailable.</p>
               </div>
               <div className="tech-item-card">
                 <div className="tech-item-header">
                   <span className="tech-item-name">HTML5 Canvas API</span>
                   <span className="tech-item-badge">Computer Vision</span>
                 </div>
-                <p className="tech-item-desc">Grayscale thresholding and adaptive contrast image preprocessing.</p>
+                <p className="tech-item-desc">Adaptive contrast preprocessing, grayscale thresholding, and multi-screenshot row stitching.</p>
               </div>
             </div>
           </div>
