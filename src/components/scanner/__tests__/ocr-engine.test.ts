@@ -301,6 +301,78 @@ BIR TE Soa ati TT TT TT mm Toa WR \\ Be Bi 5) LT) TEE Tel 06 1
     expect(subjects.length).toBe(7);
     expect(subjects.some((s) => s.code.includes('BIR'))).toBe(false);
   });
+
+  it('reliably extracts 8/8 courses for Year 2 Sem 1 with GEC 201 restoration and IT 111 stem healing', () => {
+    const raw = `
+Code Course Units Lec Units Lab Units Grade Remarks
+IT 104 Data Structures and Algorithm 3.0 2.0 1.0 1.5 PASSED
+IT 108 Object Oriented Programming 3.0 2.0 1.0 1.6 PASSED
+GEC 13 The Contemporary World 3.0 3.0 0.0 1.7 PASSED
+GEC 201 The Entrepreneurial Mind 3.0 3.0 0.0 1.4 PASSED
+BTL-Elec 2 Arts and Humanities 3.0 3.0 0.0 1.8 PASSED
+IT 110 Introduction to Human Computer Interaction 3.0 2.0 1.0 1.5 PASSED
+TH om Tecmobges 3.0 2.0 1.0 1.7 PASSED
+PATHFit 3 Menu of Dance, Sports, Martial Arts, Group Exercise, Outdoor and Adventure Activities 2.0 2.0 0.0 1.4 PASSED
+    `;
+
+    const subjects = parseDesktopRowLayout(raw);
+    expect(subjects.length).toBe(8);
+    expect(subjects[3].code).toBe('GEC 20.1');
+    expect(subjects[3].name).toBe('The Entrepreneurial Mind');
+    expect(subjects[3].grade).toBe('1.4');
+    expect(subjects[6].code).toBe('IT 111');
+    expect(subjects[6].name).toBe('Platform Technologies');
+    expect(subjects[6].grade).toBe('1.7');
+  });
+
+  it('reliably extracts 8/8 courses for Year 2 Sem 2 with IT 114 stem healing and IT 13 repair', () => {
+    const raw = `
+Code Course Units Lec Units Lab Units Grade Remarks
+IT 105 Information Management I 3.0 2.0 1.0 1.1 PASSED
+IT 112 Web Systems and Technologies 3.0 2.0 1.0 1.9 PASSED
+IT 13 Special Topics in IT 1.0 1.0 0.0 1.9 PASSED
+ne Networking 1 3.0 2.0 1.0 1.9 PASSED
+GEC 17 Science, Technology, and Society 3.0 3.0 0.0 2.0 PASSED
+GEC 18 Ethics 3.0 3.0 0.0 1.8 PASSED
+GEC Elect 212 People and the Earth's Ecosystem 3.0 3.0 0.0 1.4 PASSED
+PATHFit 4 Menu of Dance, Sports, Martial Arts, Group Exercise, Outdoor and Adventure Activities 2.0 2.0 0.0 1.4 PASSED
+    `;
+
+    const subjects = parseDesktopRowLayout(raw);
+    expect(subjects.length).toBe(8);
+    expect(subjects[2].code).toBe('IT 113');
+    expect(subjects[2].name).toBe('Special Topics in IT');
+    expect(subjects[2].units).toBe(1.0);
+    expect(subjects[3].code).toBe('IT 114');
+    expect(subjects[3].name).toBe('Networking 1');
+    expect(subjects[6].code).toBe('GEC Elect 21.2');
+  });
+
+  it('supports other BU colleges (Engineering, Nursing, Sciences, Agriculture)', () => {
+    const rawEngineering = `
+Code Course Units Lec Units Lab Units Grade Remarks
+CE 211 Statics of Rigid Bodies 3.0 3.0 0.0 1.5 PASSED
+MATH 105 Differential Equations 3.0 3.0 0.0 1.7 PASSED
+CHEM 101 Chemistry for Engineers 4.0 3.0 1.0 1.8 PASSED
+ENGR 102 Engineering Drawing 2.0 0.0 2.0 1.4 PASSED
+    `;
+    const engSubjects = parseDesktopRowLayout(rawEngineering);
+    expect(engSubjects.length).toBe(4);
+    expect(engSubjects[0].code).toBe('CE 211');
+    expect(engSubjects[2].code).toBe('CHEM 101');
+    expect(engSubjects[2].units).toBe(4.0);
+
+    const rawNursing = `
+Code Course Units Lec Units Lab Units Grade Remarks
+NURS 101 Theoretical Foundations of Nursing 3.0 3.0 0.0 1.2 PASSED
+BIO 105 Anatomy and Physiology 4.0 3.0 1.0 1.5 PASSED
+GEC 11 Understanding the Self 3.0 3.0 0.0 1.4 PASSED
+    `;
+    const nursSubjects = parseDesktopRowLayout(rawNursing);
+    expect(nursSubjects.length).toBe(3);
+    expect(nursSubjects[0].code).toBe('NURS 101');
+    expect(nursSubjects[1].units).toBe(4.0);
+  });
 });
 
 

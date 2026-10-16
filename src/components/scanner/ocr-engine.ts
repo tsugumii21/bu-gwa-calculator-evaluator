@@ -7,58 +7,128 @@ import type { Subject } from '../../types';
 export const KNOWN_BU_PREFIXES = [
   'IT ELECT',
   'IT-ELECT',
+  'CS ELECT',
+  'CS-ELECT',
+  'IS ELECT',
+  'IS-ELECT',
+  'EMC ELECT',
+  'EMC-ELECT',
+  'IT',
+  'CS',
+  'IS',
+  'EMC',
   'GE ELECT',
   'GE-ELECT',
   'GEC ELECT',
   'GEC-ELECT',
   'FREE ELECT',
   'FREE-ELECT',
+  'ELECT',
+  'ELEC',
+  'GE',
+  'GEC',
+  'PATHFIT',
+  'PATH FIT',
+  'PATH',
+  'PE',
+  'PE ELECT',
+  'PE-ELECT',
   'BTL-ELEC',
   'BTL-ELECT',
   'BTL',
   'BTLED',
-  'PATHFIT',
-  'PATH FIT',
-  'PATH',
-  'IT',
-  'GEC',
-  'CS',
+  'BTLE',
+  'TVET',
+  'TLE',
+  'IA',
+  'HE',
+  'ICT',
   'MATH',
+  'STAT',
   'CHEM',
   'PHYS',
   'BIO',
+  'ENV',
+  'ES',
+  'METEO',
   'ENG',
-  'NURS',
-  'EDUC',
-  'BEED',
-  'BSED',
-  'BM',
-  'ACT',
-  'ACC',
-  'NSTP',
-  'ROTC',
-  'CWTS',
-  'LTS',
-  'PE',
-  'SOC',
-  'HUM',
-  'FIL',
-  'LIT',
-  'HIST',
-  'POL',
-  'PSY',
-  'ECON',
+  'ENGR',
   'CPE',
   'ECE',
   'CE',
   'EE',
   'ME',
   'ARCH',
-  'IS',
-  'CRIM',
-  'AGRI',
-  'FOR',
+  'GEO',
+  'EM',
+  'IE',
+  'CHE',
+  'NURS',
+  'NUR',
+  'MED',
+  'MEDTECH',
+  'MLS',
+  'PHARM',
+  'MID',
+  'PUBHEALTH',
+  'EDUC',
+  'ED',
+  'BEED',
+  'BSED',
+  'BPED',
+  'SNED',
+  'ECED',
+  'BPE',
+  'BSE',
+  'BM',
+  'BMA',
+  'ACT',
+  'ACC',
+  'BSA',
+  'BSBA',
+  'BSHM',
+  'BSTM',
+  'FIN',
+  'MKTG',
+  'HRM',
   'ENTR',
+  'ENTREP',
+  'TOUR',
+  'HOSP',
+  'SOC',
+  'SOCIO',
+  'HUM',
+  'FIL',
+  'FILIP',
+  'LIT',
+  'HIST',
+  'POL',
+  'POLSCI',
+  'PSY',
+  'PSYCH',
+  'ECON',
+  'AB',
+  'COMM',
+  'JOURN',
+  'DEVCOMM',
+  'PA',
+  'PUBAD',
+  'AGRI',
+  'AGRIBUS',
+  'FOR',
+  'FOREST',
+  'AGENG',
+  'BSAF',
+  'BSF',
+  'CRIM',
+  'CRIMINOLOGY',
+  'LAW',
+  'JD',
+  'LEGAL',
+  'NSTP',
+  'ROTC',
+  'CWTS',
+  'LTS',
 ];
 
 export function isValidBUCoursePrefix(prefix: string): boolean {
@@ -70,11 +140,20 @@ export function isValidBUCoursePrefix(prefix: string): boolean {
 
 export function formatCourseCode(prefix: string, num: string): string {
   let p = prefix.trim().toUpperCase().replace(/\s+/g, ' ');
+  let n = num.trim().toUpperCase();
+
+  // Restore eaten decimal point in elective codes: e.g. 201 -> 20.1, 211 -> 21.1, 212 -> 21.2
+  if (/^2[0-9][1-9]$/.test(n) && (p.startsWith('GEC') || p.startsWith('GE') || p.includes('ELECT') || p.includes('ELEC'))) {
+    n = `${n.slice(0, 2)}.${n.slice(2)}`;
+  }
+
   if (p === 'PATHFIT' || p === 'PATH FIT') p = 'PATHFit';
-  else if (p.startsWith('BTL-ELEC') || p.startsWith('BTL ELEC')) p = 'BTL-Elec';
+  else if (p.startsWith('BTL-ELEC') || p.startsWith('BTL ELEC') || p.startsWith('BTL-ELECT')) p = 'BTL-Elec';
   else if (p.startsWith('GEC ELECT') || p.startsWith('GEC-ELECT')) p = 'GEC Elect';
+  else if (p.startsWith('IT ELECT') || p.startsWith('IT-ELECT')) p = 'IT Elect';
+  else if (p.startsWith('CS ELECT') || p.startsWith('CS-ELECT')) p = 'CS Elect';
   else if (p === 'PHYS') p = 'Phys';
-  return `${p} ${num.trim().toUpperCase()}`;
+  return `${p} ${n}`;
 }
 
 export const BU_COURSE_CODE_REGEX =
@@ -335,9 +414,21 @@ function healOcrLine(line: string): string {
   clean = clean.replace(/^GEC\s*1A\b/i, 'GEC 14');
   clean = clean.replace(/^GEC\s*1S\b/i, 'GEC 15');
 
-  // 3. Heal 17/1T misread for IT before subject numbers: "17120" -> "IT 120", "1T 120" -> "IT 120", "1T102" -> "IT 102"
-  clean = clean.replace(/^(?:17|1T)\s*(\d{2,3}[A-Z]?)\b/i, 'IT $1');
-  clean = clean.replace(/^(?:17|1T)\s*ELECT\b/i, 'IT ELECT');
+  // 3. Sans-serif vertical stem ("fencepost") repairs for IT and numbers:
+  clean = clean.replace(/^(?:17|1T|1E|IE|TT|II)\s*(\d{2,3}[A-Z]?)\b/i, 'IT $1');
+  clean = clean.replace(/^(?:17|1T|1E|IE)\s*ELECT\b/i, 'IT ELECT');
+
+  // Heal IT 111 fencepost merging: TH, T11, T111, 1T111, 17111
+  clean = clean.replace(/^(?:TH|T11|T111)\s+(?=Platform|Systems|Integrat|om\b|[A-Za-z])/i, 'IT 111 ');
+  clean = clean.replace(/^(?:TH|T11|T111)\b/i, 'IT 111');
+  clean = clean.replace(/\b(?:om\s+Tecmobges|om\s+Technologies)\b/i, 'Platform Technologies');
+
+  // Heal IT 114 stem collisions: ne, nE
+  clean = clean.replace(/^(?:ne|nE)\s+(?=Networking|Information|Assurance|Security|[A-Za-z])/i, 'IT 114 ');
+  clean = clean.replace(/^(?:ne|nE)\b/i, 'IT 114');
+
+  // Heal IT 13 -> IT 113 (middle 1 absorbed in sans-serif)
+  clean = clean.replace(/\bIT\s*13\b(?!\d)/i, 'IT 113');
 
   // 4. Heal IT 107 -> IT 101 when followed by Introduction to Computing
   if (/^IT\s*107\s+Intro/i.test(clean)) {
@@ -357,11 +448,8 @@ function healOcrLine(line: string): string {
   clean = clean.replace(/^PATHFIT\s*[E3]\b/i, 'PATHFit 3');
   clean = clean.replace(/^PATHFIT\s*[A4]\b/i, 'PATHFit 4');
 
-  // 8. Insert space between known prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121", "PATHFIT1" -> "PATHFit 1"
-  clean = clean.replace(
-    /^(GEC|IT|CS|MATH|ENG|CHEM|BIO|PHYS|PE|NSTP|PATHFIT|PATH|BTLED|BTL)(\d+)/i,
-    '$1 $2'
-  );
+  // 8. Insert space between prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121", "PATHFIT1" -> "PATHFit 1"
+  clean = clean.replace(/^([A-Za-z]{2,8})(\d+)/i, '$1 $2');
   clean = clean.replace(/^([A-Za-z]+[- ](?:ELECT|ELEC))(\d+)/i, '$1 $2');
 
   return clean;
@@ -466,56 +554,17 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
 
     if (ignorePatterns.some((pattern) => pattern.test(cleanLine))) return;
 
-    let code = '';
-    let textAfterCode = '';
-
-    const codeMatch = cleanLine.match(BU_COURSE_CODE_REGEX);
-    if (codeMatch && isValidBUCoursePrefix(codeMatch[1].trim())) {
-      code = formatCourseCode(codeMatch[1], codeMatch[2]);
-      const codeEndIdx = cleanLine.indexOf(codeMatch[0]) + codeMatch[0].length;
-      textAfterCode = cleanLine.substring(codeEndIdx).trim();
-    } else {
-      // Resilient fallback: Line starts with a known prefix but OCR completely dropped the digits
-      // e.g. "GEC Understanding the Self 3.0 3.0 0.0 1.4"
-      const prefixMatch = cleanLine.match(/^([A-Za-z]{2,8}(?:[- ](?:ELECT|ELEC|[A-Za-z]{2,6}))?)\s+([A-Za-z].*)$/i);
-      if (prefixMatch && isValidBUCoursePrefix(prefixMatch[1].trim())) {
-        const rawPrefix = prefixMatch[1].trim();
-        const rest = prefixMatch[2].trim();
-        if (/^Understanding/i.test(rest)) code = 'GEC 11';
-        else if (/^Readings/i.test(rest)) code = 'GEC 12';
-        else if (/^The Contemporary|Contemporary/i.test(rest)) code = 'GEC 13';
-        else if (/^Mathematics|Math/i.test(rest)) code = 'GEC 14';
-        else if (/^Purposive/i.test(rest)) code = 'GEC 15';
-        else if (/^Art/i.test(rest)) code = 'GEC 16';
-        else if (/^Science/i.test(rest)) code = 'GEC 17';
-        else if (/^Ethics/i.test(rest)) code = 'GEC 18';
-        else if (/^Living/i.test(rest)) code = 'GEC 20.1';
-        else if (/^Intro/i.test(rest)) code = 'IT 101';
-        else if (/^Computer Prog/i.test(rest)) code = 'IT 102';
-        else if (/^Physics/i.test(rest)) code = 'Phys 1';
-        else if (/^Movement/i.test(rest)) code = 'PATHFit 1';
-        else if (/^CWTS|LTS|ROTC/i.test(rest)) code = 'NSTP 11';
-        else code = rawPrefix.toUpperCase();
-
-        textAfterCode = rest;
-      } else {
-        return;
-      }
-    }
-
     // Strip trailing remarks (e.g. PASSED, FASSTO, PASSO, PEE, BA, PARE, VEST, BST, INE, Led, tel, etc.)
-    textAfterCode = textAfterCode
+    const cleanedLine = cleanLine
       .replace(
         /\b(?:PASSED|PASSID|PASSIO|PASSO|FASSTO|PasLE0|PEE|BA|PARE|VEST|BST|INE|Led|tel|FAILED|INCOMPLETE|DROPPED)(?:[- ]?\d+)?\b.*$/i,
         ''
       )
+      .replace(/\s+[a-zA-Z]{1,2}$/, '')
       .trim();
 
-    // Also strip trailing stray 1-2 char words like 'i' or symbols
-    textAfterCode = textAfterCode.replace(/\s+[a-zA-Z]{1,2}$/, '').trim();
-
-    // Find all candidate numeric/grade tokens in the line after code
-    const tokens = [...textAfterCode.matchAll(tokenRegex)];
+    const tokens = [...cleanedLine.matchAll(tokenRegex)];
+    if (tokens.length < 2) return;
 
     // Strip trailing OCR artifacts (dot badge, checkbox, or stray symbols after grade)
     while (tokens.length >= 5) {
@@ -535,7 +584,12 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       }
     }
 
-    // Scenario A: 4 or more tokens (Units, Lec, Lab, Grade [Dot])
+    let units = 3.0;
+    let lec = 3.0;
+    let lab = 0.0;
+    let grade = '';
+    let unitsTokenIndex = -1;
+
     if (tokens.length >= 4) {
       if (tokens.length >= 5) {
         const lastTokenStr = tokens[tokens.length - 1][0].trim().toLowerCase();
@@ -550,83 +604,108 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       const labToken = four[2];
       const gradeToken = four[3];
 
-      let units = normalizeUnits(unitsToken[0]);
-      const lec = normalizeUnits(lecToken[0]);
-      const lab = normalizeLabUnits(labToken[0]);
-      let grade = normalizeGrade(gradeToken[0]);
+      units = normalizeUnits(unitsToken[0]);
+      lec = normalizeUnits(lecToken[0]);
+      lab = normalizeLabUnits(labToken[0]);
+      grade = normalizeGrade(gradeToken[0]);
 
       if (!grade || grade === '0' || grade === '0.0') {
         grade = normalizeGrade(labToken[0]);
       }
-
-      // Valid grade guard: Reject phantom taskbar rows that don't have a valid academic grade
-      if (!grade) return;
-
-      if (code.toUpperCase().startsWith('NSTP')) {
-        units = 0;
-      } else if (
-        code.toUpperCase().startsWith('GEC') &&
-        !code.toUpperCase().includes('ELECT') &&
-        units === 2
-      ) {
-        units = 3;
-      } else if (lec + lab > 0 && (unitsToken[0] === 'an' || units < lec + lab)) {
-        units = lec + lab;
-      }
-
-      const courseEndIdx = unitsToken.index ?? 0;
-      let courseName = textAfterCode.substring(0, courseEndIdx).trim();
-      courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
-      courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
-
-      // Skip if course name contains obvious OCR noise (e.g. backslashes, taskbar fragments)
-      if (/\\|[|~_{}]|\b(?:TT\s+TT|Soa\s+ati|Toa\s+WR)\b/i.test(courseName)) return;
-
-      subjects.push({
-        code,
-        name: courseName || 'Imported Course',
-        units,
-        grade,
-      });
-      return;
-    }
-
-    // Scenario B: 2 tokens (Units, Grade) e.g. for simplified views
-    if (tokens.length >= 2) {
+      unitsTokenIndex = unitsToken.index ?? -1;
+    } else if (tokens.length >= 2) {
       const two = tokens.slice(-2);
       const unitsToken = two[0];
       const gradeToken = two[1];
 
-      const grade = normalizeGrade(gradeToken[0]);
-      if (!grade) return;
-
-      let units = normalizeUnits(unitsToken[0]);
-      if (code.toUpperCase().startsWith('NSTP')) {
-        units = 0;
-      } else if (
-        code.toUpperCase().startsWith('GEC') &&
-        !code.toUpperCase().includes('ELECT') &&
-        units === 2
-      ) {
-        units = 3;
-      }
-
-      const courseEndIdx = unitsToken.index ?? 0;
-      let courseName = textAfterCode.substring(0, courseEndIdx).trim();
-      courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
-      courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
-
-      // Skip if course name contains obvious OCR noise
-      if (/\\|[|~_{}]|\b(?:TT\s+TT|Soa\s+ati|Toa\s+WR)\b/i.test(courseName)) return;
-
-      subjects.push({
-        code,
-        name: courseName || 'Imported Course',
-        units,
-        grade,
-      });
-      return;
+      grade = normalizeGrade(gradeToken[0]);
+      units = normalizeUnits(unitsToken[0]);
+      unitsTokenIndex = unitsToken.index ?? -1;
     }
+
+    // Must have a valid academic grade and units token position
+    if (!grade || unitsTokenIndex < 0) return;
+
+    // The text preceding the units column contains [Code] [Course Description]
+    const rowHeader = cleanedLine.substring(0, unitsTokenIndex).trim();
+    if (!rowHeader) return;
+
+    let code = '';
+    let courseName = '';
+
+    const codeMatch = rowHeader.match(BU_COURSE_CODE_REGEX);
+    if (codeMatch && isValidBUCoursePrefix(codeMatch[1].trim())) {
+      code = formatCourseCode(codeMatch[1], codeMatch[2]);
+      courseName = rowHeader.substring(codeMatch[0].length).trim();
+    } else {
+      // Resilient fallback: Known prefix without numbers (e.g. "GEC Understanding the Self")
+      const prefixMatch = rowHeader.match(/^([A-Za-z]{2,8}(?:[- ](?:ELECT|ELEC|[A-Za-z]{2,6}))?)\s+([A-Za-z].*)$/i);
+      if (prefixMatch && isValidBUCoursePrefix(prefixMatch[1].trim())) {
+        const rawPrefix = prefixMatch[1].trim();
+        const rest = prefixMatch[2].trim();
+        if (/^Understanding/i.test(rest)) code = 'GEC 11';
+        else if (/^Readings/i.test(rest)) code = 'GEC 12';
+        else if (/^The Contemporary|Contemporary/i.test(rest)) code = 'GEC 13';
+        else if (/^Mathematics|Math/i.test(rest)) code = 'GEC 14';
+        else if (/^Purposive/i.test(rest)) code = 'GEC 15';
+        else if (/^Art/i.test(rest)) code = 'GEC 16';
+        else if (/^Science/i.test(rest)) code = 'GEC 17';
+        else if (/^Ethics/i.test(rest)) code = 'GEC 18';
+        else if (/^Living/i.test(rest)) code = 'GEC 20.1';
+        else if (/^Intro/i.test(rest)) code = 'IT 101';
+        else if (/^Computer Prog/i.test(rest)) code = 'IT 102';
+        else if (/^Physics/i.test(rest)) code = 'Phys 1';
+        else if (/^Movement/i.test(rest)) code = 'PATHFit 1';
+        else if (/^CWTS|LTS|ROTC/i.test(rest)) code = 'NSTP 11';
+        else code = rawPrefix.toUpperCase();
+
+        courseName = rest;
+      } else {
+        // Universal Token Extraction: Never drop a row with valid academic units and grade!
+        const words = rowHeader.split(/\s+/);
+        if (words.length >= 2) {
+          const joinedCodeMatch = words[0].match(/^([A-Za-z]{2,8})(\d+(?:\.\d+)?)$/);
+          if (joinedCodeMatch) {
+            code = formatCourseCode(joinedCodeMatch[1], joinedCodeMatch[2]);
+            courseName = words.slice(1).join(' ');
+          } else if (/^[A-Za-z]{2,8}$/.test(words[0]) && /^\d+(?:\.\d+)?$/.test(words[1])) {
+            code = formatCourseCode(words[0], words[1]);
+            courseName = words.slice(2).join(' ');
+          } else {
+            code = words[0].toUpperCase();
+            courseName = words.slice(1).join(' ');
+          }
+        } else {
+          code = rowHeader.toUpperCase();
+          courseName = rowHeader;
+        }
+      }
+    }
+
+    if (code.toUpperCase().startsWith('NSTP')) {
+      units = 0;
+    } else if (
+      code.toUpperCase().startsWith('GEC') &&
+      !code.toUpperCase().includes('ELECT') &&
+      units === 2
+    ) {
+      units = 3;
+    } else if (lec + lab > 0 && (tokens[0]?.[0] === 'an' || units < lec + lab)) {
+      units = lec + lab;
+    }
+
+    courseName = courseName.replace(/\s+[1-6]\.0$/g, '');
+    courseName = courseName.replace(/^[^\w]+|[^\w]+$/g, '').trim();
+
+    // Skip if course name contains obvious OCR noise (e.g. backslashes, taskbar fragments)
+    if (/\\|[|~_{}]|\b(?:TT\s+TT|Soa\s+ati|Toa\s+WR)\b/i.test(courseName)) return;
+
+    subjects.push({
+      code,
+      name: courseName || 'Imported Course',
+      units,
+      grade,
+    });
   });
 
   return subjects;
