@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useSemesterStore } from '../../store';
+import { useSemesterStore, useAppStore } from '../../store';
 import { calculateCumulativeStats } from '../../core/gwa-engine';
 import { calculateTargetGrade } from '../../core/honor-rules';
 import { HONOR_THRESHOLDS } from '../../core/constants';
@@ -9,6 +9,7 @@ import { SimulatorInfoModal, SimulatorTopic } from './SimulatorInfoModal';
 
 export const SimulatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
+  const setActiveTab = useAppStore((s) => s.setActiveTab);
   const stats = calculateCumulativeStats(semesters);
 
   const currentGWA = stats.cumulativeGWA;
@@ -49,29 +50,19 @@ export const SimulatorView: React.FC = () => {
 
   return (
     <div className="tab-content active" id="tab-simulator">
-      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div className="section-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px', marginBottom: '16px' }}>
         <div>
           <h2><i className="fa-solid fa-flask"></i> What-If Scenario Simulator</h2>
           <p className="section-desc">Project your future GWA by simulating anticipated grades for remaining units.</p>
         </div>
         <button
           type="button"
-          className="btn btn-secondary btn-sm"
+          className="sim-help-btn"
           onClick={() => openInfo('what-if')}
           title="How does What-If Scenario Simulator work?"
-          style={{
-            width: '32px',
-            height: '32px',
-            borderRadius: '50%',
-            padding: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-            marginTop: '4px',
-          }}
+          aria-label="What-If Simulator Reference Guide"
         >
-          <i className="fa-solid fa-circle-question" style={{ fontSize: '0.95rem' }}></i>
+          <i className="fa-solid fa-question"></i>
         </button>
       </div>
 
@@ -209,11 +200,63 @@ export const SimulatorView: React.FC = () => {
         </div>
       </div>
 
-      {/* Per-Subject Target Allocator (Reverse Solver) */}
-      <SubjectTargetAllocator onOpenInfo={() => openInfo('allocator')} />
+      {semesters.length === 0 ? (
+        <div className="sim-empty-grid">
+          {/* Allocator Empty Card */}
+          <div className="sim-empty-card">
+            <div className="sim-empty-icon-wrap">
+              <i className="fa-solid fa-bullseye"></i>
+            </div>
+            <div className="sim-empty-content">
+              <h4 className="sim-empty-title">
+                Per-Subject Target Allocator
+              </h4>
+              <p className="sim-empty-desc">
+                Reverse-solve required grades for major subjects by locking expected ratings in general courses.
+              </p>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm sim-empty-btn"
+                onClick={() => setActiveTab('calculator')}
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                Add Courses in Calculator
+              </button>
+            </div>
+          </div>
 
-      {/* Multi-Semester Academic Trend & Latin Honor Trajectory */}
-      <AcademicTrendChart onOpenInfo={() => openInfo('trend')} />
+          {/* Trend Chart Empty Card */}
+          <div className="sim-empty-card">
+            <div className="sim-empty-icon-wrap">
+              <i className="fa-solid fa-chart-line"></i>
+            </div>
+            <div className="sim-empty-content">
+              <h4 className="sim-empty-title">
+                Academic Trend Visualizer
+              </h4>
+              <p className="sim-empty-desc">
+                Track term-by-term GPA volatility and 4-year cumulative Latin Honor graduation trajectories.
+              </p>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm sim-empty-btn"
+                onClick={() => setActiveTab('calculator')}
+              >
+                <i className="fa-solid fa-plus" style={{ marginRight: '6px' }}></i>
+                Add Semesters to Plot
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Per-Subject Target Allocator (Reverse Solver) */}
+          <SubjectTargetAllocator onOpenInfo={() => openInfo('allocator')} />
+
+          {/* Multi-Semester Academic Trend & Latin Honor Trajectory */}
+          <AcademicTrendChart onOpenInfo={() => openInfo('trend')} />
+        </>
+      )}
 
       {/* Dedicated Simulator & Suite Reference Modal */}
       <SimulatorInfoModal

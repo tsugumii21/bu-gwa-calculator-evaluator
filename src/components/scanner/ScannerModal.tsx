@@ -6,6 +6,8 @@ import {
   preprocessGradeScreenshot,
   scanScreenshotCanvas,
   mergeMultiScreenshotResults,
+  createOCRWorker,
+  type OCRWorker,
 } from './ocr-engine';
 import { LottieLoader } from '../animations/LottieLoader';
 import { getRandomAnimation } from '../animations/animations';
@@ -14,6 +16,44 @@ interface ScannerModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultTab?: 'pdf' | 'screenshot';
+}
+
+function loadImageSafe(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    let done = false;
+
+    const cleanup = () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    img.onload = () => {
+      if (!done) {
+        done = true;
+        cleanup();
+        resolve(img);
+      }
+    };
+
+    img.onerror = () => {
+      if (!done) {
+        done = true;
+        cleanup();
+        reject(new Error(`Failed to decode image file: ${file.name}`));
+      }
+    };
+
+    setTimeout(() => {
+      if (!done) {
+        done = true;
+        cleanup();
+        reject(new Error(`Image loading timed out: ${file.name}`));
+      }
+    }, 15000);
+
+    img.src = objectUrl;
+  });
 }
 
 export const ScannerModal: React.FC<ScannerModalProps> = ({
@@ -39,11 +79,11 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
 
   if (!isOpen) return null;
 
-  // Handle Screenshot Upload (max 3)
+  // Handle Screenshot Upload (max 5)
   const handleImageSelect = (files: FileList | null) => {
     if (!files) return;
     const selected = Array.from(files).filter((f) => f.type.startsWith('image/'));
-    const combined = [...imageFiles, ...selected].slice(0, 3); // Max 3 screenshots
+    const combined = [...imageFiles, ...selected].slice(0, 5); // Max 5 screenshots
 
     setImageFiles(combined);
 
@@ -65,32 +105,35 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
 
     setIsProcessing(true);
     setProgress(0);
-    setStatusMessage('Preprocessing screenshot images via Canvas...');
+    setStatusMessage('Initializing client-side OCR engine...');
+
+    let sharedWorker: OCRWorker | null = null;
 
     try {
+      sharedWorker = await createOCRWorker();
       const allResults: Subject[][] = [];
 
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         setStatusMessage(`Processing screenshot ${i + 1} of ${imageFiles.length}...`);
 
-        // Load into HTMLImageElement
-        const img = new Image();
-        const objectUrl = URL.createObjectURL(file);
-        img.src = objectUrl;
-        await new Promise((res) => (img.onload = res));
+        try {
+          const img = await loadImageSafe(file);
+          const preprocessedCanvas = preprocessGradeScreenshot(img);
 
-        // Preprocess through Canvas
-        const preprocessedCanvas = preprocessGradeScreenshot(img);
+          const subjects = await scanScreenshotCanvas(
+            preprocessedCanvas,
+            (percent) => {
+              const overall = Math.round(((i + percent / 100) / imageFiles.length) * 100);
+              setProgress(overall);
+            },
+            sharedWorker
+          );
 
-        // Run OCR worker
-        const subjects = await scanScreenshotCanvas(preprocessedCanvas, (percent) => {
-          const overall = Math.round(((i + percent / 100) / imageFiles.length) * 100);
-          setProgress(overall);
-        });
-
-        allResults.push(subjects);
-        URL.revokeObjectURL(objectUrl);
+          allResults.push(subjects);
+        } catch (fileErr) {
+          console.error(`Error processing image ${file.name}:`, fileErr);
+        }
       }
 
       setStatusMessage('Deduplicating overlapping course rows...');
@@ -101,6 +144,13 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
       console.error(err);
       alert('Error scanning screenshots. Please verify the images are clear.');
     } finally {
+      if (sharedWorker) {
+        try {
+          await sharedWorker.terminate();
+        } catch (termErr) {
+          console.warn('OCR worker termination warning:', termErr);
+        }
+      }
       setIsProcessing(false);
     }
   };

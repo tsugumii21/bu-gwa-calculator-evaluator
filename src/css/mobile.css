@@ -200,24 +200,41 @@ html, body {
 
     .allocator-target-row {
         display: flex !important;
-        align-items: center !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
         gap: 8px !important;
         width: 100% !important;
     }
 
-    .allocator-preset-btns {
+    .allocator-input-wrapper {
         display: flex !important;
-        gap: 4px !important;
-        flex: 1 1 auto !important;
+        align-items: center !important;
+        gap: 8px !important;
     }
 
-    .allocator-preset-btns .btn {
-        flex: 1 1 0 !important;
-        padding: 4px 2px !important;
-        font-size: 0.70rem !important;
-        justify-content: center !important;
+    .allocator-gpa-input {
+        width: 100% !important;
+        max-width: 110px !important;
+        height: 38px !important;
+        font-size: 1rem !important;
+    }
+
+    .allocator-preset-btns {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 6px !important;
+        width: 100% !important;
+    }
+
+    .allocator-preset-btns .btn,
+    .allocator-preset-btn {
+        width: 100% !important;
+        padding: 6px 4px !important;
+        font-size: 0.74rem !important;
+        height: 36px !important;
         text-align: center !important;
-        white-space: nowrap !important;
+        justify-content: center !important;
+        border-radius: 8px !important;
     }
 
     .allocator-course-row {
@@ -266,11 +283,15 @@ html, body {
 
     .allocator-course-name.mobile-only {
         display: block !important;
-        font-size: 0.80rem !important;
+        font-size: 0.82rem !important;
         color: var(--text-secondary) !important;
         line-height: 1.35 !important;
         word-break: break-word !important;
+        white-space: normal !important;
+        overflow: visible !important;
+        text-overflow: clip !important;
         padding-left: 2px !important;
+        margin-top: 2px !important;
     }
 
     .allocator-row-controls {
@@ -927,6 +948,21 @@ html, body {
         gap: 8px !important;
     }
 
+    .sim-modal-tabs {
+        padding: 8px 12px !important;
+        gap: 6px !important;
+        flex-shrink: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    .sim-modal-tab-btn {
+        font-size: 0.75rem !important;
+        padding: 5px 10px !important;
+        min-height: 32px !important;
+        flex-shrink: 0 !important;
+    }
+
     .modal-close-btn {
         width: 30px !important;
         height: 30px !important;
@@ -938,6 +974,7 @@ html, body {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
         flex: 1 1 auto !important;
+        min-height: 0 !important;
     }
 
     .modal-footer {
@@ -1757,6 +1794,49 @@ html, body {
         gap: var(--space-md);
     }
 
+    /* --- Academic Trend Visualizer Mode Toggle --- */
+    .chart-mode-toggle {
+        width: 100% !important;
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 4px !important;
+        box-sizing: border-box !important;
+    }
+
+    .chart-mode-btn {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 8px 6px !important;
+        font-size: 0.72rem !important;
+        min-height: 40px !important;
+        white-space: normal !important;
+        text-align: center !important;
+        line-height: 1.25 !important;
+        gap: 6px !important;
+    }
+
+    .chart-mode-btn i {
+        font-size: 0.8rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* --- Simulator Empty Grid Mobile --- */
+    .sim-empty-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin-top: 16px !important;
+        margin-bottom: 24px !important;
+    }
+
+    .sim-empty-card {
+        padding: 20px 16px !important;
+    }
+
+    .sim-empty-btn {
+        width: 100% !important;
+        min-height: 40px !important;
+    }
+
     .sim-section-group {
         padding: 12px;
     }
@@ -2073,6 +2153,21 @@ html, body {
         gap: 6px !important;
     }
 
+    .sim-modal-tabs {
+        padding: 6px 10px !important;
+        gap: 5px !important;
+        flex-shrink: 0 !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+    }
+
+    .sim-modal-tab-btn {
+        font-size: 0.72rem !important;
+        padding: 4px 8px !important;
+        min-height: 30px !important;
+        flex-shrink: 0 !important;
+    }
+
     .modal-close-btn {
         width: 28px !important;
         height: 28px !important;
@@ -2085,6 +2180,7 @@ html, body {
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch !important;
         flex: 1 1 auto !important;
+        min-height: 0 !important;
     }
 
     .modal-footer {

@@ -4,10 +4,19 @@
 import { createWorker, PSM } from 'tesseract.js';
 import type { Subject } from '../../types';
 
-const KNOWN_BU_PREFIXES = [
+export const KNOWN_BU_PREFIXES = [
   'IT ELECT',
+  'IT-ELECT',
   'GE ELECT',
+  'GE-ELECT',
+  'GEC ELECT',
+  'GEC-ELECT',
   'FREE ELECT',
+  'FREE-ELECT',
+  'BTL-ELEC',
+  'BTL-ELECT',
+  'BTL',
+  'BTLED',
   'PATHFIT',
   'PATH FIT',
   'PATH',
@@ -16,15 +25,21 @@ const KNOWN_BU_PREFIXES = [
   'CS',
   'MATH',
   'CHEM',
+  'PHYS',
+  'BIO',
   'ENG',
   'NURS',
   'EDUC',
+  'BEED',
+  'BSED',
   'BM',
   'ACT',
+  'ACC',
   'NSTP',
+  'ROTC',
+  'CWTS',
+  'LTS',
   'PE',
-  'PHYS',
-  'BIO',
   'SOC',
   'HUM',
   'FIL',
@@ -40,7 +55,31 @@ const KNOWN_BU_PREFIXES = [
   'ME',
   'ARCH',
   'IS',
+  'CRIM',
+  'AGRI',
+  'FOR',
+  'ENTR',
 ];
+
+export function isValidBUCoursePrefix(prefix: string): boolean {
+  const norm = prefix.trim().toUpperCase().replace(/\s+/g, ' ');
+  if (KNOWN_BU_PREFIXES.some((p) => norm.startsWith(p) || p.startsWith(norm))) {
+    return true;
+  }
+  return /^[A-Z]{2,6}(?:[- ](?:ELECT|ELEC|[A-Z]{2,4}))?$/.test(norm);
+}
+
+export function formatCourseCode(prefix: string, num: string): string {
+  let p = prefix.trim().toUpperCase().replace(/\s+/g, ' ');
+  if (p === 'PATHFIT' || p === 'PATH FIT') p = 'PATHFit';
+  else if (p.startsWith('BTL-ELEC') || p.startsWith('BTL ELEC')) p = 'BTL-Elec';
+  else if (p.startsWith('GEC ELECT') || p.startsWith('GEC-ELECT')) p = 'GEC Elect';
+  else if (p === 'PHYS') p = 'Phys';
+  return `${p} ${num.trim().toUpperCase()}`;
+}
+
+export const BU_COURSE_CODE_REGEX =
+  /^([A-Za-z]{2,8}(?:[- ](?:ELECT|ELEC|[A-Za-z]{2,6}))?)\s*[-]?\s*(\d+(?:\.\d+)?(?:[A-Za-z])?)\b/i;
 
 /**
  * Preprocesses a screenshot to dramatically increase OCR accuracy:
@@ -54,15 +93,30 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
   if (!ctx) throw new Error('Could not get 2D canvas context');
 
-  // Only auto-crop status/home bar if aspect ratio indicates a tall phone screenshot
-  const isTallPhoneScreenshot = image.naturalHeight / image.naturalWidth > 1.9;
-  const cropTop = isTallPhoneScreenshot ? Math.floor(image.naturalHeight * 0.04) : 0;
-  const cropBottom = isTallPhoneScreenshot ? Math.floor(image.naturalHeight * 0.04) : 0;
-  const sourceHeight = Math.max(10, image.naturalHeight - cropTop - cropBottom);
+  const aspectRatio = image.naturalHeight / image.naturalWidth;
+  let cropTop = 0;
+  let cropBottom = 0;
 
-  // Scale up small screenshots to optimal OCR resolution (width between 1800px and 2500px)
-  const scale = Math.max(1.8, Math.min(2.5, 2400 / image.naturalWidth));
-  const targetWidth = Math.round(image.naturalWidth * scale);
+  if (aspectRatio < 0.8) {
+    // Desktop widescreen capture (16:9, e.g. 1920x1080 or 1024x544)
+    // Table header begins at ~40% Y. Crop out top browser tabs, URL bar, bookmarks & portal alerts.
+    // Crop bottom 6% to remove Windows/macOS taskbars.
+    cropTop = Math.floor(image.naturalHeight * 0.35);
+    cropBottom = Math.floor(image.naturalHeight * 0.05);
+  } else if (aspectRatio > 1.8) {
+    // Tall mobile phone capture (e.g. 1080x2400)
+    // Crop out status bar (clock, battery) and bottom home gesture pill
+    cropTop = Math.floor(image.naturalHeight * 0.04);
+    cropBottom = Math.floor(image.naturalHeight * 0.04);
+  }
+
+  const sourceHeight = Math.max(10, image.naturalHeight - cropTop - cropBottom);
+  const sourceWidth = image.naturalWidth;
+
+  // Scale small screenshots up to optimal resolution (target width ~2800px to 3200px)
+  // Ensures 6px fonts in 1024px captures become ~18-20px glyphs with sharp stems
+  const scale = Math.max(1.8, Math.min(3.2, 3000 / sourceWidth));
+  const targetWidth = Math.round(sourceWidth * scale);
   const targetHeight = Math.round(sourceHeight * scale);
 
   canvas.width = targetWidth;
@@ -75,7 +129,7 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
     image,
     0,
     cropTop,
-    image.naturalWidth,
+    sourceWidth,
     sourceHeight,
     0,
     0,
@@ -86,7 +140,7 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
   const imgData = ctx.getImageData(0, 0, targetWidth, targetHeight);
   const data = imgData.data;
 
-  // Measure luminance to detect dark mode
+  // Measure luminance across the cropped table area
   let totalLuminance = 0;
   const sampleStep = 16;
   let sampleCount = 0;
@@ -96,20 +150,30 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
   }
   const isDarkMode = totalLuminance / sampleCount < 128;
 
-  // Grayscale + Inversion + Contrast Stretch
+  // Grayscale + Inversion (if dark) + Green Dot Badge Suppression + Adaptive Contrast
   for (let i = 0; i < data.length; i += 4) {
-    let gray = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+    const r = data[i];
+    const g = data[i + 1];
+    const b = data[i + 2];
+
+    let gray = 0.299 * r + 0.587 * g + 0.114 * b;
     if (isDarkMode) {
       gray = 255 - gray;
     }
 
-    // Linear contrast stretch with preserved midtones for small decimal points
-    if (gray > 210) {
+    // Suppress green dot badge (●) next to grades by detecting high green saturation
+    const isGreenDot = g > 80 && g > r * 1.25 && g > b * 1.25;
+    if (isGreenDot) {
       gray = 255;
-    } else if (gray < 80) {
-      gray = 0;
     } else {
-      gray = Math.round(((gray - 80) / 130) * 255);
+      // Linear contrast stretching with smooth tone curve (preserves anti-aliased font edges)
+      if (gray > 220) {
+        gray = 255;
+      } else if (gray < 70) {
+        gray = 0;
+      } else {
+        gray = Math.round(((gray - 70) / 150) * 255);
+      }
     }
 
     data[i] = gray;
@@ -121,14 +185,12 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
   return canvas;
 }
 
+export type OCRWorker = Awaited<ReturnType<typeof createWorker>>;
+
 /**
- * Runs client-side OCR on preprocessed canvas using PSM.SINGLE_BLOCK and preserve_interword_spaces
- * to maintain strict column boundaries across table cells.
+ * Creates and configures a shared Tesseract worker for batch OCR processing.
  */
-export async function scanScreenshotCanvas(
-  canvas: HTMLCanvasElement,
-  onProgress?: (percent: number) => void,
-): Promise<Subject[]> {
+export async function createOCRWorker(onProgress?: (percent: number) => void): Promise<OCRWorker> {
   const worker = await createWorker('eng', 1, {
     logger: (m) => {
       if (m.status === 'recognizing text' && onProgress) {
@@ -137,16 +199,34 @@ export async function scanScreenshotCanvas(
     },
   });
 
-  try {
-    await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
-      preserve_interword_spaces: '1',
-    });
+  await worker.setParameters({
+    tessedit_pageseg_mode: PSM.SINGLE_BLOCK,
+    preserve_interword_spaces: '1',
+  });
 
+  return worker;
+}
+
+/**
+ * Runs client-side OCR on preprocessed canvas using PSM.SINGLE_BLOCK and preserve_interword_spaces
+ * to maintain strict column boundaries across table cells.
+ * Accepts an optional existing worker to avoid re-instantiating WebAssembly instances in batch runs.
+ */
+export async function scanScreenshotCanvas(
+  canvas: HTMLCanvasElement,
+  onProgress?: (percent: number) => void,
+  existingWorker?: OCRWorker,
+): Promise<Subject[]> {
+  const shouldTerminate = !existingWorker;
+  const worker = existingWorker || (await createOCRWorker(onProgress));
+
+  try {
     const { data } = await worker.recognize(canvas);
     return parseOCRTextToSubjects(data.text);
   } finally {
-    await worker.terminate();
+    if (shouldTerminate) {
+      await worker.terminate();
+    }
   }
 }
 
@@ -159,21 +239,46 @@ export async function scanScreenshotCanvas(
 function healOcrLine(line: string): string {
   let clean = line.trim().replace(/^[^a-zA-Z0-9]+/, '');
 
-  // Heal 17/1T misread for IT before subject numbers: "17120" -> "IT 120", "1T 120" -> "IT 120", "1T102" -> "IT 102"
+  // 1. Heal NSTP variations: sans-serif 11 misread as TM, TN, NM, TH, TI, II, ll, 1T, 1I, 1
+  clean = clean.replace(/^NSTP\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I|1)\b/i, 'NSTP 11');
+  clean = clean.replace(/^NSTP\s*(?:12|1Z|T2|N2|TZ)\b/i, 'NSTP 12');
+
+  // 2. Heal GEC variations:
+  // GEC 1-9 -> GEC 11-19 (leading 1 dropped by OCR in sans-serif)
+  clean = clean.replace(/^GEC\s*([1-9])\b/i, 'GEC 1$1');
+  clean = clean.replace(/^GEC\s*(?:TM|TN|NM|TH|TI|II|ll|1T|1I)\b/i, 'GEC 11');
+  clean = clean.replace(/^GECT([0-9]+)\b/i, 'GEC 1$1');
+  clean = clean.replace(/^GEC\s*1A\b/i, 'GEC 14');
+  clean = clean.replace(/^GEC\s*1S\b/i, 'GEC 15');
+
+  // 3. Heal 17/1T misread for IT before subject numbers: "17120" -> "IT 120", "1T 120" -> "IT 120", "1T102" -> "IT 102"
   clean = clean.replace(/^(?:17|1T)\s*(\d{2,3}[A-Z]?)\b/i, 'IT $1');
   clean = clean.replace(/^(?:17|1T)\s*ELECT\b/i, 'IT ELECT');
 
-  // Heal GECT1 -> GEC 11, GECT(\d) -> GEC 1$1
-  clean = clean.replace(/^GEC\s*T(\d+)/i, 'GEC 1$1');
+  // 4. Heal IT 107 -> IT 101 when followed by Introduction to Computing
+  if (/^IT\s*107\s+Intro/i.test(clean)) {
+    clean = clean.replace(/^IT\s*107/i, 'IT 101');
+  }
 
-  // Heal NSTP 1 at start where it should be NSTP 11
-  clean = clean.replace(/^NSTP\s+1\b/i, 'NSTP 11');
+  // 5. Heal Phys without a number -> Phys 1
+  clean = clean.replace(/^Phys\b(?!\s*\d)/i, 'Phys 1');
 
-  // Heal IT 19 -> IT 119 (Bicol University curriculum code)
+  // 6. Heal IT 19 -> IT 119 (Bicol University curriculum code)
   clean = clean.replace(/\bIT\s+19\b/i, 'IT 119');
 
-  // Insert space between known prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121", "PATHFIT1" -> "PATHFit 1"
-  clean = clean.replace(/^(GEC|IT|CS|MATH|ENG|CHEM|BIO|PHYS|PE|NSTP|PATHFIT|PATH)(\d+)/i, '$1 $2');
+  // 7. Normalize PATH Fit -> PATHFit
+  clean = clean.replace(/^PATH\s+Fit\b/i, 'PATHFit');
+  clean = clean.replace(/^PATHFIT\s*[TI1]\b/i, 'PATHFit 1');
+  clean = clean.replace(/^PATHFIT\s*[Z2]\b/i, 'PATHFit 2');
+  clean = clean.replace(/^PATHFIT\s*[E3]\b/i, 'PATHFit 3');
+  clean = clean.replace(/^PATHFIT\s*[A4]\b/i, 'PATHFit 4');
+
+  // 8. Insert space between known prefixes and numbers if stuck together: "GEC12" -> "GEC 12", "IT121" -> "IT 121", "PATHFIT1" -> "PATHFit 1"
+  clean = clean.replace(
+    /^(GEC|IT|CS|MATH|ENG|CHEM|BIO|PHYS|PE|NSTP|PATHFIT|PATH|BTLED|BTL)(\d+)/i,
+    '$1 $2'
+  );
+  clean = clean.replace(/^([A-Za-z]+[- ](?:ELECT|ELEC))(\d+)/i, '$1 $2');
 
   return clean;
 }
@@ -264,9 +369,6 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
     /All\s+Bookmarks/i,
   ];
 
-  // BU course code regex at start of line: "IT Elect 3", "IT 120", "IT121", "GEC 12"
-  const codeRegex = /^([A-Z]{2,6}(?:\s+ELECT)?)\s*[-]?\s*(\d+[A-Z]?)\b/i;
-
   // Regex matching candidate unit/grade tokens at column positions
   const tokenRegex = /\b(\d+(?:\.\d+)?|an|\d+[s.]|[1-5]\.\d+|INC|DRP)\b/gi;
 
@@ -276,19 +378,47 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
 
     if (ignorePatterns.some((pattern) => pattern.test(cleanLine))) return;
 
-    const codeMatch = cleanLine.match(codeRegex);
+    const codeMatch = cleanLine.match(BU_COURSE_CODE_REGEX);
     if (!codeMatch) return;
 
-    const prefix = codeMatch[1].trim().toUpperCase();
-    const isBUCode = KNOWN_BU_PREFIXES.some((p) => prefix.startsWith(p));
-    if (!isBUCode) return;
+    const prefix = codeMatch[1].trim();
+    if (!isValidBUCoursePrefix(prefix)) return;
 
-    const code = `${codeMatch[1].trim().toUpperCase()} ${codeMatch[2].trim().toUpperCase()}`.replace(/\s+/g, ' ');
+    const code = formatCourseCode(codeMatch[1], codeMatch[2]);
     const codeEndIdx = cleanLine.indexOf(codeMatch[0]) + codeMatch[0].length;
-    const textAfterCode = cleanLine.substring(codeEndIdx).trim();
+    let textAfterCode = cleanLine.substring(codeEndIdx).trim();
+
+    // Strip trailing remarks (e.g. PASSED, FASSTO, PASSO, PEE, BA, PARE, VEST, BST, INE, Led, tel, etc.)
+    textAfterCode = textAfterCode
+      .replace(
+        /\b(?:PASSED|PASSID|PASSIO|PASSO|FASSTO|PasLE0|PEE|BA|PARE|VEST|BST|INE|Led|tel|FAILED|INCOMPLETE|DROPPED)(?:[- ]?\d+)?\b.*$/i,
+        ''
+      )
+      .trim();
+
+    // Also strip trailing stray 1-2 char words like 'i' or symbols
+    textAfterCode = textAfterCode.replace(/\s+[a-zA-Z]{1,2}$/, '').trim();
 
     // Find all candidate numeric/grade tokens in the line after code
     const tokens = [...textAfterCode.matchAll(tokenRegex)];
+
+    // Strip trailing OCR artifacts (dot badge, checkbox, or stray symbols after grade)
+    while (tokens.length >= 5) {
+      const lastTokenVal = tokens[tokens.length - 1][0].trim().toLowerCase();
+      const secondLastVal = tokens[tokens.length - 2][0].trim();
+      const isSecondLastGrade = /^(?:[1-5]\.\d+|[1-5]\b|INC|DRP)$/i.test(secondLastVal);
+      if (
+        isSecondLastGrade &&
+        (lastTokenVal === '0' ||
+          lastTokenVal === '0.0' ||
+          lastTokenVal === 'o' ||
+          lastTokenVal === 'c')
+      ) {
+        tokens.pop();
+      } else {
+        break;
+      }
+    }
 
     // Scenario A: 4 or more tokens (Units, Lec, Lab, Grade [Dot])
     if (tokens.length >= 4) {
@@ -314,7 +444,15 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
         grade = normalizeGrade(labToken[0]);
       }
 
-      if (lec + lab > 0 && (unitsToken[0] === 'an' || units < lec + lab)) {
+      if (code.toUpperCase().startsWith('NSTP')) {
+        units = 0;
+      } else if (
+        code.toUpperCase().startsWith('GEC') &&
+        !code.toUpperCase().includes('ELECT') &&
+        units === 2
+      ) {
+        units = 3;
+      } else if (lec + lab > 0 && (unitsToken[0] === 'an' || units < lec + lab)) {
         units = lec + lab;
       }
 
@@ -338,7 +476,16 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
       const unitsToken = two[0];
       const gradeToken = two[1];
 
-      const units = normalizeUnits(unitsToken[0]);
+      let units = normalizeUnits(unitsToken[0]);
+      if (code.toUpperCase().startsWith('NSTP')) {
+        units = 0;
+      } else if (
+        code.toUpperCase().startsWith('GEC') &&
+        !code.toUpperCase().includes('ELECT') &&
+        units === 2
+      ) {
+        units = 3;
+      }
       const grade = normalizeGrade(gradeToken[0]);
 
       const courseEndIdx = unitsToken.index ?? 0;
@@ -363,14 +510,18 @@ export function parseDesktopRowLayout(rawText: string): Subject[] {
  * Detects whether OCR text originates from the mobile iBU card-based interface.
  */
 export function isMobileCardLayout(rawText: string): boolean {
-  return (
-    /\b(?:UNits|Units):\s*[0-9.]+/i.test(rawText) ||
-    /\bLec\s+Units:/i.test(rawText) ||
-    /\bLab\s+Units:/i.test(rawText)
+  // Desktop table header check:
+  // Tables feature horizontal column headers containing Code AND Course AND Units/Remarks
+  const hasTableHeader =
+    /\bCode\b[\s\S]{1,60}\bCourse\b[\s\S]{1,60}\bUnits\b/i.test(rawText);
+  if (hasTableHeader) return false;
+
+  // Mobile card screenshots have vertical labeled fields with colons:
+  // e.g. "Units: 3.0", "Lec Units: 2.0", "Lab Units: 1.0", "Status: PASSED", "Rating: 1.2"
+  return /\b(?:Units|Lec\s+Units|Lab\s+Units|Status|Rating)\s*:\s*[0-9.]+/i.test(
+    rawText
   );
 }
-
-const cardCodeRegex = /^([A-Z]{2,10}(?:\s+ELECT)?)\s*[-]?\s*(\d+[A-Z]?)\b/i;
 
 /**
  * Mobile Card Parser for iBU portal screenshots where each course is rendered
@@ -391,15 +542,15 @@ export function parseMobileCardLayout(rawText: string): Subject[] {
     const rawLine = lines[i];
     const healed = healOcrLine(rawLine);
 
-    const match = healed.match(cardCodeRegex);
+    const match = healed.match(BU_COURSE_CODE_REGEX);
     let isHeader = false;
     let codeStr = '';
 
     if (match) {
-      const prefixStr = match[1].trim().toUpperCase().replace(/\s+/g, ' ');
-      if (KNOWN_BU_PREFIXES.some((p) => prefixStr.startsWith(p) || p.startsWith(prefixStr))) {
+      const prefixStr = match[1].trim();
+      if (isValidBUCoursePrefix(prefixStr)) {
         isHeader = true;
-        codeStr = `${match[1].trim()} ${match[2].trim()}`.toUpperCase().replace(/\s+/g, ' ');
+        codeStr = formatCourseCode(match[1], match[2]);
       }
     }
 
@@ -450,29 +601,55 @@ function finalizeMobileCard(card: {
   let labUnits: number | null = null;
 
   for (const line of card.lines) {
-    const labMatch = line.match(/\bLab\s+Units:\s*([0-9.]+)/i);
+    const labMatch = line.match(/\bLab(?:\s+Units)?:\s*([0-9.]+)/i);
     if (labMatch) {
       labUnits = normalizeLabUnits(labMatch[1]);
       continue;
     }
 
-    const lecMatch = line.match(/\bLec\s+Units:\s*([0-9.]+)/i);
+    const lecMatch = line.match(/\bLec(?:\s+Units)?:\s*([0-9.]+)/i);
     if (lecMatch) {
       lecUnits = normalizeUnits(lecMatch[1]);
       continue;
     }
 
-    const unitsMatch = line.match(/\b(?:UNits|Units):\s*([0-9.]+)/i);
+    const unitsMatch = line.match(/\b(?:UNits|Units)\s*[:]?\s*([0-9.]+)/i);
     if (unitsMatch) {
       units = normalizeUnits(unitsMatch[1]);
       continue;
+    }
+
+    if (!grade) {
+      const explicitGradeMatch = line.match(
+        /(?:Grade|Final Grade|Rating):\s*([1-5]\.\d+|[1-5]\d{1,2}|INC|DRP)\b/i
+      );
+      if (explicitGradeMatch) {
+        grade = normalizeGrade(explicitGradeMatch[1]);
+        continue;
+      }
+
+      const lineGradeMatch = line.match(
+        /\b([1-5]\.\d{1,2}|INC|DRP)\b(?:\s+(?:PASSED|FAILED|INCOMPLETE|DROPPED))?/i
+      );
+      if (lineGradeMatch && !/Units/i.test(line)) {
+        const candidate = normalizeGrade(lineGradeMatch[1]);
+        if (candidate && candidate !== '0' && candidate !== '0.0') {
+          grade = candidate;
+          continue;
+        }
+      }
     }
 
     if (/^(?:PASSED|FAILED|INCOMPLETE|DROPPED)/i.test(line)) {
       continue;
     }
 
-    if (!courseName && !line.includes('Faculty') && !line.includes('Evaluation') && line.length > 2) {
+    if (
+      !courseName &&
+      !line.includes('Faculty') &&
+      !line.includes('Evaluation') &&
+      line.length > 2
+    ) {
       courseName = line.replace(/^[^\w]+|[^\w]+$/g, '').trim();
     }
   }
@@ -481,8 +658,12 @@ function finalizeMobileCard(card: {
     if (lecUnits !== null || labUnits !== null) {
       units = (lecUnits || 0) + (labUnits || 0);
     } else {
-      units = card.code.startsWith('NSTP') ? 0 : 3.0;
+      units = card.code.toUpperCase().startsWith('NSTP') ? 0 : 3.0;
     }
+  }
+
+  if (card.code.toUpperCase().startsWith('NSTP')) {
+    units = 0;
   }
 
   return {
@@ -495,13 +676,19 @@ function finalizeMobileCard(card: {
 
 /**
  * Parses raw OCR text into structured Subject records.
- * Automatically switches between Mobile Card Parser and Desktop Table Row Parser.
+ * Automatically switches between Mobile Card Parser and Desktop Table Row Parser,
+ * with mutual fallback to prevent dropped courses.
  */
 export function parseOCRTextToSubjects(rawText: string): Subject[] {
   if (isMobileCardLayout(rawText)) {
-    return parseMobileCardLayout(rawText);
+    const mobileResults = parseMobileCardLayout(rawText);
+    if (mobileResults.length > 0) return mobileResults;
   }
-  return parseDesktopRowLayout(rawText);
+  const desktopResults = parseDesktopRowLayout(rawText);
+  if (desktopResults.length > 0) return desktopResults;
+
+  // Fallback: If desktop parser returned 0, try mobile parser
+  return parseMobileCardLayout(rawText);
 }
 
 function normalizeCode(code: string): string {

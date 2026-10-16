@@ -5,6 +5,8 @@ import {
   preprocessGradeScreenshot,
   scanScreenshotCanvas,
   mergeMultiScreenshotResults,
+  createOCRWorker,
+  type OCRWorker,
 } from './ocr-engine';
 
 interface PhotoScanModalProps {
@@ -19,6 +21,44 @@ interface SemesterBucket {
   files: File[];
   previews: string[];
   extractedSubjects?: Subject[];
+}
+
+function loadImageSafe(file: File): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const objectUrl = URL.createObjectURL(file);
+    let done = false;
+
+    const cleanup = () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+
+    img.onload = () => {
+      if (!done) {
+        done = true;
+        cleanup();
+        resolve(img);
+      }
+    };
+
+    img.onerror = () => {
+      if (!done) {
+        done = true;
+        cleanup();
+        reject(new Error(`Failed to decode image file: ${file.name}`));
+      }
+    };
+
+    setTimeout(() => {
+      if (!done) {
+        done = true;
+        cleanup();
+        reject(new Error(`Image loading timed out: ${file.name}`));
+      }
+    }, 15000);
+
+    img.src = objectUrl;
+  });
 }
 
 export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
@@ -87,7 +127,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     setBuckets((prev) =>
       prev.map((b) => {
         if (b.id !== activeBucketId) return b;
-        const combinedFiles = [...b.files, ...selected].slice(0, 3);
+        const combinedFiles = [...b.files, ...selected].slice(0, 5);
         const newPreviews = combinedFiles.map((f) => URL.createObjectURL(f));
         return {
           ...b,
@@ -131,8 +171,12 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     setProgress(0);
 
     const updatedBuckets = [...buckets];
+    let sharedWorker: OCRWorker | null = null;
 
     try {
+      setStatusMessage('Initializing client-side OCR engine...');
+      sharedWorker = await createOCRWorker();
+
       for (let bIdx = 0; bIdx < activeBuckets.length; bIdx++) {
         const bucket = activeBuckets[bIdx];
         const bucketIndexInAll = updatedBuckets.findIndex((b) => b.id === bucket.id);
@@ -144,23 +188,26 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
             `Scanning ${bucket.title} — Image ${fIdx + 1} of ${bucket.files.length}...`
           );
 
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(file);
-          img.src = objectUrl;
-          await new Promise((res) => (img.onload = res));
+          try {
+            const img = await loadImageSafe(file);
+            const preprocessedCanvas = preprocessGradeScreenshot(img);
 
-          const preprocessedCanvas = preprocessGradeScreenshot(img);
-
-          const subjects = await scanScreenshotCanvas(preprocessedCanvas, (percent) => {
-            const bucketFraction = (fIdx + percent / 100) / bucket.files.length;
-            const overallPercent = Math.round(
-              ((bIdx + bucketFraction) / activeBuckets.length) * 100
+            const subjects = await scanScreenshotCanvas(
+              preprocessedCanvas,
+              (percent) => {
+                const bucketFraction = (fIdx + percent / 100) / bucket.files.length;
+                const overallPercent = Math.round(
+                  ((bIdx + bucketFraction) / activeBuckets.length) * 100
+                );
+                setProgress(overallPercent);
+              },
+              sharedWorker
             );
-            setProgress(overallPercent);
-          });
 
-          allBucketResults.push(subjects);
-          URL.revokeObjectURL(objectUrl);
+            allBucketResults.push(subjects);
+          } catch (fileErr) {
+            console.error(`Error processing image in ${bucket.title}:`, fileErr);
+          }
         }
 
         setStatusMessage(`Deduplicating rows for ${bucket.title}...`);
@@ -180,6 +227,13 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
       console.error(err);
       alert('Error during OCR processing. Please check image clarity and orientation.');
     } finally {
+      if (sharedWorker) {
+        try {
+          await sharedWorker.terminate();
+        } catch (termErr) {
+          console.warn('OCR worker termination warning:', termErr);
+        }
+      }
       setIsProcessing(false);
     }
   };
@@ -354,14 +408,14 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                         </div>
                       ))}
 
-                      {bucket.files.length < 3 && !isProcessing && (
+                      {bucket.files.length < 5 && !isProcessing && (
                         <div
                           className="bucket-add-thumb-btn"
                           onClick={() => triggerAddPhotos(bucket.id)}
-                          title="Add up to 3 screenshots for this semester"
+                          title="Add up to 5 screenshots for this semester"
                         >
                           <i className="fa-solid fa-plus text-primary"></i>
-                          <span>Add Photo ({bucket.files.length}/3)</span>
+                          <span>Add Photo ({bucket.files.length}/5)</span>
                         </div>
                       )}
                     </div>
@@ -433,7 +487,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                             </div>
                             <div className="scanned-sub-bottom">
                               <span className="scanned-name">{sub.name || 'Extracted Course'}</span>
-                              <span className="scanned-units-tag">{sub.units ? `${sub.units} Units` : '3.0 Units'}</span>
+                              <span className="scanned-units-tag">{typeof sub.units === 'number' ? `${sub.units} Units` : '3.0 Units'}</span>
                             </div>
                           </div>
                         ))}

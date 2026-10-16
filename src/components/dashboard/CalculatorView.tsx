@@ -49,10 +49,16 @@ export const CalculatorView: React.FC = () => {
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isCorScanOpen, setIsCorScanOpen] = useState(false);
   const [isPhotoScanOpen, setIsPhotoScanOpen] = useState(false);
-  const [successInfo, setSuccessInfo] = useState<{ isOpen: boolean; count: number; title: string }>({
+  const [successInfo, setSuccessInfo] = useState<{
+    isOpen: boolean;
+    count: number;
+    title: string;
+    source: 'pdf' | 'screenshot';
+  }>({
     isOpen: false,
     count: 0,
     title: '',
+    source: 'pdf',
   });
 
   const handleAddSemester = () => {
@@ -154,20 +160,21 @@ export const CalculatorView: React.FC = () => {
       <CorScanModal
         isOpen={isCorScanOpen}
         onClose={() => setIsCorScanOpen(false)}
-        onSuccess={(count, title) => setSuccessInfo({ isOpen: true, count, title })}
+        onSuccess={(count, title) => setSuccessInfo({ isOpen: true, count, title, source: 'pdf' })}
       />
 
       <PhotoScanModal
         isOpen={isPhotoScanOpen}
         onClose={() => setIsPhotoScanOpen(false)}
-        onSuccess={(count, title) => setSuccessInfo({ isOpen: true, count, title })}
+        onSuccess={(count, title) => setSuccessInfo({ isOpen: true, count, title, source: 'screenshot' })}
       />
 
       <ImportSuccessModal
         isOpen={successInfo.isOpen}
-        onClose={() => setSuccessInfo({ isOpen: false, count: 0, title: '' })}
+        onClose={() => setSuccessInfo({ isOpen: false, count: 0, title: '', source: 'pdf' })}
         count={successInfo.count}
         semesterTitle={successInfo.title}
+        source={successInfo.source}
       />
 
       <ComputeModal

@@ -5,6 +5,7 @@ interface ImportSuccessModalProps {
   onClose: () => void;
   count: number;
   semesterTitle: string;
+  source?: 'pdf' | 'screenshot';
 }
 
 export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
@@ -12,8 +13,13 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
   onClose,
   count,
   semesterTitle,
+  source = 'pdf',
 }) => {
   if (!isOpen) return null;
+
+  const isPdf = source === 'pdf';
+  const modalTitle = isPdf ? 'PDF COR Import Successful!' : 'Screenshot OCR Import Successful!';
+  const sourceLabel = isPdf ? 'official PDF COR' : 'screenshot(s)';
 
   return (
     <div
@@ -55,7 +61,7 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
             marginBottom: '8px',
           }}
         >
-          PDF COR Import Successful!
+          {modalTitle}
         </h3>
         <p
           id="import-success-desc"
@@ -66,7 +72,7 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
             lineHeight: 1.5,
           }}
         >
-          Successfully imported {count} courses from PDF for &quot;{semesterTitle}&quot; into your academic schedule!
+          Successfully imported {count} courses from {sourceLabel} for &quot;{semesterTitle}&quot; into your academic schedule!
         </p>
         <button
           className="btn btn-primary"

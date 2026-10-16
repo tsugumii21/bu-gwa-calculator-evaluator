@@ -310,6 +310,21 @@
     border-top: 1px solid #334155;
 }
 
+[data-theme="dark"] .sim-modal-tabs {
+    background: #1e293b !important;
+    border-bottom-color: #334155 !important;
+}
+
+[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb,
+[data-theme="dark"] .modal-body::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.25);
+}
+
+[data-theme="dark"] .custom-scrollbar::-webkit-scrollbar-thumb:hover,
+[data-theme="dark"] .modal-body::-webkit-scrollbar-thumb:hover {
+    background: rgba(148, 163, 184, 0.5);
+}
+
 [data-theme="dark"] .btn-primary {
     background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: #ffffff !important;
@@ -528,6 +543,81 @@
     background: rgba(14, 165, 233, 0.18) !important;
     border-color: rgba(56, 189, 248, 0.35) !important;
     color: #38bdf8 !important;
+}
+
+/* Simulator Panels Dark Theme Tokens */
+[data-theme="dark"] .sim-help-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #60a5fa;
+}
+
+[data-theme="dark"] .sim-help-btn:hover {
+    background: #2563eb;
+    color: #ffffff;
+    border-color: #2563eb;
+}
+
+[data-theme="dark"] .allocator-gpa-input {
+    background: #1e293b;
+    border-color: #334155;
+    color: #f1f5f9;
+}
+
+[data-theme="dark"] .allocator-preset-btn {
+    background: #1e293b;
+    border-color: #334155;
+    color: #cbd5e1;
+}
+
+[data-theme="dark"] .allocator-preset-btn:hover {
+    background: #283548;
+    border-color: var(--bu-gold);
+    color: #ffffff;
+}
+
+[data-theme="dark"] .allocator-preset-btn.is-active {
+    background: var(--bu-gold) !important;
+    color: #ffffff !important;
+    border-color: var(--bu-gold) !important;
+}
+
+/* Academic Trend Visualizer Mode Toggle Dark Theme */
+[data-theme="dark"] .chart-mode-toggle {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .chart-mode-btn {
+    color: #94a3b8;
+}
+
+[data-theme="dark"] .chart-mode-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme="dark"] .chart-mode-btn.active {
+    background: #0f172a;
+    color: #60a5fa;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* Simulator Empty State Grid Dark Theme */
+[data-theme="dark"] .sim-empty-card {
+    background: #1e293b;
+    border-color: #334155;
+}
+
+[data-theme="dark"] .sim-empty-card:hover {
+    border-color: #3b82f6;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+}
+
+[data-theme="dark"] .sim-empty-icon-wrap {
+    background: rgba(59, 130, 246, 0.15);
+    border-color: rgba(59, 130, 246, 0.3);
+    color: #60a5fa;
 }
 
 
