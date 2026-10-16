@@ -6,7 +6,7 @@ import type { Subject } from '../../types';
 // Default worker endpoint or custom endpoint configured in localStorage
 export const DEFAULT_GEMINI_WORKER_URL =
   (import.meta as any).env?.VITE_GEMINI_WORKER_URL ||
-  'https://bu-gwa-gemini-ocr.workers.dev';
+  'https://bu-gwa-gemini-ocr.tsugumii-tsuki04.workers.dev';
 
 export function getGeminiWorkerUrl(): string {
   try {
