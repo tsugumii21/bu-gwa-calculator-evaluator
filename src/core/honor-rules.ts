@@ -127,14 +127,29 @@ export function evaluateAcademicStanding(stats: CumulativeStats): StandingEvalua
 }
 
 // ---------------------------------------------------------------------------
+// Midyear & Underload Policy Helpers (BU Student Handbook Art. VIII, X, XI)
+// ---------------------------------------------------------------------------
+
+/**
+ * Checks whether a term is a Midyear or Summer term based on its title.
+ * Under BU Student Handbook policies and CHED guidelines, Midyear/Summer terms
+ * typically carry 3–9 units and are non-regular academic periods. They are NOT
+ * classified as underloaded terms and do not disqualify students from Latin Honors.
+ */
+export function isMidyearTerm(title?: string): boolean {
+  if (!title) return false;
+  return /\b(?:midyear|summer)\b/i.test(title);
+}
+
+// ---------------------------------------------------------------------------
 // Term Honor Standing (Per-Semester: President's / Dean's Lister)
 // ---------------------------------------------------------------------------
 
 /**
  * Evaluate per-semester honor standing.
  *
- * President's Lister: GPA ≤ 1.4500, NO subject > 1.75, full load, zero 5.0/INC
- * Dean's Lister:      GPA ≤ 1.7500, NO subject > 2.50, full load, zero 5.0/INC
+ * President's Lister: GPA ≤ 1.4500, NO subject > 1.75, full load (≥15 units), zero 5.0/INC
+ * Dean's Lister:      GPA ≤ 1.7500, NO subject > 2.50, full load (≥15 units), zero 5.0/INC
  *
  * Disqualified if: underloaded, or any 5.0/INC grade present.
  */
@@ -142,6 +157,7 @@ export function evaluateTermHonor(
   semesterGPA: number,
   subjects: Subject[],
   hasUnderload: boolean,
+  semesterTitle?: string,
 ): TermHonorEvaluation {
   if (!subjects || subjects.length === 0) {
     return {
@@ -195,11 +211,16 @@ export function evaluateTermHonor(
     };
   }
 
-  // Underload defense: Less than 15 active completed units in a regular term
-  const isEffectiveUnderload = hasUnderload || (activeCompletedUnits < 15 && activeCompletedUnits > 0);
+  const isMidyear = isMidyearTerm(semesterTitle);
 
-  // Eligible path: has valid graded units, zero deficiencies (5.0, 4.0, INC), full regular load
-  if (!hasDeficiency && !isEffectiveUnderload) {
+  // Term honors (President's/Dean's Lister per Art. X) require:
+  // - Regular semester (not midyear)
+  // - Full regular academic load (>= 15 units)
+  // - Not flagged as underloaded
+  // - Zero deficiencies
+  const isEligibleLoad = !hasUnderload && !isMidyear && activeCompletedUnits >= 15;
+
+  if (!hasDeficiency && isEligibleLoad) {
     // President's Lister: GPA ≤ 1.4500 and no grade > 1.75
     if (semesterGPA <= 1.45 && worstNumericGrade <= 1.75) {
       return {
@@ -219,12 +240,21 @@ export function evaluateTermHonor(
     }
   }
 
-  // Not qualified — build specific reason
-  if (isEffectiveUnderload) {
+  // Explicit user underload
+  if (hasUnderload) {
     return {
       level: 'none',
-      label: 'Not Eligible',
-      reason: 'Underloaded term (< 15 units or custom load) disqualifies from term honors',
+      label: 'Underloaded Term',
+      reason: 'Underloaded term disqualifies from academic honors per BU policy',
+    };
+  }
+
+  // Midyear term
+  if (isMidyear) {
+    return {
+      level: 'none',
+      label: 'Midyear Term',
+      reason: 'Midyear courses count toward cumulative GWA but are exempt from semestral honors (PL/DL)',
     };
   }
 
@@ -233,6 +263,14 @@ export function evaluateTermHonor(
       level: 'none',
       label: 'Not Eligible',
       reason: 'Disqualified due to 5.00 failure, 4.00 conditional, or unremoved INC mark',
+    };
+  }
+
+  if (activeCompletedUnits < 15 && activeCompletedUnits > 0) {
+    return {
+      level: 'none',
+      label: 'Regular Standing',
+      reason: "Minimum 15 units required for President's or Dean's Lister qualification",
     };
   }
 

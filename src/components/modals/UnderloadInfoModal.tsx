@@ -60,11 +60,23 @@ export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, 
                     fontSize: '0.82rem',
                   }}
                 >
-                  Carrying an underloaded term officially <strong>disqualifies</strong> a student candidate from{' '}
+                  Carrying an unauthorized underloaded term officially <strong>disqualifies</strong> a student candidate from{' '}
                   <strong>Graduation Latin Honors</strong> (Summa, Magna, or Cum Laude) and{' '}
                   <strong>Semester Academic Recognition</strong> (President&apos;s Lister or Dean&apos;s Lister).
                 </span>
               </div>
+            </div>
+
+            <div className="modal-callout-box" style={{ marginBottom: '14px', fontSize: '0.84rem' }}>
+              <strong><i className="fa-solid fa-circle-check text-success"></i> When is a low unit count NOT an underload?</strong>
+              <ul style={{ margin: '6px 0 0 16px', padding: 0, lineHeight: 1.45 }}>
+                <li><strong>Midyear / Summer Terms:</strong> Summer sessions typically carry 3–9 units and are non-regular terms — they are never considered underloaded terms.</li>
+                <li><strong>Curriculum Prescribed Loads:</strong> If your degree program curriculum officially prescribes fewer units (e.g. 9–12 units for graduating thesis, practicum, or OJT), this is an authorized regular load, not an unexcused underload.</li>
+                <li><strong>Official Excuses:</strong> Valid working-student endorsements, certified medical reasons, or unavailable phased-out subjects approved by the Dean.</li>
+              </ul>
+              <p style={{ marginTop: '8px', marginBottom: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                <em>Only check the <strong>&quot;Underloaded Term&quot;</strong> button on a semester if you had an unauthorized/unexcused reduced load below your prescribed curriculum.</em>
+              </p>
             </div>
 
             <div className="quote-box" style={{ marginTop: 0 }}>

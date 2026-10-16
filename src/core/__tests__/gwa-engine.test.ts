@@ -78,24 +78,42 @@ describe('gwa-engine — Bounds, Validation & Calculation', () => {
     expect(stats.gradedUnits).toBe(6);
   });
 
-  it('calculates cumulative statistics and detects underloaded terms (< 15 units)', () => {
+  it('does not automatically mark terms with 2-3 courses (like midyear) as underloaded when underload toggle is false', () => {
     const semesters: Semester[] = [
       {
         id: 'sem-1',
-        title: 'Term 1',
+        title: 'Year 1 - Midyear',
         underload: false,
         computed: true,
         subjects: [
           { code: 'CS 111', name: 'Intro', grade: '1.25', units: 3 },
           { code: 'CS 112', name: 'Prog', grade: '1.50', units: 3 },
           { code: 'CS 113', name: 'Math', grade: '1.75', units: 3 },
-          // Total 9 units -> Underloaded (< 15 units)
+          // Total 9 units - Midyear course / 3 courses
+        ],
+      },
+    ];
+
+    const stats = calculateCumulativeStats(semesters);
+    expect(stats.hasUnderload).toBe(false);
+    expect(stats.cumulativeGWA).toBeCloseTo(1.5, 4);
+  });
+
+  it('marks underload strictly when user explicitly sets underload to true', () => {
+    const semesters: Semester[] = [
+      {
+        id: 'sem-1',
+        title: 'Year 1 - 1st Semester',
+        underload: true,
+        computed: true,
+        subjects: [
+          { code: 'CS 111', name: 'Intro', grade: '1.25', units: 3 },
+          { code: 'CS 112', name: 'Prog', grade: '1.50', units: 3 },
         ],
       },
     ];
 
     const stats = calculateCumulativeStats(semesters);
     expect(stats.hasUnderload).toBe(true);
-    expect(stats.cumulativeGWA).toBeCloseTo(1.5, 4);
   });
 });

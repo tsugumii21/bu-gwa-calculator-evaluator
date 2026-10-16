@@ -116,17 +116,12 @@ export function calculateCumulativeStats(semesters: Semester[]): CumulativeStats
   let failingCount = 0;
 
   semesters.forEach((sem) => {
-    if (sem.underload) hasUnderload = true;
+    // Underload is strictly determined by explicit user toggle on semester
+    if (sem.underload) {
+      hasUnderload = true;
+    }
 
     if (sem.subjects) {
-      // Check semester active completed load for underload (< 15 units in regular term)
-      const semActiveUnits = sem.subjects.reduce((sum, s) => {
-        if (s.grade === 'DRP') return sum;
-        return sum + Math.max(0, parseFloat(String(s.units)) || 0);
-      }, 0);
-      if (sem.subjects.length > 0 && semActiveUnits < 15 && semActiveUnits > 0) {
-        hasUnderload = true;
-      }
 
       sem.subjects.forEach((sub) => {
         totalCourses++;
@@ -194,16 +189,12 @@ export function calculateComputedCumulativeStats(semesters: Semester[]): Cumulat
   const computedSems = semesters.filter((s) => s.computed);
 
   computedSems.forEach((sem) => {
-    if (sem.underload) hasUnderload = true;
+    // Underload is strictly determined by explicit user toggle on semester
+    if (sem.underload) {
+      hasUnderload = true;
+    }
 
     if (sem.subjects) {
-      const semActiveUnits = sem.subjects.reduce((sum, s) => {
-        if (s.grade === 'DRP') return sum;
-        return sum + Math.max(0, parseFloat(String(s.units)) || 0);
-      }, 0);
-      if (sem.subjects.length > 0 && semActiveUnits < 15 && semActiveUnits > 0) {
-        hasUnderload = true;
-      }
 
       sem.subjects.forEach((sub) => {
         totalCourses++;

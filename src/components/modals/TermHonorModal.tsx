@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
 import type { Semester } from '../../types';
 import { calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
+import { isMidyearTerm } from '../../core/honor-rules';
 import { HONOR_MESSAGES } from '../../core/constants';
 
 interface TermHonorModalProps {
@@ -43,8 +44,9 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
     let subtext = `${semester.title} • Semester GPA: ${semGWA.toFixed(4)}`;
     let headerIcon = 'fa-chart-line text-primary';
     let headerText = 'Semester Performance Summary';
+    const isMidyear = isMidyearTerm(semester.title);
 
-    if (semUnits > 0 && !hasFailOrInc && !semester.underload) {
+    if (semUnits >= 15 && !hasFailOrInc && !semester.underload && !isMidyear) {
       if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
         category = 'PL';
         title = "President's Lister";
@@ -73,8 +75,14 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
         subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Underloaded Term`;
         headerIcon = 'fa-scale-balanced text-warning';
         headerText = 'Underloaded Term Summary';
+      } else if (isMidyear) {
+        title = 'Midyear Term Performance';
+        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Midyear courses count toward cumulative GWA`;
+        headerText = 'Midyear Term Summary';
       } else if (hasFailOrInc) {
         subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Disqualified due to 5.0 / INC grade`;
+      } else if (semUnits < 15 && semUnits > 0) {
+        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Regular load (< 15 units, not eligible for PL/DL)`;
       }
     }
 

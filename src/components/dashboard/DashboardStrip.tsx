@@ -62,6 +62,7 @@ export const DashboardStrip: React.FC = () => {
       termGpa,
       latestComputedSem.subjects,
       !!latestComputedSem.underload,
+      latestComputedSem.title,
     );
 
     const semShort = formatSemShort(latestComputedSem.title);

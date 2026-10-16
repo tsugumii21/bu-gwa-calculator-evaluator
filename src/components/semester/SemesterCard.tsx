@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import type { Semester, Subject } from '../../types';
 import { useSemesterStore } from '../../store';
 import { calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
+import { isMidyearTerm } from '../../core/honor-rules';
 import { SubjectRow } from './SubjectRow';
 import { ComputeModal } from '../animations/ComputeModal';
 import { TermHonorModal } from '../modals/TermHonorModal';
@@ -80,13 +81,20 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     let honorCode = 'Good Academic Standing';
     let pillClass = 'sem-pill-regular';
 
+    const isMidyear = isMidyearTerm(semester.title);
+
     if (!hasFailOrInc && !semester.underload) {
-      if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
-        honorCode = "President's Lister";
-        pillClass = 'sem-pill-pl';
-      } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
-        honorCode = "Dean's Lister";
-        pillClass = 'sem-pill-dl';
+      if (semUnits >= 15 && !isMidyear) {
+        if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
+          honorCode = "President's Lister";
+          pillClass = 'sem-pill-pl';
+        } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
+          honorCode = "Dean's Lister";
+          pillClass = 'sem-pill-dl';
+        }
+      } else if (isMidyear) {
+        honorCode = 'Midyear Term';
+        pillClass = 'sem-pill-regular';
       }
     } else if (semester.underload) {
       honorCode = 'Underloaded Term';

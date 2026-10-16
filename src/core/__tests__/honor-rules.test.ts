@@ -96,4 +96,48 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
     expect(evalResult.level).toBe('summa');
     expect(evalResult.label).toBe('Summa Cum Laude');
   });
+
+  it('recognizes Midyear / Summer terms and does not classify them as underloaded terms', () => {
+    const midyearSubjects = [
+      { code: 'CS 111', name: 'Practicum', grade: '1.25', units: 3 },
+      { code: 'CS 112', name: 'Seminar', grade: '1.25', units: 3 },
+    ];
+    // 6 units in Midyear
+    const result = evaluateTermHonor(1.25, midyearSubjects, false, 'Year 1 - Midyear');
+    expect(result.level).toBe('none');
+    expect(result.label).toBe('Midyear Term');
+
+    // In Latin honors, a student with clean stats and a midyear term is fully eligible for Summa
+    const cleanStatsWithMidyear: CumulativeStats = {
+      totalPoints: 120,
+      totalUnits: 100,
+      gradedUnits: 100,
+      totalCourses: 30,
+      hasUnderload: false,
+      hasFailingGrade: false,
+      hasInc: false,
+      failingCount: 0,
+      cumulativeGWA: 1.20,
+    };
+    const latinResult = evaluateHonorStanding(cleanStatsWithMidyear);
+    expect(latinResult.level).toBe('summa');
+  });
+
+  it('disqualifies from Latin Honors ONLY when hasUnderload is explicitly flagged', () => {
+    const underloadedStats: CumulativeStats = {
+      totalPoints: 120,
+      totalUnits: 100,
+      gradedUnits: 100,
+      totalCourses: 30,
+      hasUnderload: true, // User pressed the Underloaded Term button
+      hasFailingGrade: false,
+      hasInc: false,
+      failingCount: 0,
+      cumulativeGWA: 1.20,
+    };
+
+    const latinResult = evaluateHonorStanding(underloadedStats);
+    expect(latinResult.level).toBe('not-eligible');
+    expect(latinResult.description).toContain('underload');
+  });
 });
