@@ -27,7 +27,20 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMessage, setStatusMessage] = useState('');
   const [dragActive, setDragActive] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
 
   if (!isOpen) return null;
 
@@ -212,69 +225,95 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
             </div>
           ) : (
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                <span style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--text-primary)' }}>
                   Staged COR Semesters ({stagedSemesters.length})
                 </span>
                 <button
                   type="button"
                   className="btn btn-secondary btn-sm"
                   onClick={() => fileInputRef.current?.click()}
-                  style={{ fontSize: '0.75rem', padding: '4px 10px', gap: '4px', whiteSpace: 'nowrap', flexShrink: 0 }}
+                  style={{ fontSize: '0.75rem', padding: '5px 12px', gap: '5px', whiteSpace: 'nowrap', flexShrink: 0, fontWeight: 600 }}
                 >
                   <i className="fa-solid fa-plus text-primary"></i> Add Another PDF
                 </button>
               </div>
 
-              <div className="staged-cor-list">
-                {stagedSemesters.map((sem, idx) => (
-                  <div key={sem.id} className="staged-cor-card">
-                    <div className="staged-cor-header">
-                      <div className="staged-cor-title-row">
-                        <i className="fa-solid fa-file-pdf text-danger" style={{ fontSize: '1rem' }}></i>
-                        <input
-                          type="text"
-                          className="staged-cor-input"
-                          value={sem.title}
-                          onChange={(e) => updateStagedTitle(sem.id, e.target.value)}
-                          placeholder={`Semester ${idx + 1}`}
-                          title="Click to rename semester"
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        className="staged-cor-del-btn"
-                        onClick={() => removeStaged(sem.id)}
-                        title="Remove from staging queue"
-                        aria-label="Remove semester"
-                      >
-                        <i className="fa-solid fa-trash-can"></i>
-                      </button>
-                    </div>
-                    <div className="staged-cor-meta">
-                      <span className="staged-meta-pill">
-                        <i className="fa-solid fa-book-open"></i> {sem.subjects.length} Courses
-                      </span>
-                      <span className="staged-meta-pill">
-                        <i className="fa-solid fa-layer-group"></i> {sem.totalUnits.toFixed(1)} Units
-                      </span>
-                      <span className="staged-meta-filename" title={sem.fileName}>
-                        {sem.fileName}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
               <div
-                className={`staged-drop-mini ${dragActive ? 'drag-active' : ''}`}
-                onClick={() => fileInputRef.current?.click()}
+                className={`staged-cor-list ${dragActive ? 'drag-active' : ''}`}
                 onDragOver={onDragOver}
                 onDragLeave={onDragLeave}
                 onDrop={onDrop}
               >
-                <i className="fa-solid fa-cloud-arrow-up text-primary"></i>
-                <span>Drop another COR PDF here or click to browse</span>
+                {stagedSemesters.map((sem, idx) => {
+                  const isExpanded = expandedIds.has(sem.id);
+                  return (
+                    <div key={sem.id} className="staged-cor-card">
+                      <div className="staged-cor-header">
+                        <div className="staged-cor-title-row">
+                          <div className="staged-cor-icon-badge">
+                            <i className="fa-solid fa-file-pdf"></i>
+                          </div>
+                          <div className="staged-cor-input-wrapper">
+                            <input
+                              type="text"
+                              className="staged-cor-input"
+                              value={sem.title}
+                              onChange={(e) => updateStagedTitle(sem.id, e.target.value)}
+                              placeholder={`Semester ${idx + 1}`}
+                              title="Click to rename semester"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="staged-cor-actions">
+                          <button
+                            type="button"
+                            className="staged-preview-toggle"
+                            onClick={() => toggleExpand(sem.id)}
+                            title={isExpanded ? 'Hide extracted courses' : 'View extracted courses'}
+                          >
+                            <i className={`fa-solid ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'}`}></i>
+                            <span>{isExpanded ? 'Hide' : 'Review'}</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="staged-cor-del-btn"
+                            onClick={() => removeStaged(sem.id)}
+                            title="Remove from staging queue"
+                            aria-label="Remove semester"
+                          >
+                            <i className="fa-solid fa-trash-can"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="staged-cor-meta">
+                        <span className="staged-meta-pill">
+                          <i className="fa-solid fa-book-open text-primary"></i> {sem.subjects.length} Courses
+                        </span>
+                        <span className="staged-meta-pill">
+                          <i className="fa-solid fa-layer-group text-primary"></i> {sem.totalUnits.toFixed(1)} Units
+                        </span>
+                        <span className="staged-meta-filename" title={sem.fileName}>
+                          <i className="fa-solid fa-paperclip"></i> {sem.fileName}
+                        </span>
+                      </div>
+
+                      {isExpanded && (
+                        <div className="staged-courses-preview">
+                          {sem.subjects.map((sub, sIdx) => (
+                            <div key={sIdx} className="staged-course-row">
+                              <span className="staged-course-code">{sub.code || 'COURSE'}</span>
+                              <span className="staged-course-name" title={sub.name}>{sub.name || 'Untitled Course'}</span>
+                              <span className="staged-course-units">{typeof sub.units === 'number' ? `${sub.units.toFixed(1)} Units` : '3.0 Units'}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}
@@ -294,7 +333,7 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
           </div>
         </div>
 
-        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+        <div className="modal-footer cor-modal-footer">
           <button
             className="btn btn-secondary btn-sm"
             onClick={handleModalClose}
