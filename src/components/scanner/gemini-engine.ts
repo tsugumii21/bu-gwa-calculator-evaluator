@@ -1,5 +1,5 @@
-// Bicol University GWA Calculator — Gemini 3.8 Flash Vision Scanner Client
-// Communicates with Cloudflare Worker proxy to extract courses with fallback to Tesseract.js
+// Bicol University GWA Calculator — Gemini AI Vision Scanner Client
+// Communicates with Cloudflare Worker proxy (multi-model cascade) with fallback to Tesseract.js
 
 import type { Subject } from '../../types';
 
@@ -35,6 +35,10 @@ export interface GeminiExtractionResult {
   }>;
 }
 
+export interface GeminiScanOptions {
+  imageCount?: number;
+}
+
 /**
  * Converts a Blob or File to a Base64 data string.
  */
@@ -51,10 +55,11 @@ export function blobToBase64(blob: Blob): Promise<string> {
 }
 
 /**
- * Calls Gemini 3.8 Flash Vision via the Cloudflare Worker proxy.
+ * Calls Gemini AI Vision via the Cloudflare Worker proxy with multi-model cascade.
  */
 export async function scanScreenshotWithGemini(
-  imageBlob: Blob
+  imageBlob: Blob,
+  options?: GeminiScanOptions
 ): Promise<Subject[]> {
   const workerUrl = getGeminiWorkerUrl();
   const base64Data = await blobToBase64(imageBlob);
@@ -65,6 +70,7 @@ export async function scanScreenshotWithGemini(
     body: JSON.stringify({
       imageBase64: base64Data,
       mimeType: imageBlob.type || 'image/png',
+      imageCount: options?.imageCount,
     }),
   });
 

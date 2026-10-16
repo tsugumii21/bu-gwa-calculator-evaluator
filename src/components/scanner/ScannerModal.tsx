@@ -106,7 +106,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
 
     setIsProcessing(true);
     setProgress(0);
-    setStatusMessage('Scanning with Gemini 3.8 Flash Vision...');
+    setStatusMessage('Scanning with Gemini AI Vision...');
 
     let sharedWorker: OCRWorker | null = null;
 
@@ -119,10 +119,10 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
 
         let subjects: Subject[] | null = null;
 
-        // Attempt 1: Gemini 3.8 Flash Vision
+        // Attempt 1: Gemini AI Vision (Cloudflare Worker proxy cascade)
         try {
-          setStatusMessage(`Analyzing with Gemini 3.8 Flash Vision (${i + 1}/${imageFiles.length})...`);
-          subjects = await scanScreenshotWithGemini(file);
+          setStatusMessage(`Analyzing with Gemini AI Vision (${i + 1}/${imageFiles.length})...`);
+          subjects = await scanScreenshotWithGemini(file, { imageCount: imageFiles.length });
         } catch (geminiErr) {
           console.warn('Gemini Vision scan failed or offline, falling back to local Tesseract OCR:', geminiErr);
         }

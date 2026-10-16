@@ -175,7 +175,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     let sharedWorker: OCRWorker | null = null;
 
     try {
-      setStatusMessage('Scanning with Gemini 3.8 Flash Vision...');
+      setStatusMessage('Scanning with Gemini AI Vision...');
 
       for (let bIdx = 0; bIdx < activeBuckets.length; bIdx++) {
         const bucket = activeBuckets[bIdx];
@@ -190,10 +190,10 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
 
           let subjects: Subject[] | null = null;
 
-          // Attempt 1: Gemini 3.8 Flash Vision (Cloudflare Worker proxy)
+          // Attempt 1: Gemini AI Vision (Cloudflare Worker proxy cascade)
           try {
-            setStatusMessage(`Analyzing with Gemini 3.8 Flash Vision (${bucket.title})...`);
-            subjects = await scanScreenshotWithGemini(file);
+            setStatusMessage(`Analyzing with Gemini AI Vision (${bucket.title})...`);
+            subjects = await scanScreenshotWithGemini(file, { imageCount: bucket.files.length });
           } catch (geminiErr) {
             console.warn('Gemini Vision scan failed or offline, falling back to local Tesseract OCR:', geminiErr);
           }
@@ -535,7 +535,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
 
           <div className="ocr-privacy-badge">
             <i className="fa-solid fa-shield-halved text-success"></i>
-            <span>All OCR is processed client-side with Canvas & Tesseract. Zero data leaves your device.</span>
+            <span>Private edge OCR with Gemini AI Vision and local Tesseract failover. Zero grade records stored.</span>
           </div>
         </div>
 
