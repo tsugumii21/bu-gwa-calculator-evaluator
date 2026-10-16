@@ -456,17 +456,14 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
               )}
 
               {isProcessing && (
-                <div style={{ textAlign: 'center', padding: '18px 0' }}>
-                  <div style={{ marginBottom: '10px' }}>
-                    <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '2.2rem', color: 'var(--bu-blue)' }}></i>
-                  </div>
-                  <div style={{ fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                <div style={{ textAlign: 'center', padding: '16px 4px' }}>
+                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
                     {statusMessage}
                   </div>
                   <div className="bucket-progress-track">
-                    <div className="bucket-progress-bar" style={{ width: `${progress}%` }} />
+                    <div className="bucket-progress-bar" style={{ width: `${Math.max(progress, 3)}%` }} />
                   </div>
-                  <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+                  <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginTop: '6px', display: 'block', fontWeight: 500 }}>
                     {progress}% Completed
                   </span>
                 </div>

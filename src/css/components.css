@@ -2378,22 +2378,24 @@
 }
 
 .bucket-progress-track {
-    height: 6px;
+    height: 8px;
     width: 100%;
-    background: var(--border-color);
-    border-radius: 3px;
+    background: var(--card-header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 9999px;
     overflow: hidden;
-    margin-top: 8px;
+    margin-top: 10px;
 }
 
 .bucket-progress-bar {
     height: 100%;
-    background: var(--bu-blue);
-    transition: width 0.2s ease;
+    background: linear-gradient(90deg, var(--bu-blue), var(--bu-azure));
+    border-radius: 9999px;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme="dark"] .bucket-progress-bar {
-    background: var(--bu-gold);
+    background: linear-gradient(90deg, #d97706, #f59e0b);
 }
 
 .review-buckets-container {
