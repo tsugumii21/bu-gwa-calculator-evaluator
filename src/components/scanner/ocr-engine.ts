@@ -82,8 +82,62 @@ export const BU_COURSE_CODE_REGEX =
   /^([A-Za-z]{2,8}(?:[- ](?:ELECT|ELEC|[A-Za-z]{2,6}))?)\s*[-]?\s*(\d+(?:\.\d+)?(?:[A-Za-z])?)\b/i;
 
 /**
+ * Samples the average luminance of a horizontal band within a canvas.
+ * Used to detect whether browser chrome (address bar, tabs) is present
+ * by comparing the brightness of the top region vs the table content region.
+ */
+function sampleBandLuminance(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  yStart: number,
+  yEnd: number,
+): number {
+  const bandHeight = Math.max(1, yEnd - yStart);
+  const bandData = ctx.getImageData(0, yStart, width, bandHeight).data;
+  let total = 0;
+  let count = 0;
+  const step = 16; // Sample every 16th pixel for speed
+  for (let i = 0; i < bandData.length; i += step) {
+    total += 0.299 * bandData[i] + 0.587 * bandData[i + 1] + 0.114 * bandData[i + 2];
+    count++;
+  }
+  return count > 0 ? total / count : 128;
+}
+
+/**
+ * Detects whether a widescreen image contains browser chrome (tabs, address bar,
+ * bookmarks bar) at the top by comparing luminance between the top strip and
+ * the middle content strip.
+ *
+ * Browser chrome creates a distinctly brighter or darker band compared to the
+ * uniform table content below. A large luminance delta (> 30) indicates chrome
+ * is present and safe to crop.
+ */
+export function detectBrowserChrome(
+  ctx: CanvasRenderingContext2D,
+  width: number,
+  height: number,
+): boolean {
+  // Sample the top 12% (browser tabs + address bar + bookmarks bar region)
+  const topEnd = Math.floor(height * 0.12);
+  const topLum = sampleBandLuminance(ctx, width, 0, topEnd);
+
+  // Sample the middle 30% (where the table content lives)
+  const midStart = Math.floor(height * 0.40);
+  const midEnd = Math.floor(height * 0.70);
+  const midLum = sampleBandLuminance(ctx, width, midStart, midEnd);
+
+  // A luminance delta > 30 means the top region is visually distinct from the
+  // table area — browser chrome is present. If delta is small, the image was
+  // already cropped/zoomed to just the table and no chrome exists.
+  const CHROME_LUMINANCE_THRESHOLD = 30;
+  return Math.abs(topLum - midLum) > CHROME_LUMINANCE_THRESHOLD;
+}
+
+/**
  * Preprocesses a screenshot to dramatically increase OCR accuracy:
- * 1. Safe cropping: only crops top/bottom for tall mobile screenshots (aspect ratio > 1.9)
+ * 1. Content-aware cropping: detects browser chrome via luminance band analysis
+ *    before cropping, preventing data loss on pre-cropped/zoomed screenshots
  * 2. High-quality scaling: scales small screenshots so font height is optimal for Tesseract OCR
  * 3. Automatic dark mode detection and inversion to crisp black text on white background
  * 4. Contrast stretching: preserves decimal points while pushing backgrounds to pure white
@@ -98,11 +152,30 @@ export function preprocessGradeScreenshot(image: HTMLImageElement): HTMLCanvasEl
   let cropBottom = 0;
 
   if (aspectRatio < 0.8) {
-    // Desktop widescreen capture (16:9, e.g. 1920x1080 or 1024x544)
-    // Table header begins at ~40% Y. Crop out top browser tabs, URL bar, bookmarks & portal alerts.
-    // Crop bottom 6% to remove Windows/macOS taskbars.
-    cropTop = Math.floor(image.naturalHeight * 0.35);
-    cropBottom = Math.floor(image.naturalHeight * 0.05);
+    // Widescreen image detected (e.g. 16:9 desktop capture or cropped table).
+    // Instead of blindly cropping 35%, probe whether browser chrome actually
+    // exists by comparing the luminance of the top strip vs the middle content.
+    // Draw full image onto a temporary probe canvas at low resolution for speed.
+    const probeWidth = Math.min(image.naturalWidth, 512);
+    const probeScale = probeWidth / image.naturalWidth;
+    const probeHeight = Math.round(image.naturalHeight * probeScale);
+
+    const probeCanvas = document.createElement('canvas');
+    probeCanvas.width = probeWidth;
+    probeCanvas.height = probeHeight;
+    const probeCtx = probeCanvas.getContext('2d', { willReadFrequently: true });
+
+    if (probeCtx) {
+      probeCtx.drawImage(image, 0, 0, probeWidth, probeHeight);
+      const hasBrowserChrome = detectBrowserChrome(probeCtx, probeWidth, probeHeight);
+
+      if (hasBrowserChrome) {
+        // Full desktop capture with tabs/URL bar/bookmarks — crop them out
+        cropTop = Math.floor(image.naturalHeight * 0.35);
+        cropBottom = Math.floor(image.naturalHeight * 0.05);
+      }
+      // Otherwise: already a clean crop/zoom of the table — keep 100%
+    }
   } else if (aspectRatio > 1.8) {
     // Tall mobile phone capture (e.g. 1080x2400)
     // Crop out status bar (clock, battery) and bottom home gesture pill
