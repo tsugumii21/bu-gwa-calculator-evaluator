@@ -372,7 +372,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                   lineHeight: 1.45,
                 }}
               >
-                Group your screenshots by semester. Each semester bucket can hold 1 to 3 screenshots (stitched automatically for long grade slips).
+                Group your screenshots by semester. Each semester bucket can hold up to 5 screenshots (stitched automatically for long grade slips).
               </p>
 
               {/* SEMESTER BUCKETS CONTAINER */}
@@ -380,8 +380,10 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                 {buckets.map((bucket, bIdx) => (
                   <div key={bucket.id} className="semester-bucket-card">
                     <div className="bucket-header">
-                      <div className="bucket-title-row">
-                        <i className="fa-solid fa-folder-open text-primary" style={{ fontSize: '0.95rem' }}></i>
+                      <div className="bucket-title-group">
+                        <div className="bucket-icon-badge">
+                          <i className="fa-solid fa-folder-open text-primary"></i>
+                        </div>
                         <input
                           type="text"
                           className="bucket-title-input"
@@ -406,39 +408,55 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                       )}
                     </div>
 
-                    <div className="bucket-thumbnails-grid">
-                      {bucket.previews.map((preview, imgIdx) => (
-                        <div key={imgIdx} className="bucket-thumb-item">
-                          <img
-                            src={preview}
-                            alt={`Screenshot ${imgIdx + 1}`}
-                            className="bucket-thumb-img"
-                          />
-                          {!isProcessing && (
-                            <button
-                              type="button"
-                              className="bucket-thumb-del-btn"
-                              onClick={() => handleRemoveImage(bucket.id, imgIdx)}
-                              title="Remove image"
-                              aria-label="Remove image"
-                            >
-                              <i className="fa-solid fa-xmark"></i>
-                            </button>
-                          )}
+                    {bucket.files.length === 0 ? (
+                      <div
+                        className="bucket-empty-dropzone"
+                        onClick={() => triggerAddPhotos(bucket.id)}
+                        title="Add up to 5 screenshots for this semester"
+                      >
+                        <div className="bucket-dropzone-icon">
+                          <i className="fa-solid fa-cloud-arrow-up text-primary"></i>
                         </div>
-                      ))}
+                        <div className="bucket-dropzone-content">
+                          <span className="dropzone-title">Tap to add semester screenshots</span>
+                          <span className="dropzone-subtitle">PNG, JPG, or WebP (up to 5 images)</span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bucket-thumbnails-grid">
+                        {bucket.previews.map((preview, imgIdx) => (
+                          <div key={imgIdx} className="bucket-thumb-item">
+                            <img
+                              src={preview}
+                              alt={`Screenshot ${imgIdx + 1}`}
+                              className="bucket-thumb-img"
+                            />
+                            {!isProcessing && (
+                              <button
+                                type="button"
+                                className="bucket-thumb-del-btn"
+                                onClick={() => handleRemoveImage(bucket.id, imgIdx)}
+                                title="Remove image"
+                                aria-label="Remove image"
+                              >
+                                <i className="fa-solid fa-xmark"></i>
+                              </button>
+                            )}
+                          </div>
+                        ))}
 
-                      {bucket.files.length < 5 && !isProcessing && (
-                        <div
-                          className="bucket-add-thumb-btn"
-                          onClick={() => triggerAddPhotos(bucket.id)}
-                          title="Add up to 5 screenshots for this semester"
-                        >
-                          <i className="fa-solid fa-plus text-primary"></i>
-                          <span>Add Photo ({bucket.files.length}/5)</span>
-                        </div>
-                      )}
-                    </div>
+                        {bucket.files.length < 5 && !isProcessing && (
+                          <div
+                            className="bucket-add-thumb-btn"
+                            onClick={() => triggerAddPhotos(bucket.id)}
+                            title="Add up to 5 screenshots for this semester"
+                          >
+                            <i className="fa-solid fa-plus text-primary"></i>
+                            <span>Add Photo ({bucket.files.length}/5)</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -515,22 +533,13 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
             </div>
           )}
 
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginTop: '16px',
-              fontSize: '0.76rem',
-              color: 'var(--text-secondary)',
-            }}
-          >
-            <i className="fa-solid fa-shield-halved" style={{ color: 'var(--color-success)' }}></i>
+          <div className="ocr-privacy-badge">
+            <i className="fa-solid fa-shield-halved text-success"></i>
             <span>All OCR is processed client-side with Canvas & Tesseract. Zero data leaves your device.</span>
           </div>
         </div>
 
-        <div className="modal-footer" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+        <div className="modal-footer photo-modal-footer">
           {!reviewMode ? (
             <>
               <button
