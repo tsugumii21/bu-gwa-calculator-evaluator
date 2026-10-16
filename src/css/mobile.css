@@ -541,7 +541,7 @@ html, body {
         min-height: 44px;
     }
 
-    .info-help-btn, .modal-close-btn, .bucket-thumb-del-btn, .staged-cor-del-btn, .bucket-remove-btn {
+    .info-help-btn, .sim-help-btn, .modal-close-btn, .bucket-thumb-del-btn, .staged-cor-del-btn, .bucket-remove-btn {
         min-height: unset !important;
         border-radius: 50% !important;
         padding: 0 !important;
@@ -549,11 +549,26 @@ html, body {
         align-items: center !important;
         justify-content: center !important;
         flex-shrink: 0 !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .info-help-btn, .modal-close-btn {
         width: 26px !important;
         height: 26px !important;
+        aspect-ratio: 1 / 1 !important;
+    }
+
+    .sim-help-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
     }
 
     .bucket-thumb-del-btn {
@@ -1894,6 +1909,20 @@ html, body {
     .sim-panel {
         padding: var(--space-md);
         gap: var(--space-md);
+    }
+
+    .sim-help-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        min-height: 32px !important;
+        max-width: 32px !important;
+        max-height: 32px !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+        flex-shrink: 0 !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
     }
 
     /* --- Academic Trend Visualizer Mode Toggle --- */

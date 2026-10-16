@@ -2745,6 +2745,11 @@
 .sim-help-btn {
     width: 32px;
     height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    max-width: 32px;
+    max-height: 32px;
+    aspect-ratio: 1 / 1;
     border-radius: 50%;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -2758,6 +2763,7 @@
     flex-shrink: 0;
     position: relative;
     padding: 0;
+    box-sizing: border-box;
 }
 
 .sim-help-btn::before {
