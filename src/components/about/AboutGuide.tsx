@@ -1,4 +1,21 @@
 import React, { useState } from 'react';
+interface ActionControlItem {
+  name: string;
+  location: string;
+  desc: string;
+  icon: string;
+}
+
+const ACTION_CONTROLS: ActionControlItem[] = [
+  { name: 'Add Semester', location: 'Toolbar / Top Bar', desc: 'Appends a new semester card with default course slots.', icon: 'fa-calendar-plus' },
+  { name: 'Multi-COR Queue', location: 'Toolbar', desc: 'Concurrently uploads and parses multiple PDF Certificate of Registration files.', icon: 'fa-file-pdf' },
+  { name: 'Screenshot Buckets', location: 'Toolbar', desc: 'Ingests mobile grade screenshots in groups of up to 3 per term with OCR deduplication.', icon: 'fa-images' },
+  { name: 'Compute GPA', location: 'Semester Card', desc: 'Computes term GPA and awards semestral honors (President\'s Lister or Dean\'s Lister).', icon: 'fa-calculator' },
+  { name: 'Compute All Semesters', location: 'Dashboard / Header', desc: 'Evaluates all terms instantaneously and checks Latin Graduation Honors.', icon: 'fa-bolt' },
+  { name: 'Expand / Collapse All', location: 'Semester Header', desc: 'Toggles accordion visibility across all recorded semester cards.', icon: 'fa-up-down' },
+  { name: 'Export to PDF', location: 'Toolbar', desc: 'Generates an official-style, printable academic transcript report.', icon: 'fa-file-export' },
+  { name: 'Clear All', location: 'Toolbar', desc: 'Resets recorded academic data with in-app confirmation modal protection.', icon: 'fa-trash-can' },
+];
 
 export const AboutGuide: React.FC = () => {
   const [desktopStep, setDesktopStep] = useState(0);
@@ -347,63 +364,55 @@ export const AboutGuide: React.FC = () => {
             </div>
           </div>
 
-          {/* Action Toolbar Reference Table */}
-          <div style={{ marginTop: '18px', padding: '16px', background: 'var(--card-bg)', border: '1px solid var(--border-color)', borderRadius: 'var(--radius-md)' }}>
-            <strong style={{ display: 'block', fontSize: '0.9rem', color: 'var(--text-primary)', marginBottom: '10px' }}>
+          {/* Action Toolbar Reference Directory */}
+          <div className="action-directory-container">
+            <strong className="action-directory-title">
               <i className="fa-solid fa-wrench text-primary" style={{ marginRight: '6px' }}></i> Action Controls &amp; Buttons Directory
             </strong>
-            <div className="table-responsive">
-              <table className="policy-table" style={{ fontSize: '0.8rem' }}>
+
+            {/* Desktop Table View (>768px) */}
+            <div className="desktop-only table-responsive">
+              <table className="policy-table action-dir-table" style={{ fontSize: '0.8rem' }}>
                 <thead>
                   <tr>
-                    <th style={{ width: '24%' }}>Button / Control</th>
-                    <th style={{ width: '26%' }}>Location</th>
+                    <th style={{ width: '28%' }}>Button / Control</th>
+                    <th style={{ width: '24%' }}>Location</th>
                     <th>Function &amp; Behavior</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td><strong>Add Semester</strong></td>
-                    <td>Toolbar / Top Bar</td>
-                    <td>Appends a new semester card with default course slots.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Multi-COR Queue</strong></td>
-                    <td>Toolbar</td>
-                    <td>Concurrently uploads and parses multiple PDF Certificate of Registration files.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Screenshot Buckets</strong></td>
-                    <td>Toolbar</td>
-                    <td>Ingests mobile grade screenshots in groups of up to 3 per term with OCR deduplication.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Compute GPA</strong></td>
-                    <td>Semester Card</td>
-                    <td>Computes term GPA and awards semestral honors (President's Lister or Dean's Lister).</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Compute All Semesters</strong></td>
-                    <td>Dashboard / Header</td>
-                    <td>Evaluates all terms instantaneously and checks Latin Graduation Honors.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Expand / Collapse All</strong></td>
-                    <td>Semester Header</td>
-                    <td>Toggles accordion visibility across all recorded semester cards.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Export to PDF</strong></td>
-                    <td>Toolbar</td>
-                    <td>Generates an official-style, printable academic transcript report.</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Clear All</strong></td>
-                    <td>Toolbar</td>
-                    <td>Resets recorded academic data with in-app confirmation modal protection.</td>
-                  </tr>
+                  {ACTION_CONTROLS.map((ctrl) => (
+                    <tr key={ctrl.name}>
+                      <td>
+                        <strong>
+                          <i className={`fa-solid ${ctrl.icon} text-primary`} style={{ marginRight: '8px' }}></i>
+                          {ctrl.name}
+                        </strong>
+                      </td>
+                      <td>
+                        <span className="action-loc-badge">{ctrl.location}</span>
+                      </td>
+                      <td>{ctrl.desc}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
+            </div>
+
+            {/* Mobile Card View (<=768px) */}
+            <div className="mobile-only action-dir-mobile">
+              {ACTION_CONTROLS.map((ctrl) => (
+                <div key={ctrl.name} className="action-dir-card">
+                  <div className="action-dir-card-header">
+                    <span className="action-dir-card-name">
+                      <i className={`fa-solid ${ctrl.icon} text-primary`}></i>
+                      {ctrl.name}
+                    </span>
+                    <span className="action-loc-badge">{ctrl.location}</span>
+                  </div>
+                  <p className="action-dir-card-desc">{ctrl.desc}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>

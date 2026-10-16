@@ -2977,3 +2977,89 @@
     min-height: 34px !important;
 }
 
+/* Responsive Utility Classes */
+.desktop-only {
+    display: block;
+}
+.mobile-only {
+    display: none;
+}
+
+/* Action Controls & Buttons Directory */
+.action-directory-container {
+    margin-top: 18px;
+    padding: 16px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+}
+
+.action-directory-title {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 12px;
+}
+
+.action-loc-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+    background: var(--card-header-bg, rgba(27, 42, 111, 0.08));
+    color: var(--bu-blue);
+    border: 1px solid var(--border-color);
+    white-space: nowrap;
+}
+
+[data-theme="dark"] .action-loc-badge {
+    background: rgba(30, 58, 138, 0.25);
+    color: #93c5fd;
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.action-dir-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.action-dir-card {
+    padding: 12px 14px;
+    background: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.action-dir-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.action-dir-card-name {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.action-dir-card-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.45;
+}
+
+

@@ -410,7 +410,7 @@ html, body {
     }
 
     /* FIX 4 — Policies Tab: Compact Mobile Grading Scale Table */
-    .guide-section:first-of-type .table-responsive {
+    #tab-guide .guide-section:first-of-type .table-responsive {
         border: 1px solid var(--border-color) !important;
         border-radius: var(--radius-md) !important;
         background: var(--card-bg) !important;
@@ -419,19 +419,19 @@ html, body {
         margin-top: 8px !important;
     }
 
-    .guide-section:first-of-type .policy-table {
+    #tab-guide .guide-section:first-of-type .policy-table {
         display: table !important;
         width: 100% !important;
         min-width: 100% !important;
         border-collapse: collapse !important;
     }
 
-    .guide-section:first-of-type .policy-table thead {
+    #tab-guide .guide-section:first-of-type .policy-table thead {
         display: table-header-group !important;
         background: var(--card-header-bg) !important;
     }
 
-    .guide-section:first-of-type .policy-table th {
+    #tab-guide .guide-section:first-of-type .policy-table th {
         display: table-cell !important;
         padding: 8px 10px !important;
         font-size: 0.74rem !important;
@@ -442,16 +442,16 @@ html, body {
         border-bottom: 1px solid var(--border-color) !important;
     }
 
-    .guide-section:first-of-type .policy-table th:nth-child(1) { width: 30% !important; text-align: left !important; }
-    .guide-section:first-of-type .policy-table th:nth-child(2) { width: 36% !important; text-align: center !important; }
-    .guide-section:first-of-type .policy-table th:nth-child(3) { width: 34% !important; text-align: right !important; }
+    #tab-guide .guide-section:first-of-type .policy-table th:nth-child(1) { width: 30% !important; text-align: left !important; }
+    #tab-guide .guide-section:first-of-type .policy-table th:nth-child(2) { width: 36% !important; text-align: center !important; }
+    #tab-guide .guide-section:first-of-type .policy-table th:nth-child(3) { width: 34% !important; text-align: right !important; }
 
-    .guide-section:first-of-type .policy-table tbody {
+    #tab-guide .guide-section:first-of-type .policy-table tbody {
         display: table-row-group !important;
         gap: 0 !important;
     }
 
-    .guide-section:first-of-type .policy-table tr {
+    #tab-guide .guide-section:first-of-type .policy-table tr {
         display: table-row !important;
         padding: 0 !important;
         background: transparent !important;
@@ -461,11 +461,11 @@ html, body {
         gap: 0 !important;
     }
 
-    .guide-section:first-of-type .policy-table tr:not(:last-child) td {
+    #tab-guide .guide-section:first-of-type .policy-table tr:not(:last-child) td {
         border-bottom: 1px solid var(--border-color) !important;
     }
 
-    .guide-section:first-of-type .policy-table td {
+    #tab-guide .guide-section:first-of-type .policy-table td {
         display: table-cell !important;
         padding: 7px 10px !important;
         vertical-align: middle !important;
@@ -473,7 +473,7 @@ html, body {
         border: none !important;
     }
 
-    .guide-section:first-of-type .policy-table td:nth-child(1) {
+    #tab-guide .guide-section:first-of-type .policy-table td:nth-child(1) {
         font-weight: 700 !important;
         color: var(--text-primary) !important;
         text-align: left !important;
@@ -484,11 +484,11 @@ html, body {
         padding-bottom: 7px !important;
     }
 
-    .guide-section:first-of-type .policy-table td:nth-child(2) {
+    #tab-guide .guide-section:first-of-type .policy-table td:nth-child(2) {
         text-align: center !important;
     }
 
-    .guide-section:first-of-type .policy-table td:nth-child(3) {
+    #tab-guide .guide-section:first-of-type .policy-table td:nth-child(3) {
         text-align: right !important;
         font-size: 0.76rem !important;
         font-weight: 600 !important;
@@ -496,11 +496,78 @@ html, body {
         line-height: 1.25 !important;
     }
 
-    .guide-section:first-of-type .adjectival-badge {
+    #tab-guide .guide-section:first-of-type .adjectival-badge {
         font-size: 0.66rem !important;
         padding: 2px 7px !important;
         letter-spacing: 0.2px !important;
         display: inline-block !important;
+    }
+
+    /* Responsive Utilities (<=768px) */
+    .desktop-only {
+        display: none !important;
+    }
+
+    .mobile-only {
+        display: block !important;
+    }
+
+    /* Action Controls & Buttons Directory Mobile Cards (<=768px) */
+    .action-directory-container {
+        padding: 14px 12px !important;
+        margin-top: 14px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+
+    .action-dir-mobile {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100% !important;
+    }
+
+    .action-dir-card {
+        padding: 12px 14px !important;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--border-color) !important;
+        border-radius: var(--radius-md) !important;
+        box-shadow: var(--shadow-sm) !important;
+        box-sizing: border-box !important;
+    }
+
+    .action-dir-card-header {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        gap: 8px !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 6px !important;
+    }
+
+    .action-dir-card-name {
+        font-size: 0.88rem !important;
+        font-weight: 700 !important;
+        color: var(--text-primary) !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+    }
+
+    .action-dir-card-name i {
+        font-size: 0.88rem !important;
+    }
+
+    .action-dir-card-desc {
+        font-size: 0.8rem !important;
+        color: var(--text-secondary) !important;
+        margin: 0 !important;
+        line-height: 1.45 !important;
+    }
+
+    .action-loc-badge {
+        font-size: 0.7rem !important;
+        padding: 2px 8px !important;
     }
 
     /* FIX 5 — About Tab: Sub-Tab Navigation Bar (2x2 Grid) */
