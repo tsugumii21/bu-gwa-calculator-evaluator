@@ -612,12 +612,10 @@ label.checkbox-label {
     .navbar-inner { flex-wrap: wrap; }
     .app-title .app-subtitle { display: none; }
     .nav-tabs-container { order: 3; width: 100%; overflow-x: auto; justify-content: flex-start; }
-    .dashboard-summary { grid-template-columns: repeat(2, 1fr); }
     .sim-grid, .sch-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 480px) {
-    .dashboard-summary { grid-template-columns: 1fr; }
     .sem-header { flex-direction: column; align-items: flex-start; }
     .sem-title-select { width: 100%; }
     .subject-table input, .subject-table select { font-size: 16px; }

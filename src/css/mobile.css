@@ -30,10 +30,14 @@ html, body {
         font-size: 0.82rem;
     }
 
-    /* Dashboard summary: 2x2 grid */
+    /* Dashboard summary: 1-Hero Banner + 2x2 grid */
     .dashboard-summary {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-md);
+    }
+
+    #card-gwa.summary-card-hero {
+        grid-column: span 2;
     }
 
     /* Simulator & Scholarship: keep 2-col but reduce gap */
@@ -732,10 +736,15 @@ html, body {
         padding: var(--space-md) var(--space-sm);
     }
 
-    /* --- Dashboard summary: 2x2 grid --- */
+    /* --- Dashboard summary: 1-Hero Banner + 2x2 grid --- */
     .dashboard-summary {
         grid-template-columns: repeat(2, 1fr);
         gap: var(--space-sm);
+    }
+
+    #card-gwa.summary-card-hero {
+        grid-column: span 2;
+        padding: 16px 18px;
     }
 
     .summary-card {
@@ -1309,74 +1318,167 @@ html, body {
         padding: var(--space-sm) var(--space-xs);
     }
 
-    /* --- Dashboard: iBU Compact 2x2 Grid --- */
+    /* --- Dashboard: 1-Hero Top Banner + Balanced 2x2 Supporting Grid --- */
     .dashboard-summary {
         grid-template-columns: repeat(2, 1fr) !important;
-        gap: 6px !important;
+        gap: 8px !important;
         margin-bottom: var(--space-md) !important;
         width: 100% !important;
         box-sizing: border-box !important;
     }
 
-    .dashboard-summary .summary-card:nth-child(5):last-child {
+    /* Hero Metric: Cumulative Degree GWA (Full-Width Top Anchor) */
+    #card-gwa.summary-card-hero {
         grid-column: span 2 !important;
-    }
-
-    .summary-card {
-        padding: 8px 10px !important;
-        position: relative !important;
-        gap: 8px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        justify-content: space-between !important;
+        padding: 14px 16px !important;
+        min-height: 96px !important;
+        border: 1px solid rgba(59, 130, 246, 0.3) !important;
+        background: var(--card-bg) !important;
         border-radius: var(--radius-md) !important;
-        min-width: 0 !important;
-        min-height: 54px !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08) !important;
     }
 
-    .icon-circle {
+    #card-gwa .hero-header-row {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    #card-gwa .hero-icon-circle {
         width: 28px !important;
         height: 28px !important;
-        font-size: 0.80rem !important;
+        border-radius: var(--radius-sm) !important;
+        background: rgba(59, 130, 246, 0.12) !important;
+        border: 1px solid rgba(59, 130, 246, 0.25) !important;
+        color: var(--bu-azure) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-size: 0.82rem !important;
         flex-shrink: 0 !important;
     }
 
-    .summary-value {
-        font-size: 1.08rem !important;
-        word-break: break-word !important;
-        line-height: 1.15 !important;
-    }
-
-    .summary-value.honor-badge,
-    .summary-value.standing-badge {
-        font-size: 0.82rem !important;
-        white-space: normal !important;
-        word-break: break-word !important;
+    #card-gwa .hero-label {
+        font-size: 0.72rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.4px !important;
+        color: var(--text-secondary) !important;
+        margin: 0 !important;
+        padding-right: 28px !important;
         line-height: 1.2 !important;
     }
 
-    .summary-label {
-        font-size: 0.62rem !important;
-        letter-spacing: 0.25px !important;
-        white-space: normal !important;
-        word-break: break-word !important;
-        line-height: 1.15 !important;
-        padding-right: 16px !important;
+    #card-gwa .hero-body {
+        margin: 4px 0 2px 0 !important;
+        text-align: left !important;
+        width: 100% !important;
     }
 
-    .summary-subtext {
-        font-size: 0.66rem !important;
-        white-space: normal !important;
-        word-break: break-word !important;
+    #card-gwa .summary-value.hero-gwa-val {
+        font-family: var(--font-display) !important;
+        font-size: 2.1rem !important;
+        font-weight: 800 !important;
+        letter-spacing: -0.5px !important;
+        line-height: 1.05 !important;
+        color: var(--text-primary) !important;
+        display: block !important;
+        margin: 0 !important;
+    }
+
+    #card-gwa .hero-footer {
+        width: 100% !important;
+        text-align: left !important;
+    }
+
+    #card-gwa .hero-footer .summary-subtext {
+        font-size: 0.74rem !important;
+        color: var(--text-secondary) !important;
+        font-weight: 500 !important;
+        text-align: left !important;
+    }
+
+    /* Supporting Cards: Symmetrical 2x2 Grid (Semestral Honor, Latin Honor, Standing, Units) */
+    .dashboard-summary .summary-card:not(.summary-card-hero) {
+        grid-column: span 1 !important;
+        padding: 10px 11px !important;
+        min-height: 66px !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 9px !important;
+        border-radius: var(--radius-md) !important;
+        box-sizing: border-box !important;
+    }
+
+    .dashboard-summary .summary-card:nth-child(5):last-child {
+        grid-column: span 1 !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .card-icon-row {
+        display: flex !important;
+        align-items: center !important;
+        flex-shrink: 0 !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .card-content {
+        display: flex !important;
+        flex-direction: column !important;
+        min-width: 0 !important;
+        flex: 1 !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .summary-label {
+        font-size: 0.63rem !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        color: var(--text-secondary) !important;
         line-height: 1.2 !important;
+        padding-right: 18px !important;
+        margin-bottom: 2px !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .summary-value {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        line-height: 1.2 !important;
+        word-break: break-word !important;
+        white-space: normal !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .summary-value.honor-badge,
+    .summary-card:not(.summary-card-hero) .summary-value.standing-badge {
+        font-size: 0.88rem !important;
+    }
+
+    .summary-card:not(.summary-card-hero) .summary-subtext {
+        font-size: 0.67rem !important;
+        color: var(--text-muted) !important;
+        line-height: 1.2 !important;
+        margin-top: 2px !important;
     }
 
     .info-help-btn {
-        width: 18px !important;
-        height: 18px !important;
-        font-size: 0.65rem !important;
-        top: 5px !important;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 0.70rem !important;
+        top: 6px !important;
         right: 6px !important;
         left: auto !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        border-radius: 50% !important;
+        color: var(--text-muted) !important;
+        background: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        cursor: pointer !important;
     }
 
     /* --- Toolbar: iBU Two-Tier Mobile Buttons --- */
