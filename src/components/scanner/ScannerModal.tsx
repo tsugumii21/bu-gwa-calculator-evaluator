@@ -9,6 +9,7 @@ import {
   createOCRWorker,
   type OCRWorker,
 } from './ocr-engine';
+import { scanScreenshotWithGemini } from './gemini-engine';
 import { LottieLoader } from '../animations/LottieLoader';
 import { getRandomAnimation } from '../animations/animations';
 
@@ -105,35 +106,54 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
 
     setIsProcessing(true);
     setProgress(0);
-    setStatusMessage('Initializing client-side OCR engine...');
+    setStatusMessage('Scanning with Gemini 3.8 Flash Vision...');
 
     let sharedWorker: OCRWorker | null = null;
 
     try {
-      sharedWorker = await createOCRWorker();
       const allResults: Subject[][] = [];
 
       for (let i = 0; i < imageFiles.length; i++) {
         const file = imageFiles[i];
         setStatusMessage(`Processing screenshot ${i + 1} of ${imageFiles.length}...`);
 
+        let subjects: Subject[] | null = null;
+
+        // Attempt 1: Gemini 3.8 Flash Vision
         try {
-          const img = await loadImageSafe(file);
-          const preprocessedCanvas = preprocessGradeScreenshot(img);
-
-          const subjects = await scanScreenshotCanvas(
-            preprocessedCanvas,
-            (percent) => {
-              const overall = Math.round(((i + percent / 100) / imageFiles.length) * 100);
-              setProgress(overall);
-            },
-            sharedWorker
-          );
-
-          allResults.push(subjects);
-        } catch (fileErr) {
-          console.error(`Error processing image ${file.name}:`, fileErr);
+          setStatusMessage(`Analyzing with Gemini 3.8 Flash Vision (${i + 1}/${imageFiles.length})...`);
+          subjects = await scanScreenshotWithGemini(file);
+        } catch (geminiErr) {
+          console.warn('Gemini Vision scan failed or offline, falling back to local Tesseract OCR:', geminiErr);
         }
+
+        // Attempt 2: Local Tesseract OCR fallback
+        if (!subjects || subjects.length === 0) {
+          try {
+            setStatusMessage(`Scanning with local OCR engine (${i + 1}/${imageFiles.length})...`);
+            if (!sharedWorker) {
+              sharedWorker = await createOCRWorker();
+            }
+            const img = await loadImageSafe(file);
+            const preprocessedCanvas = preprocessGradeScreenshot(img);
+
+            subjects = await scanScreenshotCanvas(
+              preprocessedCanvas,
+              (percent) => {
+                const overall = Math.round(((i + percent / 100) / imageFiles.length) * 100);
+                setProgress(overall);
+              },
+              sharedWorker
+            );
+          } catch (tesseractErr) {
+            console.error(`Local OCR error for ${file.name}:`, tesseractErr);
+          }
+        }
+
+        if (subjects && subjects.length > 0) {
+          allResults.push(subjects);
+        }
+        setProgress(Math.round(((i + 1) / imageFiles.length) * 100));
       }
 
       setStatusMessage('Deduplicating overlapping course rows...');

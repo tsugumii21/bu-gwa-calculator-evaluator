@@ -8,6 +8,7 @@ import {
   createOCRWorker,
   type OCRWorker,
 } from './ocr-engine';
+import { scanScreenshotWithGemini } from './gemini-engine';
 
 interface PhotoScanModalProps {
   isOpen: boolean;
@@ -174,8 +175,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     let sharedWorker: OCRWorker | null = null;
 
     try {
-      setStatusMessage('Initializing client-side OCR engine...');
-      sharedWorker = await createOCRWorker();
+      setStatusMessage('Scanning with Gemini 3.8 Flash Vision...');
 
       for (let bIdx = 0; bIdx < activeBuckets.length; bIdx++) {
         const bucket = activeBuckets[bIdx];
@@ -188,26 +188,46 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
             `Scanning ${bucket.title} — Image ${fIdx + 1} of ${bucket.files.length}...`
           );
 
+          let subjects: Subject[] | null = null;
+
+          // Attempt 1: Gemini 3.8 Flash Vision (Cloudflare Worker proxy)
           try {
-            const img = await loadImageSafe(file);
-            const preprocessedCanvas = preprocessGradeScreenshot(img);
-
-            const subjects = await scanScreenshotCanvas(
-              preprocessedCanvas,
-              (percent) => {
-                const bucketFraction = (fIdx + percent / 100) / bucket.files.length;
-                const overallPercent = Math.round(
-                  ((bIdx + bucketFraction) / activeBuckets.length) * 100
-                );
-                setProgress(overallPercent);
-              },
-              sharedWorker
-            );
-
-            allBucketResults.push(subjects);
-          } catch (fileErr) {
-            console.error(`Error processing image in ${bucket.title}:`, fileErr);
+            setStatusMessage(`Analyzing with Gemini 3.8 Flash Vision (${bucket.title})...`);
+            subjects = await scanScreenshotWithGemini(file);
+          } catch (geminiErr) {
+            console.warn('Gemini Vision scan failed or offline, falling back to local Tesseract OCR:', geminiErr);
           }
+
+          // Attempt 2: Fallback to client-side Tesseract.js OCR
+          if (!subjects || subjects.length === 0) {
+            try {
+              setStatusMessage(`Scanning with local OCR engine (${bucket.title})...`);
+              if (!sharedWorker) {
+                sharedWorker = await createOCRWorker();
+              }
+              const img = await loadImageSafe(file);
+              const preprocessedCanvas = preprocessGradeScreenshot(img);
+
+              subjects = await scanScreenshotCanvas(
+                preprocessedCanvas,
+                (percent) => {
+                  const bucketFraction = (fIdx + percent / 100) / bucket.files.length;
+                  const overallPercent = Math.round(
+                    ((bIdx + bucketFraction) / activeBuckets.length) * 100
+                  );
+                  setProgress(overallPercent);
+                },
+                sharedWorker
+              );
+            } catch (tesseractErr) {
+              console.error(`Local OCR error for ${file.name}:`, tesseractErr);
+            }
+          }
+
+          if (subjects && subjects.length > 0) {
+            allBucketResults.push(subjects);
+          }
+          setProgress(Math.round(((bIdx + (fIdx + 1) / bucket.files.length) / activeBuckets.length) * 100));
         }
 
         setStatusMessage(`Deduplicating rows for ${bucket.title}...`);

@@ -1,0 +1,7 @@
+name = "bu-gwa-gemini-ocr"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Secret variable configured via dashboard or `npx wrangler secret put GEMINI_API_KEY`:
+# [vars]
+# GEMINI_API_KEY = "your-secret-key"
