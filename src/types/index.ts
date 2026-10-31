@@ -15,6 +15,7 @@ export interface Semester {
   subjects: Subject[];
   underload: boolean;
   computed: boolean;
+  isMidyear?: boolean;
 }
 
 /** Result of cumulative GWA calculation */
@@ -37,12 +38,18 @@ export type HonorLevel =
   | 'cum-laude'
   | 'regular'
   | 'not-eligible'
-  | 'pending';
+  | 'pending'
+  | 'underclassman-milestone';
 
 export interface HonorEvaluation {
   level: HonorLevel;
   label: string;
   description: string;
+  tier?: 'tier-1-milestone' | 'tier-2-projected' | 'tier-3-candidate' | 'disqualified' | 'pending';
+  projectedHonor?: string;
+  progressPercent?: number;
+  isLocked?: boolean;
+  requiredUnitsRemaining?: number;
 }
 
 /** Academic standing */
@@ -85,7 +92,7 @@ export interface CollegePresetSemester {
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system';
-export type AppTab = 'calculator' | 'simulator' | 'scholarship' | 'policies' | 'about';
+export type AppTab = 'calculator' | 'simulator' | 'scholarship' | 'handbook' | 'policies' | 'about';
 
 /** Term honor evaluation (per-semester) */
 export type TermHonorLevel = 'president' | 'dean' | 'none';

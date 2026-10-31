@@ -42,7 +42,7 @@ export const DashboardStrip: React.FC = () => {
     ? `${formattedGradedUnits} units · ${computedCount} term${computedCount > 1 ? 's' : ''}`
     : 'Awaiting computation';
 
-  // 2. Semestral Honor (PL / DL) — Evaluates latest computed term
+  // 2. Semestral Honor (PL / DL / Deficiency) — Evaluates latest computed term
   const computedSemesters = semesters.filter((s) => s.computed);
   const latestComputedSem =
     computedSemesters.length > 0
@@ -52,73 +52,112 @@ export const DashboardStrip: React.FC = () => {
   let termHonorLabel = 'Pending';
   let termHonorSubtext = "Click 'Compute GPA'";
   let termBadgeClass = 'text-black-white';
-  let termIconCircle = 'icon-gold';
   let termIcon = 'fa-solid fa-crown';
   let isTermHonor = false;
 
   if (latestComputedSem) {
     const termGpa = calculateSemesterGWA(latestComputedSem);
-    const termEval = evaluateTermHonor(
-      termGpa,
-      latestComputedSem.subjects,
-      !!latestComputedSem.underload,
-      latestComputedSem.title,
-    );
-
     const semShort = formatSemShort(latestComputedSem.title);
 
-    if (termEval.level === 'president') {
-      termHonorLabel = "President's Lister";
-      termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
+    // Check for active deficiencies in this term
+    let termHasDeficiency = false;
+    if (latestComputedSem.subjects) {
+      termHasDeficiency = latestComputedSem.subjects.some((sub) => {
+        const raw = (sub.grade || '').trim().toUpperCase();
+        const num = parseFloat(raw);
+        return raw === '5.0' || raw === '5.00' || raw === '4.0' || raw === '4.00' || raw === 'INC' || num === 5.0 || num === 4.0;
+      });
+    }
+
+    if (termHasDeficiency) {
+      termHonorLabel = 'Academic Deficiency';
+      termHonorSubtext = `${semShort} · Has 4.0/5.0/INC`;
+      termBadgeClass = 'text-danger';
+      termIcon = 'fa-solid fa-triangle-exclamation';
+    } else if (latestComputedSem.underload) {
+      termHonorLabel = 'Underloaded Term';
+      termHonorSubtext = `${semShort} · Reduced load`;
       termBadgeClass = 'text-gold';
-      termIconCircle = 'icon-gold';
-      termIcon = 'fa-solid fa-crown';
-      isTermHonor = true;
-    } else if (termEval.level === 'dean') {
-      termHonorLabel = "Dean's Lister";
-      termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
-      termBadgeClass = 'text-blue';
-      termIconCircle = 'icon-blue';
-      termIcon = 'fa-solid fa-medal';
-      isTermHonor = true;
+      termIcon = 'fa-solid fa-triangle-exclamation';
     } else {
-      termHonorLabel = 'Regular Standing';
-      termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
-      termBadgeClass = 'text-secondary';
-      termIconCircle = 'icon-blue';
-      termIcon = 'fa-solid fa-award';
+      const termEval = evaluateTermHonor(
+        termGpa,
+        latestComputedSem.subjects,
+        !!latestComputedSem.underload,
+        latestComputedSem.title,
+        latestComputedSem.isMidyear,
+      );
+
+      if (termEval.label === 'Midyear Term') {
+        termHonorLabel = 'Midyear Term';
+        termHonorSubtext = `${semShort} · Exempt from PL/DL`;
+        termBadgeClass = 'text-secondary';
+        termIcon = 'fa-solid fa-sun';
+      } else if (termEval.level === 'president') {
+        termHonorLabel = "President's Lister";
+        termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
+        termBadgeClass = 'text-gold';
+        termIcon = 'fa-solid fa-crown';
+        isTermHonor = true;
+      } else if (termEval.level === 'dean') {
+        termHonorLabel = "Dean's Lister";
+        termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
+        termBadgeClass = 'text-blue';
+        termIcon = 'fa-solid fa-medal';
+        isTermHonor = true;
+      } else {
+        termHonorLabel = 'Regular Standing';
+        termHonorSubtext = `${semShort} · GPA ${termGpa.toFixed(4)}`;
+        termBadgeClass = 'text-secondary';
+        termIcon = 'fa-solid fa-award';
+      }
     }
   }
 
-  // 3. Latin Graduation Honors — Evaluates cumulative graduation standing
-  const latinHonorDisplay = hasComputedGrades
-    ? latinHonorEval.label
-    : 'Pending';
+  // 3. Latin Graduation Honors — 3-Tier Progressive Blueprint ("Sprint vs. Marathon")
+  let latinHonorDisplay = 'Pending';
+  let latinHonorSubtext = 'Evaluates degree pace';
+  let latinBadgeClass = 'text-black-white';
+  let latinIcon = 'fa-solid fa-graduation-cap';
+  let isLatinDistinction = false;
 
-  const isLatinCumLaude =
-    latinHonorEval.level === 'cum-laude' || latinHonorEval.label === 'Cum Laude';
-
-  const latinHonorSubtext = hasComputedGrades
-    ? isLatinCumLaude
-      ? 'Target: ≤ 1.7500'
-      : latinHonorEval.level === 'magna'
-        ? 'Target: ≤ 1.4500'
-        : latinHonorEval.level === 'summa'
-          ? 'Target: ≤ 1.2500'
-          : latinHonorEval.description
-    : 'Evaluates degree GWA';
-
-  const latinBadgeClass =
-    !hasComputedGrades || latinHonorEval.level === 'pending'
-      ? 'text-black-white'
-      : latinHonorEval.level === 'not-eligible'
-        ? 'text-danger'
-        : isLatinCumLaude
-          ? 'text-blue'
-          : 'text-gold';
-
-  const latinIconCircle = isLatinCumLaude ? 'icon-blue' : 'icon-gold';
-  const latinIcon = isLatinCumLaude ? 'fa-solid fa-award' : 'fa-solid fa-crown';
+  if (hasComputedGrades) {
+    if (latinHonorEval.tier === 'disqualified' || latinHonorEval.level === 'not-eligible') {
+      latinHonorDisplay = 'Regular Degree Standing';
+      latinHonorSubtext = latinHonorEval.description.replace('Ineligible for Latin Honors: ', 'Ineligible: ');
+      latinBadgeClass = 'text-danger';
+      latinIcon = 'fa-solid fa-circle-exclamation';
+    } else if (latinHonorEval.tier === 'tier-1-milestone') {
+      latinHonorDisplay = 'Milestone Active';
+      const rem = Math.round(latinHonorEval.requiredUnitsRemaining || 45);
+      latinHonorSubtext = `${rem}u to Latin projection`;
+      latinBadgeClass = 'text-secondary';
+      latinIcon = 'fa-solid fa-lock';
+    } else if (latinHonorEval.tier === 'tier-2-projected') {
+      latinHonorDisplay = latinHonorEval.label;
+      latinHonorSubtext = `${computedStats.gradedUnits.toFixed(0)}/140u · Unofficial`;
+      latinBadgeClass =
+        latinHonorEval.level === 'summa' || latinHonorEval.level === 'magna'
+          ? 'text-gold'
+          : 'text-blue';
+      latinIcon = 'fa-solid fa-compass';
+      isLatinDistinction = true;
+    } else if (latinHonorEval.tier === 'tier-3-candidate') {
+      latinHonorDisplay = latinHonorEval.label;
+      latinHonorSubtext = 'Pending Registrar Audit';
+      latinBadgeClass =
+        latinHonorEval.level === 'summa' || latinHonorEval.level === 'magna'
+          ? 'text-gold'
+          : 'text-blue';
+      latinIcon = latinHonorEval.level === 'summa' ? 'fa-solid fa-crown' : 'fa-solid fa-award';
+      isLatinDistinction = true;
+    } else {
+      latinHonorDisplay = latinHonorEval.label;
+      latinHonorSubtext = latinHonorEval.description;
+      latinBadgeClass = 'text-secondary';
+      latinIcon = 'fa-solid fa-award';
+    }
+  }
 
   // 4. Academic Standing
   const hasAcademicData = allStats.totalCourses > 0 && hasComputedGrades;
@@ -228,13 +267,13 @@ export const DashboardStrip: React.FC = () => {
             <i className="fa-solid fa-circle-question"></i>
           </button>
           <div className="card-icon-row">
-            <div className={`icon-circle ${latinHonorEval.level === 'summa' || latinHonorEval.level === 'magna' || latinHonorEval.level === 'cum-laude' ? 'is-honor' : ''}`}>
+            <div className={`icon-circle ${isLatinDistinction ? 'is-honor' : ''}`}>
               <i className={latinIcon}></i>
             </div>
           </div>
 
           <div className="card-content">
-            <span className="summary-label">Latin Honor (Graduation)</span>
+            <span className="summary-label">Latin Honor (Degree)</span>
             <span className={`summary-value honor-badge ${latinBadgeClass}`} id="latin-honor-status">
               {latinHonorDisplay}
             </span>

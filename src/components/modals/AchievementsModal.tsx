@@ -1,6 +1,7 @@
 import React from 'react';
 import { useSemesterStore } from '../../store';
 import { calculateCumulativeStats, calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
+import { isMidyearTerm } from '../../core/honor-rules';
 
 interface AchievementsModalProps {
   isOpen: boolean;
@@ -160,9 +161,9 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                 type="button"
                 className="btn btn-gold btn-sm"
                 onClick={computeAllSemesters}
-                title="Compute GPA for all semesters at once"
+                title="Quick compute GPA for all semesters at once"
               >
-                <i className="fa-solid fa-calculator"></i> Compute All
+                <i className="fa-solid fa-bolt"></i> Quick Compute
               </button>
             </div>
 
@@ -173,11 +174,26 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
             ) : (
               <div className="term-recog-list">
                 {semesters.map((sem, idx) => {
+                  const isMidyear = isMidyearTerm(sem.title, sem.isMidyear);
+                  const isUnderloaded = !!sem.underload;
+
                   if (!sem.computed) {
                     return (
                       <div className="term-recog-item" key={sem.id}>
                         <div className="term-recog-info">
-                          <strong>{sem.title}</strong>{' '}
+                          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                            <strong>{sem.title}</strong>
+                            {isMidyear && (
+                              <span className="term-type-tag midyear-tag" title="Midyear/Summer term (exempt from PL/DL)">
+                                Midyear
+                              </span>
+                            )}
+                            {isUnderloaded && (
+                              <span className="term-type-tag underload-tag" title="Student carried underload this term">
+                                Underloaded
+                              </span>
+                            )}
+                          </div>
                           <span className="term-gpa-tag" style={{ background: 'var(--card-header-bg)', color: 'var(--text-secondary)' }}>
                             Awaiting Computation
                           </span>
@@ -208,7 +224,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
 
                   sem.subjects.forEach((sub) => {
                     const num = parseFloat(sub.grade);
-                    if (sub.grade === '5.0' || sub.grade === '5.00' || num === 5.0 || sub.grade === 'INC') {
+                    if (sub.grade === '5.0' || sub.grade === '5.00' || num === 5.0 || sub.grade === 'INC' || sub.grade === '4.0' || sub.grade === '4.00' || num === 4.0) {
                       hasFailOrInc = true;
                     }
                     if (!isNaN(num) && num > lowestGradeInSem) lowestGradeInSem = num;
@@ -217,7 +233,16 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                   let statusTitle = 'Good Academic Standing';
                   let statusBadge = 'badge-success';
 
-                  if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
+                  if (hasFailOrInc) {
+                    statusTitle = 'Academic Deficiency Detected';
+                    statusBadge = 'badge-danger';
+                  } else if (isMidyear) {
+                    statusTitle = 'Midyear Term (Exempt from PL/DL)';
+                    statusBadge = 'badge-info';
+                  } else if (isUnderloaded) {
+                    statusTitle = 'Underloaded Term';
+                    statusBadge = 'badge-warning';
+                  } else if (semUnits >= 15) {
                     if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
                       statusTitle = "President's Lister (PL)";
                       statusBadge = 'badge-pl';
@@ -229,19 +254,28 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                       statusTitle = `Close to DL (Gap: ${gapToDL.toFixed(4)})`;
                       statusBadge = 'badge-close';
                     }
-                  } else if (sem.underload) {
-                    statusTitle = 'Underloaded Term';
+                  } else if (semUnits > 0 && semUnits < 15) {
+                    statusTitle = 'Underloaded (< 15 Units)';
                     statusBadge = 'badge-warning';
-                  } else if (hasFailOrInc) {
-                    statusTitle = 'Academic Deficiency Detected';
-                    statusBadge = 'badge-danger';
                   }
 
                   return (
                     <div className="term-recog-item" key={sem.id}>
                       <div className="term-recog-info">
-                        <strong>{sem.title}</strong>{' '}
-                        <span className="term-gpa-tag">GPA: {semGWA.toFixed(4)}</span>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+                          <strong>{sem.title}</strong>
+                          {isMidyear && (
+                            <span className="term-type-tag midyear-tag" title="Midyear/Summer term (exempt from PL/DL)">
+                              Midyear
+                            </span>
+                          )}
+                          {isUnderloaded && (
+                            <span className="term-type-tag underload-tag" title="Student carried underload this term">
+                              Underloaded
+                            </span>
+                          )}
+                        </div>
+                        <span className="term-gpa-tag">GPA: {semGWA.toFixed(4)} &nbsp;•&nbsp; {semUnits} Units</span>
                       </div>
                       <span className={`recog-pill ${statusBadge}`}>{statusTitle}</span>
                     </div>

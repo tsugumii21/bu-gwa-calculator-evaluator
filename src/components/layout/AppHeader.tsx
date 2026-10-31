@@ -24,8 +24,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ onOpenGuide }) => {
     { tab: 'calculator', label: 'Calculator', icon: 'fa-calculator' },
     { tab: 'simulator', label: 'Simulator', icon: 'fa-flask' },
     { tab: 'scholarship', label: 'Scholarship', icon: 'fa-graduation-cap' },
-    { tab: 'policies', label: 'Policies', icon: 'fa-book-open' },
-    { tab: 'about', label: 'About', icon: 'fa-circle-info' },
+    { tab: 'handbook', label: 'Handbook', icon: 'fa-book-bookmark' },
   ];
 
   return (

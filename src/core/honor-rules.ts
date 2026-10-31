@@ -4,80 +4,160 @@
 import type {
   CumulativeStats,
   HonorEvaluation,
+  HonorLevel,
   StandingEvaluation,
   Subject,
   TermHonorEvaluation,
 } from '../types';
-import { HONOR_THRESHOLDS } from './constants';
+import { HONOR_THRESHOLDS, HONORS_UNIT_MILESTONES } from './constants';
 
 // ---------------------------------------------------------------------------
-// Cumulative Honor Standing (Graduation Honors)
+// Cumulative Honor Standing (Graduation Honors — 3-Tier Progressive Blueprint)
 // ---------------------------------------------------------------------------
 
 /**
- * Evaluate cumulative honor standing for graduation.
- *
- * Rules:
- * - Summa Cum Laude: GWA ≤ 1.2500, full load every term, zero 5.0/INC
- * - Magna Cum Laude: GWA 1.2501–1.4500, full load every term, zero 5.0/INC
- * - Cum Laude:       GWA 1.4501–1.7500, full load every term, zero 5.0/INC
- * - Not eligible:    any 5.0, INC, or underloaded term disqualifies
- * - Pending:         no graded units yet
+ * Pure mathematical evaluation of honor bracket based on cumulative GWA.
+ * Summa: ≤ 1.2500, Magna: ≤ 1.4500, Cum Laude: ≤ 1.7500.
  */
-export function evaluateHonorStanding(stats: CumulativeStats): HonorEvaluation {
+export function evaluateRawHonorBracket(gwa: number): { level: HonorLevel; label: string } {
+  if (gwa <= HONOR_THRESHOLDS.SUMMA.maxGWA) {
+    return { level: 'summa', label: HONOR_THRESHOLDS.SUMMA.label };
+  }
+  if (gwa <= HONOR_THRESHOLDS.MAGNA.maxGWA) {
+    return { level: 'magna', label: HONOR_THRESHOLDS.MAGNA.label };
+  }
+  if (gwa <= HONOR_THRESHOLDS.CUM.maxGWA) {
+    return { level: 'cum-laude', label: HONOR_THRESHOLDS.CUM.label };
+  }
+  return { level: 'regular', label: 'Regular Graduate' };
+}
+
+/**
+ * Evaluate cumulative honor standing for graduation with strict BU BOR Res. 89 s. 2006
+ * unit progression tiers ("Sprint vs. Marathon" Architecture).
+ *
+ * Tiers:
+ * - Tier 1 (< 45 graded units): Underclassman Milestone. Locks premature Latin certification.
+ * - Tier 2 (45–104.9 graded units): Projected Pace (Unofficial trajectory simulation).
+ * - Tier 3 (≥ 105 graded units): Degree Honors Candidate (Pending final Registrar audit).
+ *
+ * Disqualification: any 5.0, 4.0, unremoved INC, or unapproved underload disqualifies.
+ */
+export function evaluateHonorStanding(
+  stats: CumulativeStats,
+  options?: { ignoreUnitThresholds?: boolean },
+): HonorEvaluation {
   // No data yet
   if (stats.gradedUnits === 0) {
     return {
       level: 'pending',
       label: 'Pending Evaluation',
       description: 'Awaiting term computation',
+      tier: 'pending',
+      isLocked: true,
+      progressPercent: 0,
+      requiredUnitsRemaining: HONORS_UNIT_MILESTONES.UNDERCLASSMAN_THRESHOLD,
     };
   }
 
-  // Disqualification: any failing grade, INC, or underload
+  // Disqualification: any failing/conditional grade, INC, or underload
   if (stats.hasFailingGrade || stats.hasInc || stats.hasUnderload) {
     const reasons: string[] = [];
-    if (stats.hasFailingGrade) reasons.push(`${stats.failingCount} fail`);
+    if (stats.hasFailingGrade) reasons.push(`${stats.failingCount || 1} deficiency`);
     if (stats.hasInc) reasons.push('INC grade');
     if (stats.hasUnderload) reasons.push('underload');
 
     return {
       level: 'not-eligible',
-      label: 'Regular Graduate',
-      description: `Ineligible: ${reasons.join(', ')}`,
+      label: 'Regular Degree Standing',
+      description: `Ineligible for Latin Honors: ${reasons.join(', ')}`,
+      tier: 'disqualified',
+      isLocked: false,
+      progressPercent: Math.min(100, (stats.gradedUnits / HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS) * 100),
     };
   }
 
-  const gwa = stats.cumulativeGWA;
+  const raw = evaluateRawHonorBracket(stats.cumulativeGWA);
+  const progressPercent = Math.min(
+    100,
+    (stats.gradedUnits / HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS) * 100,
+  );
 
-  if (gwa <= HONOR_THRESHOLDS.SUMMA.maxGWA) {
+  // If ignoreUnitThresholds is enabled (e.g. simulator preview / raw solver)
+  if (options?.ignoreUnitThresholds) {
     return {
-      level: 'summa',
-      label: HONOR_THRESHOLDS.SUMMA.label,
-      description: `Meets Summa criteria (≤ ${HONOR_THRESHOLDS.SUMMA.maxGWA.toFixed(4)})`,
+      level: raw.level,
+      label: raw.label,
+      description: `Meets ${raw.label} criteria (≤ ${
+        raw.level === 'summa'
+          ? HONOR_THRESHOLDS.SUMMA.maxGWA.toFixed(4)
+          : raw.level === 'magna'
+            ? HONOR_THRESHOLDS.MAGNA.maxGWA.toFixed(4)
+            : raw.level === 'cum-laude'
+              ? HONOR_THRESHOLDS.CUM.maxGWA.toFixed(4)
+              : 'N/A'
+      })`,
+      tier: 'tier-3-candidate',
+      projectedHonor: raw.label,
+      progressPercent,
+      isLocked: false,
     };
   }
 
-  if (gwa <= HONOR_THRESHOLDS.MAGNA.maxGWA) {
+  // Tier 1: Underclassman Milestone (< 45 Units / Years 1–2)
+  if (stats.gradedUnits < HONORS_UNIT_MILESTONES.UNDERCLASSMAN_THRESHOLD) {
+    const remainingUnits = HONORS_UNIT_MILESTONES.UNDERCLASSMAN_THRESHOLD - stats.gradedUnits;
     return {
-      level: 'magna',
-      label: HONOR_THRESHOLDS.MAGNA.label,
-      description: `Meets Magna criteria (≤ ${HONOR_THRESHOLDS.MAGNA.maxGWA.toFixed(4)})`,
+      level: 'underclassman-milestone',
+      label: 'Degree Tracker: Milestone Active',
+      description: `Underclassman Milestone: Latin honor trajectory activates at 45+ units (${remainingUnits.toFixed(0)} more units needed).`,
+      tier: 'tier-1-milestone',
+      projectedHonor: raw.label,
+      progressPercent,
+      isLocked: true,
+      requiredUnitsRemaining: remainingUnits,
     };
   }
 
-  if (gwa <= HONOR_THRESHOLDS.CUM.maxGWA) {
+  // Tier 2: Projected Pace (45–104.9 Units / Years 2–3)
+  if (stats.gradedUnits < HONORS_UNIT_MILESTONES.CANDIDATE_THRESHOLD) {
+    const formattedUnits = stats.gradedUnits.toFixed(stats.gradedUnits % 1 === 0 ? 0 : 1);
+    const paceLabel =
+      raw.level === 'summa'
+        ? 'Projected: Summa Pace'
+        : raw.level === 'magna'
+          ? 'Projected: Magna Pace'
+          : raw.level === 'cum-laude'
+            ? 'Projected: Cum Laude Pace'
+            : 'Regular Degree Pace';
+
     return {
-      level: 'cum-laude',
-      label: HONOR_THRESHOLDS.CUM.label,
-      description: `Meets Cum Laude criteria (≤ ${HONOR_THRESHOLDS.CUM.maxGWA.toFixed(4)})`,
+      level: raw.level,
+      label: paceLabel,
+      description: `Unofficial degree trajectory based on ${formattedUnits}/${HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS} units.`,
+      tier: 'tier-2-projected',
+      projectedHonor: raw.label,
+      progressPercent,
+      isLocked: false,
+      requiredUnitsRemaining: Math.max(0, HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS - stats.gradedUnits),
     };
   }
+
+  // Tier 3: Graduating Senior Candidate (≥ 105 Units / Year 4)
+  const candidateLabel =
+    raw.level === 'regular'
+      ? 'Regular Degree Candidate'
+      : `Candidate: ${raw.label}`;
 
   return {
-    level: 'regular',
-    label: 'Regular Graduate',
-    description: `Below Cum Laude threshold (≤ ${HONOR_THRESHOLDS.CUM.maxGWA.toFixed(4)})`,
+    level: raw.level,
+    label: candidateLabel,
+    description: 'Pending final University Registrar residency & underload audit.',
+    tier: 'tier-3-candidate',
+    projectedHonor: raw.label,
+    progressPercent,
+    isLocked: false,
+    requiredUnitsRemaining: Math.max(0, HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS - stats.gradedUnits),
   };
 }
 
@@ -131,12 +211,13 @@ export function evaluateAcademicStanding(stats: CumulativeStats): StandingEvalua
 // ---------------------------------------------------------------------------
 
 /**
- * Checks whether a term is a Midyear or Summer term based on its title.
+ * Checks whether a term is a Midyear or Summer term based on its title or explicit flag.
  * Under BU Student Handbook policies and CHED guidelines, Midyear/Summer terms
  * typically carry 3–9 units and are non-regular academic periods. They are NOT
  * classified as underloaded terms and do not disqualify students from Latin Honors.
  */
-export function isMidyearTerm(title?: string): boolean {
+export function isMidyearTerm(title?: string, isExplicitMidyear?: boolean): boolean {
+  if (isExplicitMidyear === true) return true;
   if (!title) return false;
   return /\b(?:midyear|summer)\b/i.test(title);
 }
@@ -158,6 +239,7 @@ export function evaluateTermHonor(
   subjects: Subject[],
   hasUnderload: boolean,
   semesterTitle?: string,
+  isExplicitMidyear?: boolean,
 ): TermHonorEvaluation {
   if (!subjects || subjects.length === 0) {
     return {
@@ -211,7 +293,7 @@ export function evaluateTermHonor(
     };
   }
 
-  const isMidyear = isMidyearTerm(semesterTitle);
+  const isMidyear = isMidyearTerm(semesterTitle, isExplicitMidyear);
 
   // Term honors (President's/Dean's Lister per Art. X) require:
   // - Regular semester (not midyear)

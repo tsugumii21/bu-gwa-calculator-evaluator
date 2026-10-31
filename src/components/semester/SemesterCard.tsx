@@ -7,6 +7,7 @@ import { SubjectRow } from './SubjectRow';
 import { ComputeModal } from '../animations/ComputeModal';
 import { TermHonorModal } from '../modals/TermHonorModal';
 import { UnderloadInfoModal } from '../modals/UnderloadInfoModal';
+import { MidyearInfoModal } from '../modals/MidyearInfoModal';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
 interface SemesterCardProps {
@@ -18,7 +19,7 @@ interface SemesterCardProps {
 
 export const SemesterCard: React.FC<SemesterCardProps> = ({
   semester,
-  index,
+  index: _index,
   collapsed,
   onToggleCollapse,
 }) => {
@@ -45,6 +46,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
   const [isComputing, setIsComputing] = useState(false);
   const [isTermHonorOpen, setIsTermHonorOpen] = useState(false);
   const [isUnderloadInfoOpen, setIsUnderloadInfoOpen] = useState(false);
+  const [isMidyearInfoOpen, setIsMidyearInfoOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const semGWA = calculateSemesterGWA(semester);
@@ -70,6 +72,9 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
           sub.grade === '5.0' ||
           sub.grade === '5.00' ||
           num === 5.0 ||
+          sub.grade === '4.0' ||
+          sub.grade === '4.00' ||
+          num === 4.0 ||
           sub.grade === 'INC'
         ) {
           hasFailOrInc = true;
@@ -81,26 +86,24 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     let honorCode = 'Good Academic Standing';
     let pillClass = 'sem-pill-regular';
 
-    const isMidyear = isMidyearTerm(semester.title);
+    const isMidyear = isMidyearTerm(semester.title, semester.isMidyear);
 
-    if (!hasFailOrInc && !semester.underload) {
-      if (semUnits >= 15 && !isMidyear) {
-        if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
-          honorCode = "President's Lister";
-          pillClass = 'sem-pill-pl';
-        } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
-          honorCode = "Dean's Lister";
-          pillClass = 'sem-pill-dl';
-        }
-      } else if (isMidyear) {
-        honorCode = 'Midyear Term';
-        pillClass = 'sem-pill-regular';
-      }
+    if (hasFailOrInc) {
+      honorCode = 'Academic Deficiency';
+      pillClass = 'sem-pill-danger';
     } else if (semester.underload) {
       honorCode = 'Underloaded Term';
       pillClass = 'sem-pill-warning';
-    } else if (hasFailOrInc) {
-      honorCode = 'Good Academic Standing';
+    } else if (semUnits >= 15 && !isMidyear) {
+      if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
+        honorCode = "President's Lister";
+        pillClass = 'sem-pill-pl';
+      } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
+        honorCode = "Dean's Lister";
+        pillClass = 'sem-pill-dl';
+      }
+    } else if (isMidyear) {
+      honorCode = 'Midyear Term';
       pillClass = 'sem-pill-regular';
     }
 
@@ -111,7 +114,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     const newSubject: Subject = {
       code: '',
       name: '',
-      grade: '1.25',
+      grade: '1.2',
       units: 3.0,
     };
     addSubject(semester.id, newSubject);
@@ -137,19 +140,44 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
   return (
     <>
       <div className={`semester-card ${isCollapsed ? 'is-collapsed' : ''}`}>
-        {/* ── EXACT ORIGINAL SEMESTER HEADER ── */}
+        {/* ── SEMESTER HEADER ── */}
         <div className={`sem-header ${isCollapsed ? 'sem-header-collapsed' : ''}`}>
-          <div className="sem-title-group">
-            <div className="sem-title-row">
-              <input
-                type="text"
-                className="sem-title-select"
-                value={semester.title}
-                onChange={(e) => updateSemester(semester.id, { title: e.target.value })}
-                aria-label="Semester Title"
-              />
-            </div>
+          <div className="sem-header-left">
+            {isCollapsed ? (
+              <>
+                <span className="sem-collapsed-title" title={semester.title}>
+                  {semester.title}
+                </span>
+                <div className="sem-collapsed-badges">
+                  <span className="sem-units-chip">
+                    {semUnits} Units • {semester.subjects?.length || 0} Courses
+                  </span>
+                  {semester.computed && honorBadgeData && (
+                    <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
+                      GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{honorBadgeData.honorCode}</strong>
+                    </span>
+                  )}
+                </div>
+              </>
+            ) : (
+              <>
+                <input
+                  type="text"
+                  className="sem-title-select"
+                  value={semester.title}
+                  onChange={(e) => updateSemester(semester.id, { title: e.target.value })}
+                  aria-label="Semester Title"
+                />
+                {semester.computed && honorBadgeData && (
+                  <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
+                    GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{honorBadgeData.honorCode}</strong>
+                  </span>
+                )}
+              </>
+            )}
+          </div>
 
+          <div className="sem-header-right">
             {!isCollapsed && (
               <button
                 type="button"
@@ -157,28 +185,67 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                 onClick={handleTriggerCompute}
                 title="Compute GPA and Honor Qualification for this semester"
               >
-                <i className="fa-solid fa-calculator"></i> Compute Term GPA
+                <i className="fa-solid fa-calculator"></i> <span>Compute Term GPA</span>
               </button>
             )}
 
-            <div className="sem-badges-row">
-              {isCollapsed && (
-                <span className="sem-units-chip">
-                  {semUnits} Units • {semester.subjects?.length || 0} Courses
-                </span>
-              )}
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm sem-toggle-btn"
+              onClick={handleToggleCollapse}
+              title={isCollapsed ? 'Expand semester details' : 'Collapse semester details'}
+              aria-label={isCollapsed ? 'Expand semester details' : 'Collapse semester details'}
+            >
+              <i className={`fa-solid ${isCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'}`}></i>
+              <span className="toggle-btn-text">{isCollapsed ? 'Expand' : 'Collapse'}</span>
+            </button>
 
-              {semester.computed && honorBadgeData && (
-                <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
-                  GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{honorBadgeData.honorCode}</strong>
-                </span>
-              )}
-            </div>
+            <button
+              type="button"
+              className="btn btn-danger btn-sm sem-delete-btn"
+              onClick={() => setIsDeleteModalOpen(true)}
+              title="Remove Semester"
+              aria-label={`Delete ${semester.title}`}
+            >
+              <i className="fa-solid fa-trash-can"></i>
+            </button>
           </div>
+        </div>
 
-          <div className="sem-actions">
-            {!isCollapsed && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+        {/* ── DEDICATED TERM MODIFIERS BAR (Above course table when expanded) ── */}
+        {!isCollapsed && (
+          <div className="sem-modifiers-bar">
+            <div className="sem-modifiers-toggles">
+              {/* Midyear / Summer Term Toggle */}
+              <div className="sem-modifier-item">
+                <label
+                  className="underload-toggle midyear-toggle"
+                  title="Check if this is a Midyear or Summer term (exempt from PL/DL and underload)"
+                >
+                  <input
+                    type="checkbox"
+                    checked={!!semester.isMidyear || isMidyearTerm(semester.title)}
+                    onChange={(e) => updateSemester(semester.id, { isMidyear: e.target.checked })}
+                  />{' '}
+                  Midyear Term
+                </label>
+
+                <button
+                  type="button"
+                  className="underload-info-btn"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsMidyearInfoOpen(true);
+                  }}
+                  title="Why does Midyear have no PL or DL?"
+                  aria-label="Midyear Policy Info"
+                >
+                  <i className="fa-solid fa-circle-question"></i>
+                </button>
+              </div>
+
+              {/* Underloaded Term Toggle */}
+              <div className="sem-modifier-item">
                 <label
                   className="underload-toggle"
                   title="Check if student carried less than regular load this semester"
@@ -204,32 +271,15 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                   <i className="fa-solid fa-circle-question"></i>
                 </button>
               </div>
-            )}
+            </div>
 
-            <div className="sem-action-buttons">
-              <button
-                type="button"
-                className="btn btn-secondary btn-sm sem-toggle-btn"
-                onClick={handleToggleCollapse}
-                title={isCollapsed ? 'Expand semester details' : 'Collapse semester details'}
-                aria-label={isCollapsed ? 'Expand semester details' : 'Collapse semester details'}
-              >
-                <i className={`fa-solid ${isCollapsed ? 'fa-chevron-down' : 'fa-chevron-up'}`}></i>
-                <span className="toggle-btn-text">{isCollapsed ? 'Expand' : 'Collapse'}</span>
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-danger btn-sm"
-                onClick={() => setIsDeleteModalOpen(true)}
-                title="Remove Semester"
-                aria-label={`Delete ${semester.title}`}
-              >
-                <i className="fa-solid fa-trash-can"></i>
-              </button>
+            <div className="sem-modifiers-stats">
+              <span className="sem-units-chip">
+                <i className="fa-solid fa-layer-group"></i> {semUnits} Units • {semester.subjects?.length || 0} Courses
+              </span>
             </div>
           </div>
-        </div>
+        )}
 
         {/* ── EXACT ORIGINAL SUBJECT TABLE ── */}
         {!isCollapsed && (
@@ -305,6 +355,12 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
       <UnderloadInfoModal
         isOpen={isUnderloadInfoOpen}
         onClose={() => setIsUnderloadInfoOpen(false)}
+      />
+
+      {/* Midyear Information Modal */}
+      <MidyearInfoModal
+        isOpen={isMidyearInfoOpen}
+        onClose={() => setIsMidyearInfoOpen(false)}
       />
 
       {/* Delete Semester Confirmation Modal */}

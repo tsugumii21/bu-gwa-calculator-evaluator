@@ -11,6 +11,7 @@ import { CorScanModal } from '../scanner/CorScanModal';
 import { PhotoScanModal } from '../scanner/PhotoScanModal';
 import { ImportSuccessModal } from '../modals/ImportSuccessModal';
 import { ComputeModal } from '../animations/ComputeModal';
+import { ScrollToTopBtn } from '../common/ScrollToTopBtn';
 
 export const CalculatorView: React.FC = () => {
   const semesters = useSemesterStore((s) => s.semesters);
@@ -127,7 +128,6 @@ export const CalculatorView: React.FC = () => {
         onOpenScanCor={() => setIsCorScanOpen(true)}
         onOpenScanPhoto={() => setIsPhotoScanOpen(true)}
         onOpenBulkPaste={() => setIsBulkPasteOpen(true)}
-        onOpenLatinHonors={() => setIsLatinHonorsOpen(true)}
         onOpenAchievements={() => setIsAchievementsOpen(true)}
         onComputeAll={handleComputeAll}
       />
@@ -137,7 +137,6 @@ export const CalculatorView: React.FC = () => {
         onAddSemester={handleAddSemester}
         onOpenScanCor={() => setIsCorScanOpen(true)}
         onOpenScanPhoto={() => setIsPhotoScanOpen(true)}
-        onOpenLatinHonors={() => setIsLatinHonorsOpen(true)}
         lastComputedAt={lastComputedAt}
       />
 
@@ -182,6 +181,9 @@ export const CalculatorView: React.FC = () => {
         onComplete={handleComputeAllComplete}
         termTitle="All Semesters & Cumulative GWA"
       />
+
+      {/* Floating Scroll to Top Button */}
+      <ScrollToTopBtn />
     </div>
   );
 

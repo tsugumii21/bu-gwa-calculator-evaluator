@@ -3,22 +3,22 @@
    ========================================================================== */
 
 [data-theme="dark"] {
-    --bg-main: #0f172a;
-    --card-bg: #1e293b;
-    --card-header-bg: #334155;
+    --bg-main: #080d1a;
+    --card-bg: #0f172a;
+    --card-header-bg: #172554;
 
     --text-primary: #f8fafc;
-    --text-secondary: #cbd5e1;
+    --text-secondary: #94a3b8;
     --text-muted: #cbd5e1;
     --text-gold-accessible: #fbbf24;
     --text-black-white: #ffffff;
 
-    --border-color: #334155;
-    --input-bg: #0f172a;
+    --border-color: rgba(37, 99, 235, 0.22);
+    --input-bg: #0b1120;
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.4);
 
     /* Latin Honor Colors overrides */
     --honor-summa: #fbbf24;

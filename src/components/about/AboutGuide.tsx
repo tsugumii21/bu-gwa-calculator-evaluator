@@ -130,7 +130,7 @@ export const AboutGuide: React.FC = () => {
               <div className="guide-mockup-slide active">
                 <div className="guide-mockup-info">
                   <h4>Step 3: Dashboard Analytics & Proximity Radars</h4>
-                  <p>Monitor your 4-decimal Cumulative GWA and honor standing. Uncomputed terms are marked with a <strong>Partial</strong> indicator. Click <strong>Latin Honors</strong> to see your live point gap to the next honor ceiling, and open <strong>Achievements</strong> to view your 4 colored Milestone Badges (Zero Deficiencies, Honors Pace, Consistent Evaluator, Full Load Regular).</p>
+                  <p>Monitor your 4-decimal Cumulative GWA and honor standing. Uncomputed terms are marked with a <strong>Partial</strong> indicator. Open <strong>Achievements</strong> to see your live Latin Honors proximity radar and view your 4 colored Milestone Badges (Zero Deficiencies, Honors Pace, Consistent Evaluator, Full Load Regular).</p>
                 </div>
                 <div className="css-mockup-wrapper">
                   <div className="mockup-gwa-card">

@@ -118,6 +118,67 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
               </>
             ) : (
               <>
+                {/* ── 3-TIER PROGRESSION NOTICE ── */}
+                <div
+                  style={{
+                    padding: '10px 14px',
+                    borderRadius: 'var(--radius-md)',
+                    background:
+                      stats.gradedUnits < 45
+                        ? 'rgba(37, 99, 235, 0.08)'
+                        : stats.gradedUnits < 105
+                          ? 'rgba(245, 158, 11, 0.08)'
+                          : 'rgba(16, 185, 129, 0.08)',
+                    border: `1px solid ${
+                      stats.gradedUnits < 45
+                        ? 'rgba(37, 99, 235, 0.25)'
+                        : stats.gradedUnits < 105
+                          ? 'rgba(245, 158, 11, 0.25)'
+                          : 'rgba(16, 185, 129, 0.25)'
+                    }`,
+                    marginBottom: 14,
+                    fontSize: '0.84rem',
+                    lineHeight: 1.45,
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <i
+                      className={`fa-solid ${
+                        stats.gradedUnits < 45
+                          ? 'fa-compass text-primary'
+                          : stats.gradedUnits < 105
+                            ? 'fa-chart-line text-gold'
+                            : 'fa-award text-success'
+                      }`}
+                    ></i>
+                    <strong>
+                      {stats.gradedUnits < 45
+                        ? 'Underclassman Milestone (Pace Projection)'
+                        : stats.gradedUnits < 105
+                          ? 'Mid-Degree Trajectory (Unofficial Simulation)'
+                          : 'Senior Graduation Candidate'}
+                    </strong>
+                    <span
+                      style={{
+                        marginLeft: 'auto',
+                        fontSize: '0.75rem',
+                        fontWeight: 700,
+                        color: 'var(--text-secondary)',
+                      }}
+                    >
+                      {stats.gradedUnits.toFixed(0)} / 140 Units Completed
+                    </span>
+                  </div>
+                  <span style={{ fontSize: '0.80rem', color: 'var(--text-secondary)' }}>
+                    {stats.gradedUnits < 45
+                      ? 'Latin Honors is an 8-semester cumulative marathon. This projection reflects your current pace; official candidacy is tracked at 45+ graded units.'
+                      : stats.gradedUnits < 105
+                        ? 'Tracking on-track honors pace across completed coursework. Cumulative qualification remains subject to full-load verification across all 8 terms.'
+                        : 'Eligible for Latin Honors candidacy pending final Office of the University Registrar residency and load verification.'}
+                  </span>
+                </div>
+
                 {gwa <= 1.2500 ? (
                   <div className="achieve-card card-gold">
                     <div className="achieve-icon">

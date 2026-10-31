@@ -43,6 +43,53 @@ export const VALID_GRADES = [
 export const GRADE_OPTIONS = VALID_GRADES;
 
 // ---------------------------------------------------------------------------
+// Discrete BU Grading Scale & Unit Milestones (BOR Res. 89 s. 2006)
+// ---------------------------------------------------------------------------
+
+export const BU_DISCRETE_NUMERIC_GRADES = new Set([
+  '1.0', '1.00',
+  '1.1', '1.10',
+  '1.2', '1.20',
+  '1.3', '1.30',
+  '1.4', '1.40',
+  '1.5', '1.50',
+  '1.6', '1.60',
+  '1.7', '1.70',
+  '1.8', '1.80',
+  '1.9', '1.90',
+  '2.0', '2.00',
+  '2.1', '2.10',
+  '2.2', '2.20',
+  '2.3', '2.30',
+  '2.4', '2.40',
+  '2.5', '2.50',
+  '2.6', '2.60',
+  '2.7', '2.70',
+  '2.8', '2.80',
+  '2.9', '2.90',
+  '3.0', '3.00',
+  '4.0', '4.00',
+  '5.0', '5.00',
+]);
+
+/**
+ * Validates if a grade string conforms to the official discrete Bicol University scale.
+ * Accepts discrete tenths (1.0 - 3.0), 4.0, 5.0, or non-numeric marks 'INC', 'DRP'.
+ */
+export function isValidBUGrade(grade: string): boolean {
+  if (!grade) return false;
+  const clean = grade.trim().toUpperCase();
+  if (clean === 'INC' || clean === 'DRP') return true;
+  return BU_DISCRETE_NUMERIC_GRADES.has(clean);
+}
+
+export const HONORS_UNIT_MILESTONES = {
+  UNDERCLASSMAN_THRESHOLD: 45, // < 45 graded units: Tier 1 (Milestone / Locked)
+  CANDIDATE_THRESHOLD: 105,    // >= 105 graded units: Tier 3 (Graduation Candidate)
+  DEGREE_TOTAL_UNITS: 140,     // Standard 4-year degree denominator
+} as const;
+
+// ---------------------------------------------------------------------------
 // Honor Thresholds
 // ---------------------------------------------------------------------------
 

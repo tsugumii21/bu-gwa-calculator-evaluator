@@ -77,6 +77,7 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
   const [semesterTitle, setSemesterTitle] = useState('Scanned Semester');
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const scanAnimation = React.useMemo(() => getRandomAnimation('scan'), []);
 
   if (!isOpen) return null;
 
@@ -209,8 +210,6 @@ export const ScannerModal: React.FC<ScannerModalProps> = ({
     addSemester(newSem);
     onClose();
   };
-
-  const scanAnimation = React.useMemo(() => getRandomAnimation('scan'), [isOpen]);
 
   return (
     <div

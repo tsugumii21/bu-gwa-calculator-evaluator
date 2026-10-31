@@ -6,7 +6,6 @@ interface SemesterListProps {
   onAddSemester: () => void;
   onOpenScanCor: () => void;
   onOpenScanPhoto: () => void;
-  onOpenLatinHonors?: () => void;
   lastComputedAt?: number;
 }
 
@@ -14,7 +13,6 @@ export const SemesterList: React.FC<SemesterListProps> = ({
   onAddSemester,
   onOpenScanCor,
   onOpenScanPhoto,
-  onOpenLatinHonors,
   lastComputedAt,
 }) => {
   const semesters = useSemesterStore((s) => s.semesters);
@@ -32,22 +30,28 @@ export const SemesterList: React.FC<SemesterListProps> = ({
   }, [lastComputedAt, semesters]);
 
 
-  // Semester cards remain expanded by default even after computation
-  const isSemCollapsed = (sem: (typeof semesters)[0]): boolean => {
+  // Smart Compact Accordions: On multi-term profiles (>2 semesters), prior computed semesters
+  // auto-collapse into compact summary rows to eliminate vertical scroll death-march,
+  // keeping the active / latest semester expanded for immediate editing.
+  const isSemCollapsed = (sem: (typeof semesters)[0], idx: number): boolean => {
     if (collapsedMap[sem.id] !== undefined) {
       return collapsedMap[sem.id];
+    }
+    if (semesters.length > 2 && sem.computed && idx < semesters.length - 1) {
+      return true;
     }
     return false;
   };
 
   const toggleSemester = (id: string) => {
     setCollapsedMap((prev) => {
-      const current = prev[id] !== undefined ? prev[id] : false;
+      const semIndex = semesters.findIndex((s) => s.id === id);
+      const current = prev[id] !== undefined ? prev[id] : isSemCollapsed(semesters[semIndex], semIndex);
       return { ...prev, [id]: !current };
     });
   };
 
-  const allCollapsed = semesters.length > 0 && semesters.every((s) => isSemCollapsed(s));
+  const allCollapsed = semesters.length > 0 && semesters.every((s, idx) => isSemCollapsed(s, idx));
 
   const toggleAll = () => {
     const nextState = !allCollapsed;
@@ -120,7 +124,7 @@ export const SemesterList: React.FC<SemesterListProps> = ({
           key={sem.id}
           semester={sem}
           index={idx}
-          collapsed={isSemCollapsed(sem)}
+          collapsed={isSemCollapsed(sem, idx)}
           onToggleCollapse={() => toggleSemester(sem.id)}
         />
       ))}

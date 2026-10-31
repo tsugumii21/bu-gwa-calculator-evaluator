@@ -7,7 +7,6 @@ interface ActionToolbarProps {
   onOpenScanCor: () => void;
   onOpenScanPhoto: () => void;
   onOpenBulkPaste: () => void;
-  onOpenLatinHonors: () => void;
   onOpenAchievements: () => void;
   onComputeAll?: () => void;
 }
@@ -17,7 +16,6 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   onOpenScanCor,
   onOpenScanPhoto,
   onOpenBulkPaste,
-  onOpenLatinHonors,
   onOpenAchievements,
   onComputeAll,
 }) => {
@@ -50,18 +48,9 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
 
         <button
           className="btn btn-gold btn-sm"
-          onClick={onOpenLatinHonors}
-          id="btn-latin-honors"
-          title="Compute Latin Graduation Honors & Proximity"
-        >
-          <i className="fa-solid fa-medal"></i> Latin Honors
-        </button>
-
-        <button
-          className="btn btn-gold btn-sm"
           onClick={onOpenAchievements}
           id="btn-achievements"
-          title="View Academic Achievements Radar"
+          title="View Academic Achievements & Graduation Honors Radar"
         >
           <i className="fa-solid fa-trophy"></i> Achievements
         </button>

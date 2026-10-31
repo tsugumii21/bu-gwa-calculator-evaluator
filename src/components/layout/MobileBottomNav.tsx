@@ -1,5 +1,5 @@
 import { useAppStore } from '../../store';
-import { Calculator, FlaskConical, GraduationCap, BookOpen, Info } from 'lucide-react';
+import { Calculator, FlaskConical, GraduationCap, BookOpen } from 'lucide-react';
 import type { AppTab } from '../../types';
 
 interface NavItem {
@@ -12,8 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { tab: 'calculator', label: 'Calculator', icon: Calculator },
   { tab: 'simulator', label: 'Simulator', icon: FlaskConical },
   { tab: 'scholarship', label: 'Scholar', icon: GraduationCap },
-  { tab: 'policies', label: 'Policies', icon: BookOpen },
-  { tab: 'about', label: 'About', icon: Info },
+  { tab: 'handbook', label: 'Handbook', icon: BookOpen },
 ];
 
 export function MobileBottomNav() {
