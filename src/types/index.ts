@@ -4,7 +4,7 @@
 export interface Subject {
   code: string;
   name: string;
-  grade: string; // '1.00' | '1.25' | ... | '5.00' | 'INC' | 'DRP'
+  grade: string; // Discrete BU grade, INC, DRP, or blank
   units: number;
 }
 
@@ -16,10 +16,20 @@ export interface Semester {
   underload: boolean;
   computed: boolean;
   isMidyear?: boolean;
+  /** Student confirmation of the curriculum-specific regular load; absent means unverified. */
+  regularLoadConfirmed?: boolean;
+}
+
+/** Exact weighted evidence in grade hundredths and a shared unit scale. */
+export interface WeightedGradeTotals {
+  points: bigint;
+  unitTicks: bigint;
+  unitScale: bigint;
 }
 
 /** Result of cumulative GWA calculation */
 export interface CumulativeStats {
+  weighted?: WeightedGradeTotals;
   totalPoints: number;
   totalUnits: number;
   gradedUnits: number;

@@ -17,7 +17,7 @@ export default defineConfig({
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'zustand'],
           'lottie-vendor': ['lottie-react'],
-          'pdf-vendor': ['pdfjs-dist'],
+          'pdf-vendor': ['pdfjs-dist/legacy/build/pdf.mjs'],
           'ocr-vendor': ['tesseract.js'],
         },
       },

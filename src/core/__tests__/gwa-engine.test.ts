@@ -12,7 +12,7 @@ import type { Semester } from '../../types';
 describe('gwa-engine — Bounds, Validation & Calculation', () => {
   it('validates official BU grades correctly and rejects invalid/out-of-bound marks', () => {
     expect(isGradeNumeric('1.00')).toBe(true);
-    expect(isGradeNumeric('1.25')).toBe(true);
+    expect(isGradeNumeric('1.25')).toBe(false);
     expect(isGradeNumeric('3.00')).toBe(true);
     expect(isGradeNumeric('5.00')).toBe(true);
 
@@ -26,7 +26,8 @@ describe('gwa-engine — Bounds, Validation & Calculation', () => {
 
   it('parses valid numeric grades and returns null for invalid grades', () => {
     expect(parseGrade('1.50')).toBe(1.5);
-    expect(parseGrade('2.75')).toBe(2.75);
+    expect(parseGrade('2.75')).toBeNull();
+    expect(parseGrade('1.0abc')).toBeNull();
     expect(parseGrade('5.0')).toBe(5.0);
     expect(parseGrade('0.00')).toBeNull();
     expect(parseGrade('-10')).toBeNull();
@@ -40,14 +41,14 @@ describe('gwa-engine — Bounds, Validation & Calculation', () => {
       underload: false,
       computed: true,
       subjects: [
-        { code: 'CS 111', name: 'Intro', grade: '1.25', units: 3 },
-        { code: 'CS 112', name: 'Programming', grade: '1.75', units: 3 },
+        { code: 'CS 111', name: 'Intro', grade: '1.20', units: 3 },
+        { code: 'CS 112', name: 'Programming', grade: '1.80', units: 3 },
         { code: 'GEC 11', name: 'UTS', grade: 'INC', units: 3 },
         { code: 'PE 1', name: 'Pathfit', grade: 'DRP', units: 2 },
       ],
     };
 
-    // Only CS 111 (1.25 * 3 = 3.75) and CS 112 (1.75 * 3 = 5.25) are graded
+    // Only CS 111 (1.20 * 3 = 3.60) and CS 112 (1.80 * 3 = 5.40) are graded
     // Total points: 9.0, Total graded units: 6 -> GWA: 1.5000
     const gwa = calculateSemesterGWA(semester);
     expect(gwa).toBeCloseTo(1.5, 4);
@@ -86,9 +87,9 @@ describe('gwa-engine — Bounds, Validation & Calculation', () => {
         underload: false,
         computed: true,
         subjects: [
-          { code: 'CS 111', name: 'Intro', grade: '1.25', units: 3 },
+          { code: 'CS 111', name: 'Intro', grade: '1.20', units: 3 },
           { code: 'CS 112', name: 'Prog', grade: '1.50', units: 3 },
-          { code: 'CS 113', name: 'Math', grade: '1.75', units: 3 },
+          { code: 'CS 113', name: 'Math', grade: '1.80', units: 3 },
           // Total 9 units - Midyear course / 3 courses
         ],
       },
@@ -107,7 +108,7 @@ describe('gwa-engine — Bounds, Validation & Calculation', () => {
         underload: true,
         computed: true,
         subjects: [
-          { code: 'CS 111', name: 'Intro', grade: '1.25', units: 3 },
+          { code: 'CS 111', name: 'Intro', grade: '1.20', units: 3 },
           { code: 'CS 112', name: 'Prog', grade: '1.50', units: 3 },
         ],
       },

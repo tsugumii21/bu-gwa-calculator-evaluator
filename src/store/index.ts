@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Semester, Subject, AppTab, ThemeMode } from '../types';
+import type { DegreeRequirements } from '../core/latin-honors';
 
 // ─── Storage Keys ───────────────────────────────────────────
 const STORAGE_KEY = 'bu_gwa_semesters_v2';
@@ -15,10 +16,12 @@ interface AppState {
   theme: ThemeMode;
   /** Whether the welcome screen has been dismissed */
   isWelcomeDismissed: boolean;
+  degreeRequirements: DegreeRequirements;
 
   setActiveTab: (tab: AppTab) => void;
   setTheme: (theme: ThemeMode) => void;
   dismissWelcome: () => void;
+  updateDegreeRequirements: (updates: Partial<DegreeRequirements>) => void;
 }
 
 export const useAppStore = create<AppState>()(
@@ -27,10 +30,12 @@ export const useAppStore = create<AppState>()(
       activeTab: 'calculator',
       theme: 'system',
       isWelcomeDismissed: false,
+      degreeRequirements: { regularSemesters: '', creditUnits: '' },
 
       setActiveTab: (tab) => set({ activeTab: tab }),
       setTheme: (theme) => set({ theme }),
       dismissWelcome: () => set({ isWelcomeDismissed: true }),
+      updateDegreeRequirements: (updates) => set(state => ({ degreeRequirements: { ...state.degreeRequirements, ...updates } })),
     }),
     { name: SETTINGS_KEY }
   )
@@ -59,6 +64,25 @@ interface SemesterState {
   clearAll: () => void;
 }
 
+/** Load evidence expires when the curriculum record or term classification changes. */
+function applySemesterUpdates(semester: Semester, updates: Partial<Semester>): Semester {
+  const loadChanged = ['subjects', 'title', 'underload', 'isMidyear'].some(key =>
+    key in updates && updates[key as keyof Semester] !== semester[key as keyof Semester]);
+  const next = { ...semester, ...updates };
+  const entryChanged = loadChanged || ('regularLoadConfirmed' in updates
+    && updates.regularLoadConfirmed !== semester.regularLoadConfirmed);
+  return { ...next, computed: entryChanged ? false : next.computed,
+    regularLoadConfirmed: next.underload || loadChanged ? false : next.regularLoadConfirmed };
+}
+
+/** Numeric grade edits retain load evidence; code, units and withdrawal changes do not. */
+function changesCurriculumLoad(subject: Subject, updates: Partial<Subject>): boolean {
+  const wasDropped = subject.grade.trim().toUpperCase() === 'DRP';
+  const isDropped = (updates.grade ?? subject.grade).trim().toUpperCase() === 'DRP';
+  return ('code' in updates && updates.code !== subject.code)
+    || ('units' in updates && updates.units !== subject.units) || wasDropped !== isDropped;
+}
+
 export const useSemesterStore = create<SemesterState>()(
   persist(
     (set) => ({
@@ -66,7 +90,7 @@ export const useSemesterStore = create<SemesterState>()(
 
       addSemester: (semester) =>
         set((state) => ({
-          semesters: [...state.semesters, semester],
+          semesters: [...state.semesters, { ...semester, regularLoadConfirmed: false, computed: false }],
         })),
 
       removeSemester: (id) =>
@@ -77,7 +101,7 @@ export const useSemesterStore = create<SemesterState>()(
       updateSemester: (id, updates) =>
         set((state) => ({
           semesters: state.semesters.map((s) =>
-            s.id === id ? { ...s, ...updates } : s
+            s.id === id ? applySemesterUpdates(s, updates) : s
           ),
         })),
 
@@ -103,7 +127,7 @@ export const useSemesterStore = create<SemesterState>()(
         set((state) => ({
           semesters: state.semesters.map((s) =>
             s.id === semesterId
-              ? { ...s, subjects: [...s.subjects, subject], computed: false }
+              ? { ...s, subjects: [...s.subjects, subject], computed: false, regularLoadConfirmed: false }
               : s
           ),
         })),
@@ -118,6 +142,8 @@ export const useSemesterStore = create<SemesterState>()(
                     i === subjectIndex ? { ...sub, ...updates } : sub
                   ),
                   computed: false,
+                  regularLoadConfirmed: s.subjects[subjectIndex] && changesCurriculumLoad(s.subjects[subjectIndex], updates)
+                    ? false : s.regularLoadConfirmed,
                 }
               : s
           ),
@@ -131,6 +157,7 @@ export const useSemesterStore = create<SemesterState>()(
                   ...s,
                   subjects: s.subjects.filter((_, i) => i !== subjectIndex),
                   computed: false,
+                  regularLoadConfirmed: false,
                 }
               : s
           ),
@@ -166,7 +193,8 @@ export const useSemesterStore = create<SemesterState>()(
 
       importSemesters: (newSemesters) =>
         set((state) => ({
-          semesters: [...state.semesters, ...newSemesters],
+          semesters: [...state.semesters, ...newSemesters.map(semester => ({ ...semester,
+            regularLoadConfirmed: false, computed: false }))],
         })),
 
       clearAll: () => set({ semesters: [] }),

@@ -99,9 +99,11 @@ export const HONOR_THRESHOLDS = {
   CUM: { maxGWA: 1.75, label: 'Cum Laude' },
 } as const;
 
+const TERM_HONOR_SUBJECT_CAP = 2.4;
+
 export const TERM_HONOR_THRESHOLDS = {
-  PRESIDENT: { maxGPA: 1.45, maxSubjectGrade: 1.75, label: "President's Lister" },
-  DEAN: { maxGPA: 1.75, maxSubjectGrade: 2.50, label: "Dean's Lister" },
+  PRESIDENT: { maxGPA: 1.45, maxSubjectGrade: TERM_HONOR_SUBJECT_CAP, label: "President's Lister" },
+  DEAN: { maxGPA: 1.75, maxSubjectGrade: TERM_HONOR_SUBJECT_CAP, label: "Dean's Lister" },
 } as const;
 
 // ---------------------------------------------------------------------------

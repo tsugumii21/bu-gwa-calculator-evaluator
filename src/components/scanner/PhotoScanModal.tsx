@@ -1,14 +1,14 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { ArrowLeft, FolderOpen, GraduationCap, Images, Import, Plus, ShieldCheck, Upload, Trash2 } from 'lucide-react';
 import { useSemesterStore } from '../../store';
-import type { Subject } from '../../types';
-import {
-  preprocessGradeScreenshot,
-  scanScreenshotCanvas,
-  mergeMultiScreenshotResults,
-  createOCRWorker,
-  type OCRWorker,
-} from './ocr-engine';
-import { scanScreenshotWithGemini } from './gemini-engine';
+import type { ScanCandidate, ScanImageResult } from '../../types/scan';
+import { mergeScanCandidates, reviewedSubjects, scanImportError } from '../../core/scan-results';
+import { ScanSession } from './scan-service';
+import { SCAN_LIMITS, validateSelection } from './image-preparation';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+import { ScanReviewRows } from './scan-review-rows';
+import { buildCalculationReport } from '../../core/calculation-report';
+import { RecordDialogHeader } from '../modals/record-dialog-header';
 
 interface PhotoScanModalProps {
   isOpen: boolean;
@@ -21,10 +21,10 @@ interface SemesterBucket {
   title: string;
   files: File[];
   previews: string[];
-  extractedSubjects?: Subject[];
+  extractedSubjects?: ScanCandidate[];
 }
 
-function loadImageSafe(file: File): Promise<HTMLImageElement> {
+export function loadImageSafe(file: File): Promise<HTMLImageElement> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const objectUrl = URL.createObjectURL(file);
@@ -82,8 +82,27 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
   const [progress, setProgress] = useState(0);
   const [statusMessage, setStatusMessage] = useState('');
   const [reviewMode, setReviewMode] = useState(false);
+  const [imageResults, setImageResults] = useState<ScanImageResult[]>([]);
+  const sessionRef = useRef<ScanSession | null>(null);
+  const committing = useRef(false);
+  const previewsRef = useRef<string[]>([]);
+  previewsRef.current = buckets.flatMap(bucket => bucket.previews);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const requestId = useRef(0);
+  const [error, setError] = useState('');
+  const dialogRef = useAccessibleDialog(isOpen, () => handleCloseModal());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    committing.current = false;
+    const session = new ScanSession();
+    sessionRef.current = session;
+    void session.warm().catch(() => {
+      if (!session.isStopped) setError('Local OCR could not initialize. Retry scanning; no image was uploaded.');
+    });
+    return () => { sessionRef.current?.stop(); previewsRef.current.forEach(preview => URL.revokeObjectURL(preview)); };
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -104,6 +123,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
 
   const handleRemoveBucket = (bucketId: string) => {
     if (buckets.length <= 1) return;
+    setImageResults(previous => previous.filter(result => !result.sourceId.startsWith(`${bucketId}:`)));
     const target = buckets.find((b) => b.id === bucketId);
     target?.previews.forEach((p) => URL.revokeObjectURL(p));
     setBuckets((prev) => prev.filter((b) => b.id !== bucketId));
@@ -122,13 +142,16 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
 
   const handleFilesSelected = (files: FileList | null) => {
     if (!files || !activeBucketId) return;
-    const selected = Array.from(files).filter((f) => f.type.startsWith('image/'));
+    const selection = validateSelection(buckets.flatMap(bucket => bucket.files), Array.from(files));
+    const selected = selection.accepted;
+    setError(selection.rejected.join(' '));
     if (selected.length === 0) return;
 
     setBuckets((prev) =>
       prev.map((b) => {
         if (b.id !== activeBucketId) return b;
-        const combinedFiles = [...b.files, ...selected].slice(0, 5);
+        const combinedFiles = [...b.files, ...selected];
+        b.previews.forEach(url => URL.revokeObjectURL(url));
         const newPreviews = combinedFiles.map((f) => URL.createObjectURL(f));
         return {
           ...b,
@@ -141,6 +164,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
   };
 
   const handleRemoveImage = (bucketId: string, index: number) => {
+    setImageResults(previous => previous.filter(result => !result.sourceId.startsWith(`${bucketId}:`)));
     setBuckets((prev) =>
       prev.map((b) => {
         if (b.id !== bucketId) return b;
@@ -152,6 +176,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
           ...b,
           files: nextFiles,
           previews: nextPreviews,
+          extractedSubjects: undefined,
         };
       })
     );
@@ -161,114 +186,70 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     buckets.forEach((b) => b.previews.forEach((p) => URL.revokeObjectURL(p)));
   };
 
-  const handleProcessAll = async () => {
-    const activeBuckets = buckets.filter((b) => b.files.length > 0);
-    if (activeBuckets.length === 0) {
-      alert('Please upload at least one screenshot before running OCR.');
-      return;
-    }
-
+  const handleProcessAll = async (retryIds?: string[]) => {
+    const activeBuckets = buckets.filter(bucket => bucket.files.length > 0);
+    if (!activeBuckets.length || isProcessing) return;
     setIsProcessing(true);
+    setError('');
     setProgress(0);
-
-    const updatedBuckets = [...buckets];
-    let sharedWorker: OCRWorker | null = null;
-
-    try {
-      setStatusMessage('Scanning with Gemini AI Vision...');
-
-      for (let bIdx = 0; bIdx < activeBuckets.length; bIdx++) {
-        const bucket = activeBuckets[bIdx];
-        const bucketIndexInAll = updatedBuckets.findIndex((b) => b.id === bucket.id);
-        const allBucketResults: Subject[][] = [];
-
-        for (let fIdx = 0; fIdx < bucket.files.length; fIdx++) {
-          const file = bucket.files[fIdx];
-          setStatusMessage(
-            `Scanning ${bucket.title} — Image ${fIdx + 1} of ${bucket.files.length}...`
-          );
-
-          let subjects: Subject[] | null = null;
-
-          // Attempt 1: Gemini AI Vision (Cloudflare Worker proxy cascade)
-          try {
-            setStatusMessage(`Analyzing with Gemini AI Vision (${bucket.title})...`);
-            subjects = await scanScreenshotWithGemini(file, { imageCount: bucket.files.length });
-          } catch (geminiErr) {
-            console.warn('Gemini Vision scan failed or offline, falling back to local Tesseract OCR:', geminiErr);
-          }
-
-          // Attempt 2: Fallback to client-side Tesseract.js OCR
-          if (!subjects || subjects.length === 0) {
-            try {
-              setStatusMessage(`Scanning with local OCR engine (${bucket.title})...`);
-              if (!sharedWorker) {
-                sharedWorker = await createOCRWorker();
-              }
-              const img = await loadImageSafe(file);
-              const preprocessedCanvas = preprocessGradeScreenshot(img);
-
-              subjects = await scanScreenshotCanvas(
-                preprocessedCanvas,
-                (percent) => {
-                  const bucketFraction = (fIdx + percent / 100) / bucket.files.length;
-                  const overallPercent = Math.round(
-                    ((bIdx + bucketFraction) / activeBuckets.length) * 100
-                  );
-                  setProgress(overallPercent);
-                },
-                sharedWorker
-              );
-            } catch (tesseractErr) {
-              console.error(`Local OCR error for ${file.name}:`, tesseractErr);
-            }
-          }
-
-          if (subjects && subjects.length > 0) {
-            allBucketResults.push(subjects);
-          }
-          setProgress(Math.round(((bIdx + (fIdx + 1) / bucket.files.length) / activeBuckets.length) * 100));
-        }
-
-        setStatusMessage(`Deduplicating rows for ${bucket.title}...`);
-        const mergedSubjects = mergeMultiScreenshotResults(allBucketResults);
-        if (bucketIndexInAll !== -1) {
-          updatedBuckets[bucketIndexInAll] = {
-            ...updatedBuckets[bucketIndexInAll],
-            extractedSubjects: mergedSubjects,
-          };
-        }
-      }
-
-      setBuckets(updatedBuckets);
-      setReviewMode(true);
-      setStatusMessage('OCR complete! Review extracted courses.');
-    } catch (err) {
-      console.error(err);
-      alert('Error during OCR processing. Please check image clarity and orientation.');
-    } finally {
-      if (sharedWorker) {
-        try {
-          await sharedWorker.terminate();
-        } catch (termErr) {
-          console.warn('OCR worker termination warning:', termErr);
-        }
-      }
-      setIsProcessing(false);
+    const currentRequest = ++requestId.current;
+    const allJobs = activeBuckets.flatMap(bucket => bucket.files.map((file, index) => ({
+      file, sourceId: `${bucket.id}:${index}`, force: !!retryIds,
+    })));
+    const jobs = retryIds ? allJobs.filter(job => retryIds.includes(job.sourceId)) : allJobs;
+    const session = sessionRef.current && !sessionRef.current.isStopped ? sessionRef.current : new ScanSession();
+    sessionRef.current = session;
+    const retained = retryIds ? imageResults.filter(result => !retryIds.includes(result.sourceId)) : [];
+    setImageResults([...retained, ...jobs.map(job => ({ sourceId: job.sourceId, name: job.file.name,
+      status: 'queued' as const, candidates: [], issues: [], expectedRows: null, milliseconds: 0 }))]);
+    setStatusMessage('Reading grade tables locally. No images are uploaded.');
+    const completed = new Set<string>();
+    const results = await session.run(jobs, result => {
+      if (currentRequest !== requestId.current) return;
+      setImageResults(previous => previous.map(item => item.sourceId === result.sourceId ? result : item));
+      if (!['running', 'queued'].includes(result.status)) completed.add(result.sourceId);
+      setProgress(Math.round(completed.size / (jobs.length + 1) * 100));
+      setStatusMessage(`${completed.size} of ${jobs.length} images processed${result.phase ? ` · ${result.phase}` : ''}`);
+    });
+    if (currentRequest !== requestId.current) return;
+    setBuckets(previous => previous.map(bucket => ({ ...bucket, extractedSubjects: mergeScanCandidates([
+      ...(retryIds ? (bucket.extractedSubjects ?? []).filter(row => !row.sourceIds.some(id => retryIds.includes(id))) : []),
+      ...results.filter(result => result.sourceId.startsWith(`${bucket.id}:`)).flatMap(result => result.candidates),
+    ]) })));
+    setProgress(100);
+    setStatusMessage('Finished · results ready to review');
+    setIsProcessing(false);
+    setReviewMode(true);
+    const failed = results.filter(result => ['failed', 'timed-out', 'canceled'].includes(result.status));
+    if (failed.length) {
+      setStatusMessage(`Finished · ${failed.length} need retry`);
+      setError(`${failed.length} image(s) unfinished. Completed results are preserved; retry unfinished files.`);
     }
   };
 
   const handleCommit = () => {
+    if (committing.current) return;
     const eligibleBuckets = buckets.filter(
       (b) => b.extractedSubjects && b.extractedSubjects.length > 0
     );
 
     if (eligibleBuckets.length === 0) {
-      alert('No extracted courses found to import.');
+      setError('No courses to import. Add a course or scan another image.');
       return;
     }
+    const blockedBucket = eligibleBuckets.find(bucket => scanImportError(bucket.extractedSubjects || []));
+    if (blockedBucket) {
+      setError(`${blockedBucket.title}: ${scanImportError(blockedBucket.extractedSubjects || [])}`);
+      const blockedRow = dialogRef.current?.querySelector<HTMLElement>('[data-import-blocked="true"]');
+      blockedRow?.focus({ preventScroll: true });
+      blockedRow?.scrollIntoView({ block: 'center', behavior: 'instant' });
+      return;
+    }
+    const invalid = buildCalculationReport(eligibleBuckets.map(bucket => ({ id: bucket.id, title: bucket.title, subjects: reviewedSubjects(bucket.extractedSubjects || []), computed: false, underload: false }))).errors[0];
+    if (invalid) { setError(invalid); return; }
 
     let totalImportedCourses = 0;
+    committing.current = true;
 
     eligibleBuckets.forEach((bucket) => {
       addSemester({
@@ -276,10 +257,12 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
         title: bucket.title || 'Scanned Semester',
         underload: false,
         computed: false,
-        subjects: bucket.extractedSubjects || [],
+        subjects: reviewedSubjects(bucket.extractedSubjects || []),
       });
       totalImportedCourses += bucket.extractedSubjects?.length || 0;
     });
+
+    setImageResults([]);
 
     cleanupAllPreviews();
     setBuckets([
@@ -302,7 +285,12 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
   };
 
   const handleCloseModal = () => {
-    if (isProcessing) return;
+    requestId.current++;
+    sessionRef.current?.stop();
+    sessionRef.current = null;
+    setImageResults([]);
+    setIsProcessing(false);
+    setError('');
     cleanupAllPreviews();
     setBuckets([
       {
@@ -322,11 +310,13 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
     (sum, b) => sum + (b.extractedSubjects?.length || 0),
     0
   );
+  const blockedCourses = buckets.reduce((count, bucket) => count + (bucket.extractedSubjects ?? []).filter(row => scanImportError([row])).length, 0);
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay v2-record-overlay"
       id="photo-scan-modal"
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="photo-modal-title"
@@ -334,22 +324,18 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
         if (e.target === e.currentTarget && !isProcessing) handleCloseModal();
       }}
     >
-      <div className="modal-content animate__animated animate__zoomIn animate__faster">
-        <div className="modal-header">
-          <h3 id="photo-modal-title">
-            <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Images / Photos by Semester
-          </h3>
-          <button
-            className="modal-close-btn"
-            onClick={handleCloseModal}
-            disabled={isProcessing}
-            aria-label="Close modal"
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
+      <div className="modal-content v2-record-dialog">
+        <RecordDialogHeader id="photo-modal-title" title={reviewMode ? 'Review scanned courses' : 'Import grade images'} icon={Images} onClose={handleCloseModal} eyebrow={reviewMode ? 'REVIEW BEFORE IMPORTING' : 'IMPORT GRADES'} />
 
         <div className="modal-body">
+          <p className="v2-dialog-note">{reviewMode ? 'Check courses against your images before importing.' : 'Add screenshots by semester.'}</p>
+          {imageResults.length > 0 && <section className="scan-image-outcomes" aria-label="Image scan results" aria-live="polite">
+            {imageResults.map(result => <div key={result.sourceId}>
+              <strong>{result.name}: {result.status}</strong>
+              <span>{result.candidates.length} courses{result.expectedRows !== null ? ` / ${result.expectedRows} visible rows` : ' · coverage needs review'}{result.milliseconds > 0 ? ` · ${(result.milliseconds / 1000).toFixed(1)}s` : ''}</span>
+              {!isProcessing && ['partial', 'failed', 'timed-out', 'canceled'].includes(result.status) && <button type="button" className="btn btn-secondary" aria-label={`Retry ${result.name}`} onClick={() => void handleProcessAll([result.sourceId])}>Retry image</button>}
+            </div>)}
+          </section>}
           <input
             type="file"
             ref={fileInputRef}
@@ -372,7 +358,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                   lineHeight: 1.45,
                 }}
               >
-                Group your screenshots by semester. Each semester bucket can hold up to 5 screenshots (stitched automatically for long grade slips).
+                {SCAN_LIMITS.images} images maximum · 10 MiB each
               </p>
 
               {/* SEMESTER BUCKETS CONTAINER */}
@@ -382,7 +368,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                     <div className="bucket-header">
                       <div className="bucket-title-group">
                         <div className="bucket-icon-badge">
-                          <i className="fa-solid fa-folder-open text-primary"></i>
+                          <FolderOpen size={20} aria-hidden="true" />
                         </div>
                         <input
                           type="text"
@@ -392,6 +378,7 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                           placeholder={`Semester ${bIdx + 1}`}
                           disabled={isProcessing}
                           title="Click to rename semester"
+                          aria-label={`New semester title ${bIdx + 1}`}
                         />
                       </div>
                       {buckets.length > 1 && (
@@ -401,9 +388,9 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                           onClick={() => handleRemoveBucket(bucket.id)}
                           disabled={isProcessing}
                           title="Remove this semester bucket"
-                          aria-label="Remove semester bucket"
+                          aria-label={`Remove semester ${bucket.title}`}
                         >
-                          <i className="fa-solid fa-trash-can"></i>
+                          <Trash2 size={18} aria-hidden="true" /> Remove semester
                         </button>
                       )}
                     </div>
@@ -411,15 +398,17 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                     {bucket.files.length === 0 ? (
                       <div
                         className="bucket-empty-dropzone"
+                        role="button" tabIndex={0} aria-label={`Add images for ${bucket.title}`}
+                        onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); triggerAddPhotos(bucket.id); } }}
                         onClick={() => triggerAddPhotos(bucket.id)}
-                        title="Add up to 5 screenshots for this semester"
+                        title="Add screenshots for this semester"
                       >
                         <div className="bucket-dropzone-icon">
-                          <i className="fa-solid fa-cloud-arrow-up text-primary"></i>
+                          <Upload size={22} aria-hidden="true" />
                         </div>
                         <div className="bucket-dropzone-content">
-                          <span className="dropzone-title">Tap to add semester screenshots</span>
-                          <span className="dropzone-subtitle">PNG, JPG, or WebP (up to 5 images)</span>
+                          <span className="dropzone-title">Choose screenshots</span>
+                          <span className="dropzone-subtitle">PNG, JPG, or WebP · local OCR</span>
                         </div>
                       </div>
                     ) : (
@@ -429,30 +418,33 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                             <img
                               src={preview}
                               alt={`Screenshot ${imgIdx + 1}`}
-                              className="bucket-thumb-img"
+                              className="bucket-thumb-img" loading="lazy" decoding="async"
                             />
+                            <span className="scan-image-name" title={bucket.files[imgIdx]?.name}>{bucket.files[imgIdx]?.name}</span>
                             {!isProcessing && (
                               <button
                                 type="button"
                                 className="bucket-thumb-del-btn"
                                 onClick={() => handleRemoveImage(bucket.id, imgIdx)}
                                 title="Remove image"
-                                aria-label="Remove image"
+                                aria-label={`Delete image ${imgIdx + 1}: ${bucket.files[imgIdx]?.name}`}
                               >
-                                <i className="fa-solid fa-xmark"></i>
+                                <Trash2 size={18} aria-hidden="true" /> Delete image
                               </button>
                             )}
                           </div>
                         ))}
 
-                        {bucket.files.length < 5 && !isProcessing && (
+                        {totalUploadedImages < SCAN_LIMITS.images && !isProcessing && (
                           <div
                             className="bucket-add-thumb-btn"
+                            role="button" tabIndex={0} aria-label={`Add more images for ${bucket.title}`}
+                            onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); triggerAddPhotos(bucket.id); } }}
                             onClick={() => triggerAddPhotos(bucket.id)}
-                            title="Add up to 5 screenshots for this semester"
+                            title="Add screenshots for this semester"
                           >
-                            <i className="fa-solid fa-plus text-primary"></i>
-                            <span>Add Photo ({bucket.files.length}/5)</span>
+                            <Plus size={18} aria-hidden="true" />
+                            <span>Add images ({totalUploadedImages}/{SCAN_LIMITS.images})</span>
                           </div>
                         )}
                       </div>
@@ -468,24 +460,12 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                   onClick={handleAddBucket}
                   style={{ marginTop: '10px' }}
                 >
-                  <i className="fa-solid fa-folder-plus text-primary"></i>
-                  <span>Add Another Semester for New Images</span>
+                  <Plus size={18} aria-hidden="true" />
+                  <span>Add another semester</span>
                 </button>
               )}
 
-              {isProcessing && (
-                <div style={{ textAlign: 'center', padding: '16px 4px' }}>
-                  <div style={{ fontSize: '0.88rem', fontWeight: 600, color: 'var(--text-primary)', marginBottom: '8px' }}>
-                    {statusMessage}
-                  </div>
-                  <div className="bucket-progress-track">
-                    <div className="bucket-progress-bar" style={{ width: `${Math.max(progress, 3)}%` }} />
-                  </div>
-                  <span style={{ fontSize: '0.76rem', color: 'var(--text-secondary)', marginTop: '6px', display: 'block', fontWeight: 500 }}>
-                    {progress}% Completed
-                  </span>
-                </div>
-              )}
+
             </>
           ) : (
             <div>
@@ -500,12 +480,12 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
 
               <div className="review-buckets-container">
                 {buckets
-                  .filter((b) => (b.extractedSubjects?.length || 0) > 0)
+                  .filter((b) => b.files.length > 0)
                   .map((b) => (
                     <div key={b.id} className="review-bucket-card">
                       <div className="review-bucket-header">
                         <span className="review-bucket-title">
-                          <i className="fa-solid fa-graduation-cap text-gold" style={{ marginRight: '6px' }}></i>
+                          <GraduationCap size={18} aria-hidden="true" />
                           {b.title}
                         </span>
                         <span className="review-bucket-count">
@@ -513,19 +493,9 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
                         </span>
                       </div>
 
-                      <div className="scanned-subjects-list" style={{ maxHeight: '180px' }}>
-                        {b.extractedSubjects?.map((sub, i) => (
-                          <div key={i} className="scanned-subject-card">
-                            <div className="scanned-sub-top">
-                              <span className="scanned-code">{sub.code || 'COURSE'}</span>
-                              <span className="scanned-grade-badge">Grade: {sub.grade || '—'}</span>
-                            </div>
-                            <div className="scanned-sub-bottom">
-                              <span className="scanned-name">{sub.name || 'Extracted Course'}</span>
-                              <span className="scanned-units-tag">{typeof sub.units === 'number' ? `${sub.units} Units` : '3.0 Units'}</span>
-                            </div>
-                          </div>
-                        ))}
+                      <div className="v2-scan-review">
+                        <details className="v2-source-preview"><summary>View source images ({b.previews.length})</summary>{b.previews.map((preview, index) => <img key={preview} src={preview} loading="lazy" decoding="async" alt={`Source image ${index + 1} for ${b.title}`} />)}</details>
+                        <ScanReviewRows rows={b.extractedSubjects || []} onChange={subjects => { setError(''); setBuckets(previous => previous.map(bucket => bucket.id === b.id ? { ...bucket, extractedSubjects: subjects } : bucket)); }} />
                       </div>
                     </div>
                   ))}
@@ -534,46 +504,54 @@ export const PhotoScanModal: React.FC<PhotoScanModalProps> = ({
           )}
 
           <div className="ocr-privacy-badge">
-            <i className="fa-solid fa-shield-halved text-success"></i>
-            <span>Private edge OCR with Gemini AI Vision and local Tesseract failover. Zero grade records stored.</span>
+            <ShieldCheck size={18} aria-hidden="true" />
+            <span>Scans stay on this device. OCR engine data may download; images are never uploaded.</span>
           </div>
         </div>
 
+        {(isProcessing || reviewMode) && <section className="scan-processing-panel" aria-label="Scan progress" aria-busy={isProcessing}>
+          <div className="scan-processing-status"><span className={isProcessing ? 'scan-activity is-active' : 'scan-activity'} aria-hidden="true" /><span role="status">{statusMessage}</span></div>
+          <progress max="100" value={progress || undefined} aria-label="Image extraction progress" />
+        </section>}
         <div className="modal-footer photo-modal-footer">
+          <div className="scan-import-feedback" aria-live="polite">
+            {error ? <p role="alert">{error}</p> : reviewMode && <p>{blockedCourses ? `${blockedCourses} course${blockedCourses === 1 ? '' : 's'} need corrections. Review highlighted rows.` : totalExtractedCourses ? `${totalExtractedCourses} courses ready to import.` : 'No courses to import.'}</p>}
+          </div>
           {!reviewMode ? (
             <>
               <button
                 className="btn btn-secondary btn-sm"
                 onClick={handleCloseModal}
-                disabled={isProcessing}
                 style={{ padding: '8px 16px', fontWeight: 600 }}
               >
                 Cancel
               </button>
               <button
                 className="btn btn-primary btn-sm"
-                onClick={handleProcessAll}
+                onClick={() => void handleProcessAll()}
+                title={`${activeBucketsCount} semesters with selected images`}
                 disabled={isProcessing || totalUploadedImages === 0}
                 style={{ padding: '8px 18px', fontWeight: 700 }}
               >
-                <i className="fa-solid fa-microchip"></i> Run OCR ({totalUploadedImages} Images • {activeBucketsCount} Terms)
+                Scan images ({totalUploadedImages})
               </button>
             </>
           ) : (
             <>
               <button
                 className="btn btn-secondary btn-sm"
-                onClick={() => setReviewMode(false)}
+                disabled={isProcessing} onClick={() => { setReviewMode(false); setError(''); }}
                 style={{ padding: '8px 16px', fontWeight: 600 }}
               >
-                <i className="fa-solid fa-arrow-left"></i> Edit Images
+                <ArrowLeft size={18} aria-hidden="true" /> Edit images
               </button>
               <button
                 className="btn btn-gold btn-sm"
                 onClick={handleCommit}
+                disabled={isProcessing || totalExtractedCourses === 0}
                 style={{ padding: '8px 18px', fontWeight: 700 }}
               >
-                <i className="fa-solid fa-file-import"></i> Import All ({buckets.filter((b) => (b.extractedSubjects?.length || 0) > 0).length} Semesters)
+                <Import size={18} aria-hidden="true" /> Import courses ({totalExtractedCourses})
               </button>
             </>
           )}

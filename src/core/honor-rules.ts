@@ -8,8 +8,18 @@ import type {
   StandingEvaluation,
   Subject,
   TermHonorEvaluation,
+  WeightedGradeTotals,
 } from '../types';
-import { HONOR_THRESHOLDS, HONORS_UNIT_MILESTONES } from './constants';
+import { HONOR_THRESHOLDS, HONORS_UNIT_MILESTONES, TERM_HONOR_THRESHOLDS, isValidBUGrade } from './constants';
+import { calculateWeightedGrades, compareWeightedCutoff, isMidyearTerm, parseGrade, weightedAverage } from './gwa-engine';
+
+export { isMidyearTerm } from './gwa-engine';
+
+function meetsCutoff(gwa: number, cutoff: number, weighted?: WeightedGradeTotals): boolean {
+  if (!weighted) return gwa <= cutoff;
+  const comparison = compareWeightedCutoff(weighted.points, weighted.unitTicks, BigInt(Math.round(cutoff * 100)));
+  return comparison !== null && comparison <= 0;
+}
 
 // ---------------------------------------------------------------------------
 // Cumulative Honor Standing (Graduation Honors — 3-Tier Progressive Blueprint)
@@ -19,14 +29,15 @@ import { HONOR_THRESHOLDS, HONORS_UNIT_MILESTONES } from './constants';
  * Pure mathematical evaluation of honor bracket based on cumulative GWA.
  * Summa: ≤ 1.2500, Magna: ≤ 1.4500, Cum Laude: ≤ 1.7500.
  */
-export function evaluateRawHonorBracket(gwa: number): { level: HonorLevel; label: string } {
-  if (gwa <= HONOR_THRESHOLDS.SUMMA.maxGWA) {
+export function evaluateRawHonorBracket(gwa: number, weighted?: WeightedGradeTotals): { level: HonorLevel; label: string } {
+  if (!Number.isFinite(gwa) || gwa < 1) return { level: 'pending', label: 'Pending Evaluation' };
+  if (meetsCutoff(gwa, HONOR_THRESHOLDS.SUMMA.maxGWA, weighted)) {
     return { level: 'summa', label: HONOR_THRESHOLDS.SUMMA.label };
   }
-  if (gwa <= HONOR_THRESHOLDS.MAGNA.maxGWA) {
+  if (meetsCutoff(gwa, HONOR_THRESHOLDS.MAGNA.maxGWA, weighted)) {
     return { level: 'magna', label: HONOR_THRESHOLDS.MAGNA.label };
   }
-  if (gwa <= HONOR_THRESHOLDS.CUM.maxGWA) {
+  if (meetsCutoff(gwa, HONOR_THRESHOLDS.CUM.maxGWA, weighted)) {
     return { level: 'cum-laude', label: HONOR_THRESHOLDS.CUM.label };
   }
   return { level: 'regular', label: 'Regular Graduate' };
@@ -77,7 +88,7 @@ export function evaluateHonorStanding(
     };
   }
 
-  const raw = evaluateRawHonorBracket(stats.cumulativeGWA);
+  const raw = evaluateRawHonorBracket(stats.cumulativeGWA, stats.weighted);
   const progressPercent = Math.min(
     100,
     (stats.gradedUnits / HONORS_UNIT_MILESTONES.DEGREE_TOTAL_UNITS) * 100,
@@ -207,160 +218,69 @@ export function evaluateAcademicStanding(stats: CumulativeStats): StandingEvalua
 }
 
 // ---------------------------------------------------------------------------
-// Midyear & Underload Policy Helpers (BU Student Handbook Art. VIII, X, XI)
-// ---------------------------------------------------------------------------
-
-/**
- * Checks whether a term is a Midyear or Summer term based on its title or explicit flag.
- * Under BU Student Handbook policies and CHED guidelines, Midyear/Summer terms
- * typically carry 3–9 units and are non-regular academic periods. They are NOT
- * classified as underloaded terms and do not disqualify students from Latin Honors.
- */
-export function isMidyearTerm(title?: string, isExplicitMidyear?: boolean): boolean {
-  if (isExplicitMidyear === true) return true;
-  if (!title) return false;
-  return /\b(?:midyear|summer)\b/i.test(title);
-}
-
-// ---------------------------------------------------------------------------
 // Term Honor Standing (Per-Semester: President's / Dean's Lister)
 // ---------------------------------------------------------------------------
 
+/** Checks all recorded grades, including zero-unit subjects, against the handbook. */
+function termCourseEvidence(subjects: Subject[]) {
+  const active = subjects.filter(subject => subject.grade.trim().toUpperCase() !== 'DRP');
+  const numeric = active.map(subject => parseGrade(subject.grade) ?? 0);
+  return {
+    worstGrade: Math.max(0, ...numeric),
+    hasPending: active.some(subject => !subject.grade.trim() || subject.grade.trim().toUpperCase() === 'INC'),
+    hasInvalid: subjects.some(subject => !Number.isFinite(subject.units) || subject.units < 0
+      || (!!subject.grade.trim() && !isValidBUGrade(subject.grade))),
+    hasWeightedGrade: active.some(subject => parseGrade(subject.grade) !== null && Number.isFinite(subject.units) && subject.units > 0),
+  };
+}
+
+function termHonorBlocker(evidence: ReturnType<typeof termCourseEvidence>, hasUnderload: boolean): TermHonorEvaluation | null {
+  const none = (label: string, reason: string): TermHonorEvaluation => ({ level: 'none', label, reason });
+  if (evidence.worstGrade > 3) return none('Not Eligible', `A ${evidence.worstGrade.toFixed(2)} conditional or failing grade needs review.`);
+  const cap = TERM_HONOR_THRESHOLDS.PRESIDENT.maxSubjectGrade;
+  const gradeReason = evidence.worstGrade > cap
+    ? `A recorded grade of ${evidence.worstGrade.toFixed(2)} exceeds the PL/DL subject cap of ${cap.toFixed(2)}.` : '';
+  const loadReason = hasUnderload ? 'An underloaded term does not meet the regular curriculum load requirement for PL/DL.'
+    : '';
+  const reasons = [gradeReason, loadReason];
+  if (evidence.hasInvalid || evidence.hasPending) reasons.push('Complete valid course entries and resolve any INC grades.');
+  if (evidence.hasInvalid || evidence.hasPending) {
+    return none('Provisional', reasons.filter(Boolean).join(' '));
+  }
+  return gradeReason || hasUnderload ? none('Good Academic Standing', reasons.filter(Boolean).join(' ')) : null;
+}
+
 /**
- * Evaluate per-semester honor standing.
- *
- * President's Lister: GPA ≤ 1.4500, NO subject > 1.75, full load (≥15 units), zero 5.0/INC
- * Dean's Lister:      GPA ≤ 1.7500, NO subject > 2.50, full load (≥15 units), zero 5.0/INC
- *
- * Disqualified if: underloaded, or any 5.0/INC grade present.
+ * 2019 handbook, printed p.32/PDF p.42: PL [1,1.45], DL (1.45,1.75], all grades <=2.4.
+ * The app reserves term distinctions for regular semesters and does not infer curriculum load from a unit count.
  */
 export function evaluateTermHonor(
   semesterGPA: number,
   subjects: Subject[],
   hasUnderload: boolean,
-  semesterTitle?: string,
-  isExplicitMidyear?: boolean,
+  _semesterTitle?: string,
+  _isExplicitMidyear?: boolean,
+  _regularLoadConfirmed = false,
+  weighted?: WeightedGradeTotals,
 ): TermHonorEvaluation {
-  if (!subjects || subjects.length === 0) {
-    return {
-      level: 'none',
-      label: 'Pending',
-      reason: 'No courses recorded in this semester',
-    };
+  const evidence = termCourseEvidence(subjects || []);
+  if (!evidence.hasWeightedGrade || !Number.isFinite(semesterGPA) || semesterGPA < 1) {
+    return { level: 'none', label: 'Pending', reason: 'Awaiting valid numeric course grades with positive units.' };
   }
-
-  let worstNumericGrade = -1;
-  let hasDeficiency = false;
-  let gradedUnits = 0;
-  let activeCompletedUnits = 0;
-
-  subjects.forEach((sub) => {
-    const rawGrade = (sub.grade || '').trim().toUpperCase();
-    const units = Math.max(0, parseFloat(String(sub.units)) || 0);
-
-    if (rawGrade === 'DRP') return;
-
-    activeCompletedUnits += units;
-
-    const num = parseFloat(sub.grade);
-    const isValidNumber = !isNaN(num) && num >= 1.0 && num <= 5.0;
-
-    if (
-      rawGrade === '5.0' ||
-      rawGrade === '5.00' ||
-      rawGrade === '4.0' ||
-      rawGrade === '4.00' ||
-      (isValidNumber && (num === 5.0 || num === 4.0)) ||
-      rawGrade === 'INC'
-    ) {
-      hasDeficiency = true;
-    }
-
-    if (isValidNumber && units > 0) {
-      gradedUnits += units;
-      if (worstNumericGrade === -1 || num > worstNumericGrade) {
-        worstNumericGrade = num;
-      }
-    }
-  });
-
-  // Zero-grade defense: If no valid grades are entered or GPA is zero, do not award honors
-  if (gradedUnits === 0 || semesterGPA <= 0 || worstNumericGrade === -1) {
-    return {
-      level: 'none',
-      label: 'Pending',
-      reason: 'Awaiting course grade entries to evaluate term honors',
-    };
+  if (isMidyearTerm(_semesterTitle, _isExplicitMidyear)) {
+    return { level: 'none', label: 'Midyear Term', reason: 'This calculator shows term distinctions for regular semesters.' };
   }
-
-  const isMidyear = isMidyearTerm(semesterTitle, isExplicitMidyear);
-
-  // Term honors (President's/Dean's Lister per Art. X) require:
-  // - Regular semester (not midyear)
-  // - Full regular academic load (>= 15 units)
-  // - Not flagged as underloaded
-  // - Zero deficiencies
-  const isEligibleLoad = !hasUnderload && !isMidyear && activeCompletedUnits >= 15;
-
-  if (!hasDeficiency && isEligibleLoad) {
-    // President's Lister: GPA ≤ 1.4500 and no grade > 1.75
-    if (semesterGPA <= 1.45 && worstNumericGrade <= 1.75) {
-      return {
-        level: 'president',
-        label: "President's Lister",
-        reason: `Semester GPA ${semesterGPA.toFixed(4)} with no grade above 1.75`,
-      };
-    }
-
-    // Dean's Lister: GPA ≤ 1.7500 and no grade > 2.50
-    if (semesterGPA <= 1.75 && worstNumericGrade <= 2.5) {
-      return {
-        level: 'dean',
-        label: "Dean's Lister",
-        reason: `Semester GPA ${semesterGPA.toFixed(4)} with no grade above 2.50`,
-      };
-    }
-  }
-
-  // Explicit user underload
-  if (hasUnderload) {
-    return {
-      level: 'none',
-      label: 'Underloaded Term',
-      reason: 'Underloaded term disqualifies from academic honors per BU policy',
-    };
-  }
-
-  // Midyear term
-  if (isMidyear) {
-    return {
-      level: 'none',
-      label: 'Midyear Term',
-      reason: 'Midyear courses count toward cumulative GWA but are exempt from semestral honors (PL/DL)',
-    };
-  }
-
-  if (hasDeficiency) {
-    return {
-      level: 'none',
-      label: 'Not Eligible',
-      reason: 'Disqualified due to 5.00 failure, 4.00 conditional, or unremoved INC mark',
-    };
-  }
-
-  if (activeCompletedUnits < 15 && activeCompletedUnits > 0) {
-    return {
-      level: 'none',
-      label: 'Regular Standing',
-      reason: "Minimum 15 units required for President's or Dean's Lister qualification",
-    };
-  }
-
-  return {
-    level: 'none',
-    label: 'Not Eligible',
-    reason: `Semester GPA ${semesterGPA.toFixed(4)} does not meet Dean's Lister threshold (≤ 1.7500)`,
+  const blocker = termHonorBlocker(evidence, hasUnderload);
+  if (blocker) return blocker;
+  if (meetsCutoff(semesterGPA, TERM_HONOR_THRESHOLDS.PRESIDENT.maxGPA, weighted)) return {
+    level: 'president', label: TERM_HONOR_THRESHOLDS.PRESIDENT.label,
+    reason: 'PL average and subject-grade criteria met. Explicit underload flags are evaluated separately.',
   };
+  if (meetsCutoff(semesterGPA, TERM_HONOR_THRESHOLDS.DEAN.maxGPA, weighted)) return {
+    level: 'dean', label: TERM_HONOR_THRESHOLDS.DEAN.label,
+    reason: 'DL average and subject-grade criteria met. Explicit underload flags are evaluated separately.',
+  };
+  return { level: 'none', label: 'Good Academic Standing', reason: 'The semester GWA is outside the PL/DL range (1.0000–1.7500).' };
 }
 
 // ---------------------------------------------------------------------------
@@ -404,19 +324,10 @@ export function calculateTargetGrade(
 export function evaluateTermHonors(
   subjects: Subject[],
   hasUnderload: boolean,
+  regularLoadConfirmed = false,
 ): TermHonorEvaluation {
-  let totalGradePoints = 0;
-  let gradedUnits = 0;
-  (subjects || []).forEach((sub) => {
-    const numGrade = parseFloat(sub.grade);
-    const units = parseFloat(String(sub.units)) || 0;
-    if (!isNaN(numGrade) && units > 0) {
-      totalGradePoints += numGrade * units;
-      gradedUnits += units;
-    }
-  });
-  const gpa = gradedUnits > 0 ? totalGradePoints / gradedUnits : 0;
-  return evaluateTermHonor(gpa, subjects, hasUnderload);
+  const weighted = calculateWeightedGrades(subjects || []);
+  return evaluateTermHonor(weightedAverage(weighted), subjects, hasUnderload, undefined, undefined, regularLoadConfirmed, weighted);
 }
 
 /**

@@ -2,10 +2,11 @@
 // Communicates with Cloudflare Worker proxy (multi-model cascade) with fallback to Tesseract.js
 
 import type { Subject } from '../../types';
+import { ScanFailure } from '../../types/scan';
 
 // Default worker endpoint or custom endpoint configured in localStorage
 export const DEFAULT_GEMINI_WORKER_URL =
-  (import.meta as any).env?.VITE_GEMINI_WORKER_URL ||
+  (import.meta as ImportMeta & { env?: Record<string, string> }).env?.VITE_GEMINI_WORKER_URL ||
   'https://bu-gwa-gemini-ocr.tsugumii-tsuki04.workers.dev';
 
 export function getGeminiWorkerUrl(): string {
@@ -28,15 +29,16 @@ export function setGeminiWorkerUrl(url: string): void {
 
 export interface GeminiExtractionResult {
   courses: Array<{
-    code?: string;
-    name?: string;
-    units?: number | string;
-    grade?: string | number;
+    code?: string | null;
+    name?: string | null;
+    units?: number | string | null;
+    grade?: string | number | null;
   }>;
 }
 
 export interface GeminiScanOptions {
   imageCount?: number;
+  signal?: AbortSignal;
 }
 
 /**
@@ -66,6 +68,7 @@ export async function scanScreenshotWithGemini(
 
   const response = await fetch(workerUrl, {
     method: 'POST',
+    signal: AbortSignal.any([AbortSignal.timeout(15_000), ...(options?.signal ? [options.signal] : [])]),
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       imageBase64: base64Data,
@@ -75,8 +78,7 @@ export async function scanScreenshotWithGemini(
   });
 
   if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Worker returned status ${response.status}: ${errorBody}`);
+    throw new ScanFailure('provider', response.status === 429 ? 'Gemini quota reached. Use local scanning or retry later.' : 'Gemini could not process this image. Use local scanning or retry.');
   }
 
   const data = (await response.json()) as GeminiExtractionResult;
@@ -85,13 +87,11 @@ export async function scanScreenshotWithGemini(
   }
 
   return data.courses.map((c) => {
-    let units = typeof c.units === 'number' ? c.units : parseFloat(String(c.units || '3.0'));
-    if (isNaN(units)) units = 3.0;
+    const units = typeof c.units === 'number' ? c.units : c.units == null ? NaN : Number(c.units);
+    if (!Number.isFinite(units) || units < 0) throw new ScanFailure('provider', 'Total units could not be read. Review the image locally.');
 
     const code = (c.code || '').trim();
-    if (code.toUpperCase().startsWith('NSTP')) {
-      units = 0;
-    }
+    if (!code || !c.name?.trim()) throw new ScanFailure('provider', 'A course label could not be read. Review the image locally.');
 
     let grade = '';
     if (c.grade !== undefined && c.grade !== null) {
@@ -99,8 +99,8 @@ export async function scanScreenshotWithGemini(
     }
 
     return {
-      code: code || 'COURSE',
-      name: (c.name || 'Imported Subject').trim(),
+      code,
+      name: c.name.trim(),
       units,
       grade,
     };

@@ -1,7 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { FileText, ShieldCheck } from 'lucide-react';
 import { useSemesterStore } from '../../store';
 import type { Subject } from '../../types';
-import { parsePdfCOR } from './pdf-parser';
+import { ScanFailure } from '../../types/scan';
+import { COR_LIMITS, parsePdfCOR } from './pdf-parser';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+import { ImportRows } from '../modals/import-rows';
+import { validateCalculationEntries } from '../../core/calculation-report';
+import { RecordDialogHeader } from '../modals/record-dialog-header';
 
 interface CorScanModalProps {
   isOpen: boolean;
@@ -29,6 +35,15 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
   const [dragActive, setDragActive] = useState(false);
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [error, setError] = useState('');
+  const [failedFiles, setFailedFiles] = useState<{ id: string; file: File; message: string }[]>([]);
+  const request = useRef<AbortController | null>(null);
+  const dialogRef = useAccessibleDialog(isOpen, () => handleModalClose());
+
+  useEffect(() => {
+    if (!isOpen) return;
+    return () => { request.current?.abort(); request.current = null; };
+  }, [isOpen]);
 
   const toggleExpand = (id: string) => {
     setExpandedIds((prev) => {
@@ -44,17 +59,26 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
 
   if (!isOpen) return null;
 
-  const handleFiles = async (fileList: FileList | File[]) => {
+  const handleFiles = async (fileList: FileList | File[], retryId?: string) => {
+    if (request.current) return;
     const files = Array.from(fileList).filter(
       (f) => f.name.toLowerCase().endsWith('.pdf') || f.type === 'application/pdf'
     );
 
     if (files.length === 0) {
-      alert('Please select valid PDF documents (.pdf). Image files are not supported in this tool.');
+      setError('Choose a PDF document. Use Scan Image for screenshots or photos.');
       return;
     }
 
+    if (stagedSemesters.length + failedFiles.length + files.length - Number(!!retryId) > COR_LIMITS.files) {
+      setError(`Stage up to ${COR_LIMITS.files} PDFs at a time. Remove a staged or failed file to add another.`);
+      return;
+    }
+    if (retryId) setFailedFiles(previous => previous.filter(item => item.id !== retryId));
+    const controller = new AbortController();
+    request.current = controller;
     setIsProcessing(true);
+    setError('');
     const newStaged: StagedCorSemester[] = [];
 
     for (let i = 0; i < files.length; i++) {
@@ -62,9 +86,10 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
       setStatusMessage(`Parsing COR ${i + 1} of ${files.length} (${file.name})...`);
 
       try {
-        const result = await parsePdfCOR(file);
-        if (result.subjects && result.subjects.length > 0) {
-          const units = result.subjects.reduce((acc, s) => acc + (s.units || 0), 0);
+        const result = await parsePdfCOR(file, controller.signal);
+        if (controller.signal.aborted) return;
+        if (result.subjects.length > 0) {
+          const units = result.subjects.reduce((acc, s) => acc + s.units, 0);
           newStaged.push({
             id: crypto.randomUUID(),
             title: result.semesterTitle || `Year ${stagedSemesters.length + newStaged.length + 1} - 1st Semester`,
@@ -72,19 +97,27 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
             subjects: result.subjects,
             totalUnits: units,
           });
+        } else {
+          setFailedFiles(previous => [...previous, { id: crypto.randomUUID(), file, message: 'No COR schedule rows found.' }]);
         }
-      } catch (err) {
-        console.error(`Error parsing ${file.name}:`, err);
+      } catch (failure) {
+        if (controller.signal.aborted) return;
+        const message = failure instanceof ScanFailure ? failure.message
+          : failure instanceof DOMException && failure.name === 'TimeoutError' ? 'Reading the PDF timed out.'
+          : 'Could not read the PDF.';
+        setFailedFiles(previous => [...previous, { id: crypto.randomUUID(), file, message }]);
       }
     }
 
+    request.current = null;
     setIsProcessing(false);
     setStatusMessage('');
 
     if (newStaged.length > 0) {
       setStagedSemesters((prev) => [...prev, ...newStaged]);
+      setExpandedIds(previous => new Set([...previous, ...newStaged.map(term => term.id)]));
     } else {
-      alert('Could not parse course schedules from the selected PDF(s). Please ensure they are official Bicol University Certificate of Registration (COR) PDFs.');
+      setError('No courses could be read from these PDFs. Try another COR file or paste the courses manually.');
     }
   };
 
@@ -99,7 +132,9 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
   };
 
   const handleCommitAll = () => {
-    if (stagedSemesters.length === 0) return;
+    if (stagedSemesters.length === 0 || request.current) return;
+    const invalid = validateCalculationEntries(stagedSemesters.map(term => ({ ...term, underload: false, computed: false })))[0];
+    if (invalid) { setError(invalid); return; }
 
     let totalCourses = 0;
     stagedSemesters.forEach((sem) => {
@@ -118,13 +153,19 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
         ? stagedSemesters[0].title
         : `${stagedSemesters.length} Semesters`;
 
-    setStagedSemesters([]);
-    onClose();
+    handleModalClose();
     onSuccess(totalCourses, summaryTitle);
   };
 
   const handleModalClose = () => {
-    if (isProcessing) return;
+    request.current?.abort();
+    request.current = null;
+    setIsProcessing(false);
+    setError('');
+    setStatusMessage('');
+    setDragActive(false);
+    setFailedFiles([]);
+    setExpandedIds(new Set());
     setStagedSemesters([]);
     onClose();
   };
@@ -150,8 +191,9 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay v2-record-overlay"
       id="cor-scan-modal"
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="cor-modal-title"
@@ -159,22 +201,17 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
         if (e.target === e.currentTarget && !isProcessing) handleModalClose();
       }}
     >
-      <div className="modal-content animate__animated animate__zoomIn animate__faster">
-        <div className="modal-header">
-          <h3 id="cor-modal-title">
-            <i className="fa-solid fa-file-pdf" style={{ color: '#ef4444' }}></i> Scan Bicol University COR (PDF)
-          </h3>
-          <button
-            className="modal-close-btn"
-            onClick={handleModalClose}
-            disabled={isProcessing}
-            aria-label="Close modal"
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
+      <div className="modal-content v2-record-dialog">
+        <RecordDialogHeader id="cor-modal-title" title="Import a COR PDF" icon={FileText} onClose={handleModalClose} eyebrow={stagedSemesters.length ? 'REVIEW BEFORE IMPORTING' : 'IMPORT GRADES'} />
 
         <div className="modal-body">
+          <p className="v2-dialog-note">Review before importing. Each PDF adds a new semester; existing records are kept. Select one imported term in GWA mode, or use all terms in Latin Honors mode.</p>
+          {error && <p role="alert">{error}</p>}
+          {failedFiles.map(({ id, file, message }) => <div key={id} className="staged-cor-card">
+            <p role="status">{file.name} — {message}</p>
+            <button type="button" className="btn btn-secondary" disabled={isProcessing} onClick={() => void handleFiles([file], id)}>Retry {file.name}</button>
+            <button type="button" className="btn btn-secondary" onClick={() => setFailedFiles(previous => previous.filter(item => item.id !== id))}>Remove failed file</button>
+          </div>)}
           <input
             type="file"
             ref={fileInputRef}
@@ -194,9 +231,9 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
               <div style={{ marginBottom: '14px' }}>
                 <i className="fa-solid fa-circle-notch fa-spin" style={{ fontSize: '2.2rem', color: 'var(--bu-blue)' }}></i>
               </div>
-              <h4 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '6px' }}>
+              <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '6px' }}>
                 Processing COR Document(s)...
-              </h4>
+              </h3>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: 0 }}>
                 {statusMessage}
               </p>
@@ -204,17 +241,19 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
           ) : stagedSemesters.length === 0 ? (
             <div
               className={`modal-dropzone ${dragActive ? 'drag-active' : ''}`}
+              role="button" tabIndex={0} aria-label="Choose COR PDFs"
+              onKeyDown={event => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); fileInputRef.current?.click(); } }}
               onClick={() => fileInputRef.current?.click()}
               onDragOver={onDragOver}
               onDragLeave={onDragLeave}
               onDrop={onDrop}
             >
               <div>
-                <i className="fa-solid fa-file-pdf modal-dropzone-icon" style={{ color: '#ef4444' }}></i>
+                <FileText className="modal-dropzone-icon" size={32} aria-hidden="true" />
               </div>
-              <h4 className="modal-dropzone-title">
-                Click or tap to select BU COR PDF(s)
-              </h4>
+              <h3 className="modal-dropzone-title">
+                Choose COR PDFs
+              </h3>
               <p className="modal-dropzone-sub">
                 Select 1 or multiple official Bicol University Certificate of Registration PDFs
                 <span className="modal-desktop-only"> or drag and drop files here</span>
@@ -262,6 +301,7 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
                               onChange={(e) => updateStagedTitle(sem.id, e.target.value)}
                               placeholder={`Semester ${idx + 1}`}
                               title="Click to rename semester"
+                              aria-label={`New semester title ${idx + 1}`}
                             />
                           </div>
                         </div>
@@ -302,13 +342,7 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
 
                       {isExpanded && (
                         <div className="staged-courses-preview">
-                          {sem.subjects.map((sub, sIdx) => (
-                            <div key={sIdx} className="staged-course-row">
-                              <span className="staged-course-code">{sub.code || 'COURSE'}</span>
-                              <span className="staged-course-name" title={sub.name}>{sub.name || 'Untitled Course'}</span>
-                              <span className="staged-course-units">{typeof sub.units === 'number' ? `${sub.units.toFixed(1)} Units` : '3.0 Units'}</span>
-                            </div>
-                          ))}
+                          <ImportRows subjects={sem.subjects} onChange={subjects => setStagedSemesters(previous => previous.map(term => term.id === sem.id ? { ...term, subjects, totalUnits: subjects.reduce((sum, row) => sum + row.units, 0) } : term))} />
                         </div>
                       )}
                     </div>
@@ -319,6 +353,7 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
           )}
 
           <div
+            className="record-privacy-note"
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -328,8 +363,8 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
               color: 'var(--text-secondary)',
             }}
           >
-            <i className="fa-solid fa-shield-halved" style={{ color: 'var(--color-success)' }}></i>
-            <span>All parsing occurs client-side in your browser. Student data is never sent externally.</span>
+            <ShieldCheck size={18} aria-hidden="true" />
+            <span>PDFs are read in your browser. These files are not uploaded.</span>
           </div>
         </div>
 
@@ -337,7 +372,6 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
           <button
             className="btn btn-secondary btn-sm"
             onClick={handleModalClose}
-            disabled={isProcessing}
             style={{ padding: '8px 16px', fontWeight: 600 }}
           >
             Cancel

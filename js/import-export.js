@@ -1,5 +1,7 @@
 // Bicol University GWA Calculator — Pure PDF Document Scanner & PDF Exporter
 
+const LEGACY_PDFJS_BUILD = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@6.5.438/legacy/build/';
+
 // Export Academic Summary as PDF (triggers print / save as PDF dialog)
 function exportToPDF() {
     const stats = typeof calculateCumulativeStats === "function" ? calculateCumulativeStats() : null;
@@ -49,33 +51,38 @@ async function processPDFDocument(file) {
 
     const arrayBuffer = await file.arrayBuffer();
     
-    if (typeof pdfjsLib === "undefined") {
-        throw new Error("PDF.js library not loaded");
-    }
+    const pdfjsLib = await import(`${LEGACY_PDFJS_BUILD}pdf.min.mjs`);
+    pdfjsLib.GlobalWorkerOptions.workerSrc = `${LEGACY_PDFJS_BUILD}pdf.worker.min.mjs`;
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+    const task = pdfjsLib.getDocument({ data: arrayBuffer });
     let extractedText = "";
 
-    for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
-        showScanLoading(true, `Extracting Page ${pageNum} of ${pdf.numPages}...`);
-        const page = await pdf.getPage(pageNum);
-        const textContent = await page.getTextContent();
-        
-        let lastY = null;
-        let pageText = "";
-        textContent.items.forEach(item => {
-            if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
-                pageText += "\n";
-            } else if (pageText.length > 0 && !pageText.endsWith("\n") && !pageText.endsWith(" ")) {
-                pageText += " ";
+    try {
+        const pdf = await task.promise;
+        for (let pageNum = 1; pageNum <= pdf.numPages; pageNum++) {
+            showScanLoading(true, `Extracting Page ${pageNum} of ${pdf.numPages}...`);
+            const page = await pdf.getPage(pageNum);
+            try {
+                const textContent = await page.getTextContent();
+                let lastY = null;
+                let pageText = "";
+                textContent.items.forEach(item => {
+                    if (!('str' in item)) return;
+                    if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+                        pageText += "\n";
+                    } else if (pageText.length > 0 && !pageText.endsWith("\n") && !pageText.endsWith(" ")) {
+                        pageText += " ";
+                    }
+                    pageText += item.str;
+                    lastY = item.transform[5];
+                });
+                extractedText += pageText + "\n";
+            } finally {
+                page.cleanup();
             }
-            pageText += item.str;
-            lastY = item.transform[5];
-        });
-
-        extractedText += pageText + "\n";
+        }
+    } finally {
+        await task.destroy();
     }
 
     parseExtractedText(extractedText, file.name);

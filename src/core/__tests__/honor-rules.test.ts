@@ -20,7 +20,7 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
     expect(result.label).toBe('Pending');
   });
 
-  it('awards President Lister when GPA <= 1.4500, no grade > 1.75, and full load (>= 15 units)', () => {
+  it('awards President Lister with the handbook average and confirmed curriculum load', () => {
     const subjects = [
       { code: 'CS 111', name: 'Course 1', grade: '1.20', units: 3 },
       { code: 'CS 112', name: 'Course 2', grade: '1.20', units: 3 },
@@ -29,12 +29,12 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
       { code: 'CS 115', name: 'Course 5', grade: '1.50', units: 3 },
     ];
     // GPA = 1.4000, 15 units, lowest grade 1.50 <= 1.75
-    const result = evaluateTermHonor(1.4, subjects, false);
+    const result = evaluateTermHonor(1.4, subjects, false, undefined, undefined, true);
     expect(result.level).toBe('president');
     expect(result.label).toBe("President's Lister");
   });
 
-  it('disqualifies student from President Lister if any grade exceeds 1.75 even if GPA is <= 1.4500', () => {
+  it('keeps a PL average in the PL range when a subject is 2.00', () => {
     const subjects = [
       { code: 'CS 111', name: 'Course 1', grade: '1.00', units: 3 },
       { code: 'CS 112', name: 'Course 2', grade: '1.00', units: 3 },
@@ -42,10 +42,10 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
       { code: 'CS 114', name: 'Course 4', grade: '1.00', units: 3 },
       { code: 'CS 115', name: 'Course 5', grade: '2.00', units: 3 },
     ];
-    // GPA = 1.2000, but has a 2.00 (> 1.75) -> Should fall back to Dean's Lister
-    const result = evaluateTermHonor(1.2, subjects, false);
-    expect(result.level).toBe('dean');
-    expect(result.label).toBe("Dean's Lister");
+    // The handbook uses a shared 2.4 subject cap, so there is no PL-to-DL fallback.
+    const result = evaluateTermHonor(1.2, subjects, false, undefined, undefined, true);
+    expect(result.level).toBe('president');
+    expect(result.label).toBe("President's Lister");
   });
 
   it('disqualifies from term honors if term has 4.00, 5.00, or INC', () => {
@@ -56,7 +56,7 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
       { code: 'CS 114', name: 'Course 4', grade: '1.20', units: 3 },
       { code: 'CS 115', name: 'Course 5', grade: '1.20', units: 3 },
     ];
-    const result = evaluateTermHonor(1.4, subjects, false);
+    const result = evaluateTermHonor(1.4, subjects, false, undefined, undefined, true);
     expect(result.level).toBe('none');
     expect(result.label).toBe('Not Eligible');
     expect(result.reason).toContain('4.00');
@@ -162,22 +162,33 @@ describe('honor-rules — BU BOR Res. 89 s. 2006 Policy Compliance', () => {
     expect(evalResult.label).toBe('Summa Cum Laude');
   });
 
-  it('recognizes Midyear / Summer terms and does not classify them as underloaded terms', () => {
-    const midyearSubjects = [
-      { code: 'CS 111', name: 'Practicum', grade: '1.20', units: 3 },
-      { code: 'CS 112', name: 'Seminar', grade: '1.20', units: 3 },
-    ];
-    // 6 units in Midyear
-    const result = evaluateTermHonor(1.20, midyearSubjects, false, 'Year 1 - Midyear');
-    expect(result.level).toBe('none');
-    expect(result.label).toBe('Midyear Term');
-
-    // Also recognizes explicit user midyear flag even without keyword in title
+  it('reserves term recognition for regular terms without a universal unit minimum', () => {
+    const subjects = [{ code: 'TEST', name: 'Synthetic', grade: '1.2', units: 3 }];
     expect(isMidyearTerm('Term 3', true)).toBe(true);
-    const resultExplicit = evaluateTermHonor(1.20, midyearSubjects, false, 'Term 3', true);
-    expect(resultExplicit.level).toBe('none');
-    expect(resultExplicit.label).toBe('Midyear Term');
-    expect(resultExplicit.reason).toContain('exempt from semestral honors');
+    expect(evaluateTermHonor(1.2, subjects, false, 'Summer', true, true).level).toBe('none');
+  });
+
+  it.each([
+    [1.45, 'president'], [1.450001, 'dean'], [1.75, 'dean'], [1.750001, 'none'],
+  ])('uses the unrounded handbook average boundary %s', (average, level) => {
+    const subjects = [{ code: 'TEST', name: 'Synthetic', grade: '1.4', units: 3 }];
+    expect(evaluateTermHonor(average, subjects, false, undefined, undefined, true).level).toBe(level);
+  });
+
+  it.each(['2.5', '2.7'])('blocks both PL and DL for a recorded %s even with zero units', grade => {
+    const subjects = [{ code: 'TEST', name: 'Synthetic', grade: '1.2', units: 15 },
+      { code: 'ZERO', name: 'Synthetic zero-unit course', grade, units: 0 }];
+    expect(evaluateTermHonor(1.2, subjects, false, undefined, undefined, true).reason).toContain('2.40');
+  });
+
+  it('accepts exactly 2.4 as the shared individual grade cap', () => {
+    const subjects = [{ code: 'TEST', name: 'Synthetic', grade: '2.4', units: 3 }];
+    expect(evaluateTermHonor(1.45, subjects, false, undefined, undefined, true).level).toBe('president');
+  });
+
+  it('evaluates recognition without manual curriculum load confirmation', () => {
+    const subjects = [{ code: 'TEST', name: 'Synthetic', grade: '1.2', units: 15 }];
+    expect(evaluateTermHonor(1.2, subjects, false).level).toBe('president');
   });
 
   it('disqualifies from Latin Honors ONLY when hasUnderload is explicitly flagged', () => {
