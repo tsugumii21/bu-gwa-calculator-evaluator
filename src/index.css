@@ -10,6 +10,12 @@
 @import "./css/dark-theme.css";
 @import "./css/print.css";
 @import "./css/mobile.css";
+@import "./css/redesign-tokens.css";
+@import "./css/redesign-layout.css";
+@import "./css/welcome-v2.css";
+@import "./css/shell-v2.css";
+@import "./css/dialogs-v2.css";
+@import "./css/record-tools-v2.css";
 
 /* Tabular numbers for numeric grades */
 .tabular-nums {

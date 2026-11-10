@@ -1,5 +1,8 @@
 import { useAppStore } from '../../store';
-import { AppHeader } from './AppHeader';
+import { ShellHeader } from './shell-header';
+import { SiteFooter } from './site-footer';
+
+
 import { CalculatorView } from '../dashboard/CalculatorView';
 import { SimulatorView } from '../simulator/SimulatorView';
 import { ScholarshipView } from '../scholarship/ScholarshipView';
@@ -12,6 +15,7 @@ const TAB_COMPONENTS: Record<AppTab, React.FC> = {
   simulator: SimulatorView,
   scholarship: ScholarshipView,
   handbook: HandbookView,
+  guide: HandbookView,
   // Backward compatibility aliases
   policies: HandbookView,
   about: HandbookView,
@@ -19,24 +23,20 @@ const TAB_COMPONENTS: Record<AppTab, React.FC> = {
 
 export function AppShell() {
   const activeTab = useAppStore((s) => s.activeTab);
-  const setActiveTab = useAppStore((s) => s.setActiveTab);
   const ActiveTabComponent = TAB_COMPONENTS[activeTab] || HandbookView;
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="rd-app-shell">
       {/* Header with desktop navigation & theme toggle */}
-      <AppHeader onOpenGuide={() => setActiveTab('handbook')} />
+      <ShellHeader />
+
 
       {/* Main content area — natural window scrolling */}
-      <main className="main-container">
+      <main className={activeTab === 'calculator' ? 'rd-calculator-main' : 'main-container'} id="academic-workspace" tabIndex={-1}>
         <ActiveTabComponent />
       </main>
 
-      {/* Authentic BU Footer */}
-      <footer className="footer">
-        <p><em>&quot;Scholarship • Leadership • Service • Character&quot;</em> • Bicol University Core Values</p>
-        <p>Built by <a href="https://github.com/tsugumii21" target="_blank" rel="noopener noreferrer">Allen Del Valle</a> · <a href="https://github.com/tsugumii21/bu-gwa-calculator-evaluator" target="_blank" rel="noopener noreferrer">GitHub Repository</a></p>
-      </footer>
+      <SiteFooter />
 
       {/* Floating Bueño AI Assistant */}
       <BuenoAiDrawer />

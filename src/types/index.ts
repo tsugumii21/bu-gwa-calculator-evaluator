@@ -102,7 +102,7 @@ export interface CollegePresetSemester {
 }
 
 export type ThemeMode = 'light' | 'dark' | 'system';
-export type AppTab = 'calculator' | 'simulator' | 'scholarship' | 'handbook' | 'policies' | 'about';
+export type AppTab = 'calculator' | 'simulator' | 'scholarship' | 'handbook' | 'policies' | 'about' | 'guide';
 
 /** Term honor evaluation (per-semester) */
 export type TermHonorLevel = 'president' | 'dean' | 'none';
