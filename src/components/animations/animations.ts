@@ -103,7 +103,7 @@ function getStoredBag(category: AnimationCategory): number[] | null {
     const raw = sessionStorage.getItem(`${sessionKeyPrefix}${category}`);
     if (raw) {
       const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.every((x) => typeof x === 'number')) {
+      if (Array.isArray(parsed) && parsed.every(Number.isInteger) && new Set(parsed).size === parsed.length) {
         return parsed;
       }
     }
@@ -126,8 +126,8 @@ function getStoredLastIdx(category: AnimationCategory): number {
   try {
     const raw = sessionStorage.getItem(`${sessionKeyPrefix}${category}_last`);
     if (raw !== null) {
-      const num = parseInt(raw, 10);
-      if (!isNaN(num)) return num;
+      const num = Number(raw);
+      if (Number.isInteger(num) && num >= 0) return num;
     }
   } catch {
     // Ignore storage errors in restricted contexts

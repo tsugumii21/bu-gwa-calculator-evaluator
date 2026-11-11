@@ -36,7 +36,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
         <div className="modal-body" id="midyear-modal-body">
           <div className="achieve-section" style={{ marginBottom: 0 }}>
             <div className="handbook-ref-badge handbook-ref-gold" style={{ marginBottom: '12px' }}>
-              <i className="fa-solid fa-book"></i> BU Student Handbook: Article VIII &amp; Article X (Pages 28–36)
+              <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, printed pp. 20–21 / PDF pp. 30–31
             </div>
 
             {/* 1. Why no PL / DL */}
@@ -66,11 +66,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
                     color: 'var(--text-secondary)',
                   }}
                 >
-                  Under <strong>BU Student Handbook Article X (Term Honors)</strong>, qualification for{' '}
-                  <strong>President&apos;s Lister</strong> (GPA ≤ 1.4500) or{' '}
-                  <strong>Dean&apos;s Lister</strong> (GPA ≤ 1.7500) strictly requires enrollment in a{' '}
-                  <strong>regular semester carrying at least 15 graded academic units</strong>. Since Midyear/Summer is an
-                  accelerated, non-regular term (typically 3–9 units / 2–3 subjects), it is exempt from semestral honor rolls.
+                  The calculator reserves term distinctions for regular semesters and leaves Midyear out of its regular-term underload check. Confirm official requirements with your college.
                 </span>
               </div>
             </div>
@@ -135,9 +131,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
                     color: 'var(--text-secondary)',
                   }}
                 >
-                  <strong>NO.</strong> Under Article VIII &amp; XI, midyear terms are recognized non-regular terms.
-                  Carrying 3–9 units during summer is standard authorized load and will{' '}
-                  <strong>NOT disqualify</strong> you from Summa, Magna, or Cum Laude graduation honors!
+                  The calculator excludes Midyear from its regular-term underload check. Confirm prescribed load and official graduation requirements with your college.
                 </span>
               </div>
             </div>

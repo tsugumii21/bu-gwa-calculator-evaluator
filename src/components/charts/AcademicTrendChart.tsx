@@ -1,7 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSemesterStore } from '../../store';
-import { calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
+import { addWeightedGrades, weightedAverage } from '../../core/gwa-engine';
+import { buildCalculationReport, validateCalculationEntries } from '../../core/calculation-report';
+import { evaluateRawHonorBracket } from '../../core/honor-rules';
 import { HONOR_THRESHOLDS, TERM_HONOR_THRESHOLDS } from '../../core/constants';
+import type { WeightedGradeTotals } from '../../types';
 
 export type ChartMode = 'term' | 'cumulative';
 
@@ -13,6 +16,8 @@ interface DataPoint {
   cumulativeGwa: number;
   units: number;
   totalUnitsToDate: number;
+  termRecognition: string;
+  latinBracket: string;
 }
 
 export interface AcademicTrendChartProps {
@@ -142,32 +147,34 @@ export const AcademicTrendChart: React.FC<AcademicTrendChartProps> = ({ onOpenIn
     });
   }, [semesters, minAyYear]);
 
+  const baselineError = validateCalculationEntries(semesters)[0];
   const chartData: DataPoint[] = useMemo(() => {
-    if (sortedSemesters.length === 0) return [];
+    if (baselineError) return [];
 
-    let runningPoints = 0;
-    let runningUnits = 0;
+    let running: WeightedGradeTotals | undefined;
 
-    return sortedSemesters.map((sem, idx) => {
-      const semGpa = calculateSemesterGWA(sem);
-      const semUnits = calculateSemesterUnits(sem);
+    return sortedSemesters.flatMap((sem, idx) => {
+      const { stats, termHonor } = buildCalculationReport([sem]);
+      const { cumulativeGWA: semGpa, gradedUnits: semUnits, weighted } = stats;
+      if (!semUnits) return [];
 
-      runningPoints += semGpa * semUnits;
-      runningUnits += semUnits;
-
-      const cumGwa = runningUnits > 0 ? runningPoints / runningUnits : semGpa;
+      running = running ? addWeightedGrades(running, weighted) : weighted;
+      const cumGwa = weightedAverage(running);
+      const latin = evaluateRawHonorBracket(cumGwa, running);
 
       return {
         index: idx,
         semesterId: sem.id,
         title: sem.title,
-        termGpa: semGpa > 0 ? semGpa : 1.0,
-        cumulativeGwa: cumGwa > 0 ? cumGwa : 1.0,
+        termGpa: semGpa,
+        cumulativeGwa: cumGwa,
         units: semUnits,
-        totalUnitsToDate: runningUnits,
+        totalUnitsToDate: Number(running.unitTicks) / Number(running.unitScale),
+        termRecognition: termHonor?.label ?? 'Pending review',
+        latinBracket: latin.level === 'regular' ? 'Outside Latin honors GWA brackets' : `${latin.label} GWA bracket`,
       };
     });
-  }, [sortedSemesters]);
+  }, [sortedSemesters, baselineError]);
 
   const width = isMobile ? 380 : 740;
   const height = isMobile ? 240 : 280;
@@ -197,21 +204,13 @@ export const AcademicTrendChart: React.FC<AcademicTrendChartProps> = ({ onOpenIn
   const yMagna = getY(HONOR_THRESHOLDS.MAGNA.maxGWA);
   const yCum = getY(HONOR_THRESHOLDS.CUM.maxGWA);
 
-  const termLinePath = useMemo(() => {
-    if (chartData.length < 2) return '';
-    return chartData
-      .map((d, i) => `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.termGpa).toFixed(1)}`)
-      .join(' ');
-  }, [chartData, isMobile]);
+  const linePath = (field: 'termGpa' | 'cumulativeGwa') => chartData.length < 2 ? '' : chartData
+    .map((point, index) => `${index === 0 ? 'M' : 'L'} ${getX(index).toFixed(1)} ${getY(point[field]).toFixed(1)}`)
+    .join(' ');
+  const termLinePath = linePath('termGpa');
+  const cumulativeLinePath = linePath('cumulativeGwa');
 
-  const cumulativeLinePath = useMemo(() => {
-    if (chartData.length < 2) return '';
-    return chartData
-      .map((d, i) => `${i === 0 ? 'M' : 'L'} ${getX(i).toFixed(1)} ${getY(d.cumulativeGwa).toFixed(1)}`)
-      .join(' ');
-  }, [chartData, isMobile]);
-
-  if (semesters.length === 0) {
+  if (baselineError || chartData.length === 0) {
     return (
       <div className="sim-empty-card" style={{ marginTop: '24px', marginBottom: '36px' }}>
         <div className="sim-empty-icon-wrap">
@@ -222,7 +221,7 @@ export const AcademicTrendChart: React.FC<AcademicTrendChartProps> = ({ onOpenIn
             Academic Trend Visualizer
           </h4>
           <p className="sim-empty-desc">
-            Record semesters to unlock real-time term GPA volatility and 4-year cumulative Latin Honor trajectory lines.
+            {baselineError ? `Correct the saved course before plotting. ${baselineError}` : 'Enter graded courses to plot your academic trend.'}
           </p>
         </div>
       </div>
@@ -600,13 +599,7 @@ export const AcademicTrendChart: React.FC<AcademicTrendChartProps> = ({ onOpenIn
                   </div>
                 </div>
                 <div style={{ fontSize: '0.72rem', fontWeight: 600 }}>
-                  {hoveredPoint.termGpa <= 1.45 ? (
-                    <span style={{ color: '#8b5cf6' }}>🏅 President&apos;s Lister Candidate</span>
-                  ) : hoveredPoint.termGpa <= 1.75 ? (
-                    <span style={{ color: '#0284c7' }}>🎖️ Dean&apos;s Lister Candidate</span>
-                  ) : (
-                    <span style={{ color: 'var(--text-secondary, #475569)' }}>📘 Regular Academic Standing</span>
-                  )}
+                  {hoveredPoint.termRecognition} · unofficial
                 </div>
               </div>
             ) : (
@@ -622,15 +615,7 @@ export const AcademicTrendChart: React.FC<AcademicTrendChartProps> = ({ onOpenIn
                   </div>
                 </div>
                 <div style={{ fontSize: '0.72rem', fontWeight: 600 }}>
-                  {hoveredPoint.cumulativeGwa <= 1.25 ? (
-                    <span style={{ color: '#10b981' }}>🎓 Summa Cum Laude Track</span>
-                  ) : hoveredPoint.cumulativeGwa <= 1.45 ? (
-                    <span style={{ color: '#2563eb' }}>🎓 Magna Cum Laude Track</span>
-                  ) : hoveredPoint.cumulativeGwa <= 1.75 ? (
-                    <span style={{ color: '#d97706' }}>🎓 Cum Laude Track</span>
-                  ) : (
-                    <span style={{ color: 'var(--text-secondary, #475569)' }}>🎓 Regular Graduate Track</span>
-                  )}
+                  {hoveredPoint.latinBracket}
                 </div>
               </div>
             )}

@@ -1,13 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import type { Semester, Subject } from '../../types';
 import { useSemesterStore } from '../../store';
 import { calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
 import { isMidyearTerm } from '../../core/honor-rules';
+import { buildCalculationReport } from '../../core/calculation-report';
 import { SubjectRow } from './SubjectRow';
-import { ComputeModal } from '../animations/ComputeModal';
 import { TermHonorModal } from '../modals/TermHonorModal';
-import { UnderloadInfoModal } from '../modals/UnderloadInfoModal';
-import { MidyearInfoModal } from '../modals/MidyearInfoModal';
+import { TermPolicyDialog } from '../modals/term-policy-dialog';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
 interface SemesterCardProps {
@@ -15,13 +14,23 @@ interface SemesterCardProps {
   index: number;
   collapsed?: boolean;
   onToggleCollapse?: () => void;
+  showModifiers?: boolean;
+  hideCompute?: boolean;
+  computeLabel?: string;
+  onCompute?: () => void;
+  showRecognition?: boolean;
 }
 
 export const SemesterCard: React.FC<SemesterCardProps> = ({
   semester,
-  index: _index,
+  index,
   collapsed,
   onToggleCollapse,
+  showModifiers = true,
+  hideCompute = false,
+  computeLabel,
+  onCompute,
+  showRecognition = true,
 }) => {
   const {
     updateSemester,
@@ -30,6 +39,8 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     updateSubject,
     removeSubject,
     computeSemester,
+    moveSemester,
+    semesters,
   } = useSemesterStore();
 
   const [localCollapsed, setLocalCollapsed] = useState<boolean>(false);
@@ -43,7 +54,6 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
     }
   };
 
-  const [isComputing, setIsComputing] = useState(false);
   const [isTermHonorOpen, setIsTermHonorOpen] = useState(false);
   const [isUnderloadInfoOpen, setIsUnderloadInfoOpen] = useState(false);
   const [isMidyearInfoOpen, setIsMidyearInfoOpen] = useState(false);
@@ -52,75 +62,25 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
   const semGWA = calculateSemesterGWA(semester);
   const semUnits = calculateSemesterUnits(semester);
 
-  const honorBadgeData = useMemo(() => {
-    if (!semester.computed) return null;
-
-    if (semUnits === 0) {
-      return {
-        pillClass: 'sem-pill-regular',
-        honorCode: 'No Courses',
-      };
-    }
-
-    let lowestGradeInSem = 1.0;
-    let hasFailOrInc = false;
-
-    if (semester.subjects) {
-      semester.subjects.forEach((sub) => {
-        const num = parseFloat(sub.grade);
-        if (
-          sub.grade === '5.0' ||
-          sub.grade === '5.00' ||
-          num === 5.0 ||
-          sub.grade === '4.0' ||
-          sub.grade === '4.00' ||
-          num === 4.0 ||
-          sub.grade === 'INC'
-        ) {
-          hasFailOrInc = true;
-        }
-        if (!isNaN(num) && num > lowestGradeInSem) lowestGradeInSem = num;
-      });
-    }
-
-    let honorCode = 'Good Academic Standing';
-    let pillClass = 'sem-pill-regular';
-
-    const isMidyear = isMidyearTerm(semester.title, semester.isMidyear);
-
-    if (hasFailOrInc) {
-      honorCode = 'Academic Deficiency';
-      pillClass = 'sem-pill-danger';
-    } else if (semester.underload) {
-      honorCode = 'Underloaded Term';
-      pillClass = 'sem-pill-warning';
-    } else if (semUnits >= 15 && !isMidyear) {
-      if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
-        honorCode = "President's Lister";
-        pillClass = 'sem-pill-pl';
-      } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
-        honorCode = "Dean's Lister";
-        pillClass = 'sem-pill-dl';
-      }
-    } else if (isMidyear) {
-      honorCode = 'Midyear Term';
-      pillClass = 'sem-pill-regular';
-    }
-
-    return { honorCode, pillClass };
-  }, [semester, semGWA, semUnits]);
+  const termReport = buildCalculationReport([semester]);
+  const termHonor = termReport.termHonor;
+  const honorBadgeData = semester.computed && termHonor ? {
+    honorCode: termHonor.label,
+    pillClass: termHonor.level === 'president' ? 'sem-pill-pl' : termHonor.level === 'dean' ? 'sem-pill-dl' : 'sem-pill-regular',
+  } : null;
 
   const handleAddSubject = () => {
     const newSubject: Subject = {
       code: '',
       name: '',
-      grade: '1.2',
+      grade: '',
       units: 3.0,
     };
     addSubject(semester.id, newSubject);
   };
 
   const handleTriggerCompute = () => {
+    if (onCompute) { onCompute(); return; }
     const hasAnyGrade = semester.subjects && semester.subjects.some(
       (sub) => sub.grade && sub.grade.trim() !== '' && !isNaN(parseFloat(sub.grade))
     );
@@ -128,18 +88,13 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
       alert('Please enter at least one Grade Rating before computing.');
       return;
     }
-    setIsComputing(true);
-  };
-
-  const handleComputeComplete = () => {
-    setIsComputing(false);
     computeSemester(semester.id);
     setIsTermHonorOpen(true);
   };
 
   return (
     <>
-      <div className={`semester-card ${isCollapsed ? 'is-collapsed' : ''}`}>
+      <div id={`semester-${semester.id}`} tabIndex={-1} className={`semester-card ${isCollapsed ? 'is-collapsed' : ''}`}>
         {/* ── SEMESTER HEADER ── */}
         <div className={`sem-header ${isCollapsed ? 'sem-header-collapsed' : ''}`}>
           <div className="sem-header-left">
@@ -149,12 +104,9 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                   {semester.title}
                 </span>
                 <div className="sem-collapsed-badges">
-                  <span className="sem-units-chip">
-                    {semUnits} Units • {semester.subjects?.length || 0} Courses
-                  </span>
                   {semester.computed && honorBadgeData && (
                     <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
-                      GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{honorBadgeData.honorCode}</strong>
+                      GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{showRecognition ? honorBadgeData.honorCode : 'Entered grades'}</strong>
                     </span>
                   )}
                 </div>
@@ -168,9 +120,10 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                   onChange={(e) => updateSemester(semester.id, { title: e.target.value })}
                   aria-label="Semester Title"
                 />
+                {!semester.computed && <span className="rd-pending">Awaiting computation</span>}
                 {semester.computed && honorBadgeData && (
                   <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
-                    GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{honorBadgeData.honorCode}</strong>
+                    GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{showRecognition ? honorBadgeData.honorCode : 'Entered grades'}</strong>
                   </span>
                 )}
               </>
@@ -178,16 +131,10 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
           </div>
 
           <div className="sem-header-right">
-            {!isCollapsed && (
-              <button
-                type="button"
-                className="btn btn-gold btn-sm btn-compute-trigger"
-                onClick={handleTriggerCompute}
-                title="Compute GPA and Honor Qualification for this semester"
-              >
-                <i className="fa-solid fa-calculator"></i> <span>Compute Term GPA</span>
-              </button>
-            )}
+            {semesters.length > 1 && <div className="sem-order-controls">
+              <button type="button" className="btn" disabled={index === 0} aria-label={`Move ${semester.title} up`} onClick={() => moveSemester(semester.id, 'up')}><i className="fa-solid fa-arrow-up" aria-hidden="true" /></button>
+              <button type="button" className="btn" disabled={index === semesters.length - 1} aria-label={`Move ${semester.title} down`} onClick={() => moveSemester(semester.id, 'down')}><i className="fa-solid fa-arrow-down" aria-hidden="true" /></button>
+            </div>}
 
             <button
               type="button"
@@ -209,18 +156,22 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
             >
               <i className="fa-solid fa-trash-can"></i>
             </button>
+            {!hideCompute && <button type="button" className="btn btn-compute-trigger" onClick={handleTriggerCompute}>
+              {computeLabel ?? (onCompute ? 'Compute GWA' : 'Update term GPA')} <i className="fa-solid fa-arrow-right" aria-hidden="true" />
+            </button>}
+            <span className="sem-count-summary">{semUnits} units · {semester.subjects?.length || 0} courses</span>
           </div>
         </div>
 
         {/* ── DEDICATED TERM MODIFIERS BAR (Above course table when expanded) ── */}
-        {!isCollapsed && (
+        {!isCollapsed && showModifiers && (
           <div className="sem-modifiers-bar">
             <div className="sem-modifiers-toggles">
               {/* Midyear / Summer Term Toggle */}
               <div className="sem-modifier-item">
                 <label
                   className="underload-toggle midyear-toggle"
-                  title="Check if this is a Midyear or Summer term (exempt from PL/DL and underload)"
+                  title="Mark this semester as a Midyear or Summer term"
                 >
                   <input
                     type="checkbox"
@@ -237,7 +188,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                     e.stopPropagation();
                     setIsMidyearInfoOpen(true);
                   }}
-                  title="Why does Midyear have no PL or DL?"
+                  title="How is the curriculum load checked for Midyear?"
                   aria-label="Midyear Policy Info"
                 >
                   <i className="fa-solid fa-circle-question"></i>
@@ -289,10 +240,10 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                 <thead>
                   <tr>
                     <th scope="col" style={{ width: '22%' }}>Course Code (Optional)</th>
-                    <th scope="col" style={{ width: '43%' }}>Course Description</th>
-                    <th scope="col" style={{ width: '17%' }}>Grade Rating</th>
-                    <th scope="col" style={{ width: '10%' }}>Credit Units</th>
-                    <th scope="col" style={{ width: '8%', textAlign: 'center' }}>Action</th>
+                    <th scope="col" style={{ width: '46%' }}>Course Description</th>
+                    <th scope="col" style={{ width: '14%' }}>Grade Rating</th>
+                    <th scope="col" style={{ width: '12%' }}>Credit Units</th>
+                    <th scope="col" style={{ width: '6%', textAlign: 'center' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -337,12 +288,6 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
         )}
       </div>
 
-      {/* 2.7s Lottie Computation Animation Modal */}
-      <ComputeModal
-        isOpen={isComputing}
-        onComplete={handleComputeComplete}
-        termTitle={semester.title}
-      />
 
       {/* Term Honor Qualification Result Modal */}
       <TermHonorModal
@@ -352,13 +297,13 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
       />
 
       {/* Underload Information Modal */}
-      <UnderloadInfoModal
+      <TermPolicyDialog kind="underload"
         isOpen={isUnderloadInfoOpen}
         onClose={() => setIsUnderloadInfoOpen(false)}
       />
 
       {/* Midyear Information Modal */}
-      <MidyearInfoModal
+      <TermPolicyDialog kind="midyear"
         isOpen={isMidyearInfoOpen}
         onClose={() => setIsMidyearInfoOpen(false)}
       />

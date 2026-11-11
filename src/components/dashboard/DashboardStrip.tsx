@@ -34,7 +34,7 @@ export const DashboardStrip: React.FC = () => {
   const hasComputedGrades = computedStats.gradedUnits > 0;
   const gwaDisplay = hasComputedGrades
     ? computedStats.cumulativeGWA.toFixed(4)
-    : '0.0000';
+    : '—';
   const formattedGradedUnits = computedStats.gradedUnits.toFixed(
     computedStats.gradedUnits % 1 === 0 ? 0 : 1,
   );

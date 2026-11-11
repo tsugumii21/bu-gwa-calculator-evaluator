@@ -1,62 +1,36 @@
-import React, { useState } from 'react';
-import { HandbookPolicies } from './HandbookPolicies';
-import { AboutGuide } from '../about/AboutGuide';
-import { AboutOverview } from '../about/AboutOverview';
-import { AboutDeveloper } from '../about/AboutDeveloper';
+import { HandbookOverview } from './handbook-overview';
+import { MascotReference } from '../illustrations/mascot-reference';
+import { useRef, useState } from 'react';
+import { useAppStore } from '../../store';
+import { HandbookReference } from './handbook-reference';
+import { HandbookGuide, HandbookAbout } from './handbook-about';
 
-type HandbookSubtab = 'policies' | 'guide' | 'overview' | 'developer';
+const SECTIONS = { policies: 'Academic Policies & Midyear', guide: 'How to use', overview: 'Overview & disclaimer', about: 'About & developer' } as const;
+type Section = keyof typeof SECTIONS;
 
-export const HandbookView: React.FC = () => {
-  const [activeSubtab, setActiveSubtab] = useState<HandbookSubtab>('policies');
-
-  return (
-    <div className="tab-pane active" id="tab-handbook">
-      <div className="section-header">
-        <h2>
-          <i className="fa-solid fa-book-bookmark text-primary"></i> Bicol University Academic Handbook &amp; Guide
-        </h2>
-        <p className="section-desc">
-          Official academic grading scales, semestral recognition (PL/DL), Latin graduation honors, midyear policies, platform user guides, and developer governance.
-        </p>
-      </div>
-
-      {/* SUB-TAB BAR */}
-      <div className="subtab-bar" style={{ marginBottom: 20 }}>
-        <button
-          type="button"
-          className={`subtab-btn ${activeSubtab === 'policies' ? 'active' : ''}`}
-          onClick={() => setActiveSubtab('policies')}
-        >
-          <i className="fa-solid fa-landmark"></i> Academic Policies &amp; Midyear
-        </button>
-        <button
-          type="button"
-          className={`subtab-btn ${activeSubtab === 'guide' ? 'active' : ''}`}
-          onClick={() => setActiveSubtab('guide')}
-        >
-          <i className="fa-solid fa-circle-question"></i> How to Use
-        </button>
-        <button
-          type="button"
-          className={`subtab-btn ${activeSubtab === 'overview' ? 'active' : ''}`}
-          onClick={() => setActiveSubtab('overview')}
-        >
-          <i className="fa-solid fa-book-open"></i> Overview &amp; Disclaimer
-        </button>
-        <button
-          type="button"
-          className={`subtab-btn ${activeSubtab === 'developer' ? 'active' : ''}`}
-          onClick={() => setActiveSubtab('developer')}
-        >
-          <i className="fa-solid fa-user-gear"></i> Developer &amp; Feedback
-        </button>
-      </div>
-
-      {/* SUB-TAB CONTENTS */}
-      {activeSubtab === 'policies' && <HandbookPolicies />}
-      {activeSubtab === 'guide' && <AboutGuide />}
-      {activeSubtab === 'overview' && <AboutOverview />}
-      {activeSubtab === 'developer' && <AboutDeveloper />}
+/** Indexed handbook reader with current workflows and independent project credits. */
+export function HandbookView() {
+  const activeTab = useAppStore(state => state.activeTab);
+  const [section, setSection] = useState<Section>(activeTab === 'about' ? 'about' : activeTab === 'guide' ? 'guide' : 'policies');
+  const panel = useRef<HTMLDivElement>(null);
+  const selectSection = (next: Section) => {
+    setSection(next);
+    panel.current?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  };
+  return <div className="v2-handbook tab-pane active" id="tab-handbook">
+    <header className="hb-heading hb-heading-with-scene">
+      <span className="hb-eyebrow">A LITTLE GUIDANCE FOR THE WAY AHEAD</span>
+      <h1>Your record.<br/>A little more understood.</h1>
+      <MascotReference scene={`handbook-${section}`} className="handbook-scene" />
+      <p>Find a reference, learn the tools, or meet the project behind them.</p>
+    </header>
+    <nav className="hb-navigation" aria-label="Handbook navigation">{Object.entries(SECTIONS).map(([key, label]) => <button key={key} type="button" aria-pressed={section === key} aria-controls="hb-reading-panel" onClick={() => selectSection(key as Section)}>{label}</button>)}</nav>
+    <div ref={panel} id="hb-reading-panel" tabIndex={-1} role="region" aria-label={SECTIONS[section]}>
+      {section === 'policies' && <HandbookReference/>}
+      {section === 'guide' && <HandbookGuide/>}
+      {section === 'overview' && <HandbookOverview/>}
+      {section === 'about' && <HandbookAbout/>}
     </div>
-  );
-};
+  </div>;
+}

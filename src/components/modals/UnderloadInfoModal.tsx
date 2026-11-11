@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 
 interface UnderloadInfoModalProps {
   isOpen: boolean;
@@ -6,11 +7,13 @@ interface UnderloadInfoModalProps {
 }
 
 export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, onClose }) => {
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
   if (!isOpen) return null;
 
   return (
     <div
       className="modal-overlay"
+      ref={dialogRef}
       id="underload-info-modal"
       role="dialog"
       aria-modal="true"

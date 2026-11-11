@@ -1,4 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import { TERM_HONOR_THRESHOLDS } from '../../core/constants';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+
+const SUBJECT_CAP = TERM_HONOR_THRESHOLDS.PRESIDENT.maxSubjectGrade.toFixed(2);
 
 export type SimulatorTopic = 'what-if' | 'allocator' | 'trend';
 
@@ -14,23 +18,13 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
   initialTopic = 'what-if',
 }) => {
   const [activeTopic, setActiveTopic] = useState<SimulatorTopic>(initialTopic);
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
 
   useEffect(() => {
     if (isOpen) {
       setActiveTopic(initialTopic);
     }
   }, [isOpen, initialTopic]);
-
-  useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -41,6 +35,7 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="sim-info-modal-title"
+      ref={dialogRef}
       style={{ display: 'flex', zIndex: 1100 }}
     >
       <div
@@ -87,14 +82,14 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
                 flexShrink: 0,
               }}
             >
-              <i className="fa-solid fa-circle-question" style={{ color: 'var(--bu-gold, #f59e0b)', fontSize: '1.15rem' }}></i>
+              <i className="fa-solid fa-circle-question" style={{ color: 'var(--dialog-surface)', fontSize: '1.15rem' }}></i>
             </div>
             <div>
               <h3 id="sim-info-modal-title" style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: 'var(--text-primary, #0f172a)' }}>
                 Academic Suite Reference Guide
               </h3>
               <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary, #475569)' }}>
-                Official BU Handbook formulas &amp; simulator mechanics
+                Unofficial planning formulas &amp; simulator mechanics
               </p>
             </div>
           </div>
@@ -193,7 +188,7 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
                   Why does it show Latin Honor Pace instead of President&#39;s or Dean&#39;s List?
                 </strong>
                 <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                  <strong>President&#39;s Lister (≤ 1.4500)</strong> and <strong>Dean&#39;s Lister (≤ 1.7500)</strong> are <em>single-semester honors</em> evaluated strictly on that term&#39;s courses with specific constraints (no grade below 1.75 for PL, no grade below 2.50 for DL, minimum 15 units).
+                  <strong>President&#39;s Lister (through 1.4500)</strong> and <strong>Dean&#39;s Lister (above 1.4500 through 1.7500)</strong> are single-semester distinctions. Both use a subject grade cap of {SUBJECT_CAP} and the prescribed regular curriculum load. See Section IV, printed pp. 31–32 / PDF pp. 41–42.
                 </p>
                 <p style={{ margin: '6px 0 0 0', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                   By contrast, the What-If Simulator projects your <strong>4-year cumulative graduation GWA</strong> across past and remaining future units. Graduation honors (Summa Cum Laude ≤ 1.2500, Magna Cum Laude ≤ 1.4500, Cum Laude ≤ 1.7500) are evaluated on your entire collegiate record, so the simulator benchmarks your long-term graduation trajectory.
@@ -267,7 +262,7 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
                   <li><strong>Set Your Target GPA</strong>: Tap President&#39;s Lister (1.45), Dean&#39;s Lister (1.75), or enter a custom GPA.</li>
                   <li><strong>Lock Known Subjects</strong>: Lock high marks (e.g. 1.00 or 1.25) in subjects you are confident about (GEs, PE, NSTP).</li>
                   <li><strong>Instant Reverse Solution</strong>: The solver computes the uniform grade required in all remaining unlocked major subjects.</li>
-                  <li><strong>Apply to Semester</strong>: Tap &ldquo;Apply Target Grades&rdquo; to automatically populate the calculated values directly into that semester card!</li>
+                  <li><strong>Reset your scenario</strong>: Tap &ldquo;Reset course scenario&rdquo; to restore the starting values. Planning changes never overwrite your saved grades.</li>
                 </ol>
               </div>
 
@@ -275,7 +270,7 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
                 <strong style={{ display: 'block', marginBottom: '6px' }}>Status Meanings:</strong>
                 <ul style={{ margin: 0, paddingLeft: '18px', fontSize: '0.82rem', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '4px' }}>
                   <li><strong className="text-primary">Target Achievable</strong>: Displays the exact uniform grade required across unlocked units.</li>
-                  <li><strong className="text-success">Already Guaranteed</strong>: Even with a passing mark (3.00), your locked grades ensure your target GPA.</li>
+                  <li><strong className="text-success">Passing average meets target</strong>: Even with a passing mark (3.00), your locked grades ensure your target GPA.</li>
                   <li><strong className="text-danger">Mathematically Unreachable</strong>: Required grade exceeds the BU maximum mark (1.00). You need higher locked grades in other courses.</li>
                 </ul>
               </div>
@@ -315,11 +310,11 @@ export const SimulatorInfoModal: React.FC<SimulatorInfoModalProps> = ({
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ width: '16px', height: '2px', borderTop: '2px dashed #8b5cf6', flexShrink: 0 }} />
-                        <div><strong>President&apos;s Lister (&le; 1.45)</strong>: Semestral honor benchmark requiring no subject grade above 1.75 and full regular load.</div>
+                        <div><strong>President&apos;s Lister (&le; 1.45)</strong> uses the shared subject cap of {SUBJECT_CAP} and the prescribed regular curriculum load.</div>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         <span style={{ width: '16px', height: '2px', borderTop: '2px dashed #0284c7', flexShrink: 0 }} />
-                        <div><strong>Dean&apos;s Lister (&le; 1.75)</strong>: Semestral honor cutoff requiring no subject grade above 2.50 and full regular load.</div>
+                        <div><strong>Dean&apos;s Lister (&gt; 1.45 and &le; 1.75)</strong> uses the shared subject cap of {SUBJECT_CAP} and the prescribed regular curriculum load.</div>
                       </div>
                     </div>
                   </div>

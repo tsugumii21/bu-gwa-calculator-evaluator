@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
+import { ClipboardPaste, FileText } from 'lucide-react';
 import { useSemesterStore } from '../../store';
 import type { Subject } from '../../types';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+import { buildCalculationReport } from '../../core/calculation-report';
+import { ImportRows } from './import-rows';
+import { RecordDialogHeader } from './record-dialog-header';
 
 interface BulkPasteModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-const SAMPLE_DATA = `CS 111 - Introduction to Computing - 3 - 1.25
+const SAMPLE_DATA = `CS 111 - Introduction to Computing - 3 - 1.2
 GEC 11 - Understanding the Self - 3 - 1.50
-MATH 111 - Calculus 1 - 4 - 1.75
-CS 112 - Computer Programming 1 - 3 - 1.25
-NSTP 1 - National Service Training Program 1 - 3 - 1.25`;
+MATH 111 - Calculus 1 - 4 - 1.7
+CS 112 - Computer Programming 1 - 3 - 1.2
+NSTP 1 - National Service Training Program 1 - 3 - 1.2`;
 
 export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
   isOpen,
@@ -19,6 +24,11 @@ export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
 }) => {
   const { addSemester } = useSemesterStore();
   const [text, setText] = useState('');
+  const [review, setReview] = useState<Subject[] | null>(null);
+  const [title, setTitle] = useState('Imported semester');
+  const [error, setError] = useState('');
+  const close = () => { setText(''); setReview(null); setError(''); onClose(); };
+  const dialogRef = useAccessibleDialog(isOpen, close);
 
   if (!isOpen) return null;
 
@@ -27,6 +37,14 @@ export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
   };
 
   const processBulkPaste = () => {
+    if (review) {
+      const term = { id: crypto.randomUUID(), title, subjects: review, computed: false, underload: false };
+      const invalid = buildCalculationReport([term]).errors[0];
+      if (invalid || !review.length || !title.trim()) { setError(invalid ?? 'Enter a semester title and at least one course.'); return; }
+      addSemester(term);
+      close();
+      return;
+    }
     const rawText = text.trim();
     if (!rawText) {
       onClose();
@@ -45,17 +63,17 @@ export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
         if (parts.length >= 4) {
           const codeVal = parts[0];
           const gradeVal = parts[parts.length - 1];
-          const unitsVal = Math.max(0, parseFloat(parts[parts.length - 2]) || 3);
+          const unitsVal = Number(parts[parts.length - 2]) || 0;
           const nameVal = parts.slice(1, -2).join(` ${delim} `);
           return { code: codeVal, name: nameVal, units: unitsVal, grade: gradeVal };
         }
         if (parts.length === 3) {
-          return { code: parts[0], name: parts[1], units: Math.max(0, parseFloat(parts[2]) || 3), grade: '1.50' };
+          return { code: parts[0], name: parts[1], units: Number(parts[2]) || 0, grade: '' };
         }
         if (parts.length === 2) {
-          return { code: parts[0], name: parts[1], units: 3, grade: '1.50' };
+          return { code: parts[0], name: parts[1], units: 0, grade: '' };
         }
-        return { code: parts[0], name: 'Imported Course', units: 3, grade: '1.50' };
+        return { code: parts[0], name: '', units: 0, grade: '' };
       };
 
       if (trimmed.includes('\t')) {
@@ -65,74 +83,66 @@ export const BulkPasteModal: React.FC<BulkPasteModalProps> = ({
       } else if (trimmed.includes('-')) {
         newSubjects.push(parseRow(trimmed, '-'));
       } else {
-        newSubjects.push({ code: trimmed, name: 'Imported Course', grade: '1.50', units: 3 });
+        newSubjects.push({ code: trimmed, name: '', grade: '', units: 0 });
       }
     });
 
-    if (newSubjects.length > 0) {
-      addSemester({
-        id: crypto.randomUUID(),
-        title: `Bulk Imported (${newSubjects.length} Courses)`,
-        underload: false,
-        computed: false,
-        subjects: newSubjects,
-      });
-    }
-
-    setText('');
-    onClose();
+    setReview(newSubjects);
   };
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay v2-import-overlay v2-record-overlay"
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title-paste"
-      onClick={onClose}
+      ref={dialogRef}
+      onClick={close}
     >
       <div
-        className="modal-content animate__animated animate__zoomIn animate__faster"
+        className="modal-content v2-record-dialog"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="modal-header">
-          <h3 id="modal-title-paste">
-            <i className="fa-solid fa-paste text-primary"></i> Bulk Paste Schedule
-          </h3>
-          <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
+        <RecordDialogHeader id="modal-title-paste" title={review ? 'Review pasted courses' : 'Paste your courses'} icon={ClipboardPaste} onClose={close} eyebrow={review ? 'REVIEW BEFORE IMPORTING' : 'IMPORT GRADES'} />
 
         <div className="modal-body">
+          <p className="v2-dialog-note">Adds a new semester to your shared record. Existing semesters are kept. In GWA mode, select the imported semester to compute it on its own.</p>
+          {error && <p role="alert">{error}</p>}
+          {review ? <><label className="v2-dialog-field">New semester title<input value={title} onChange={event => setTitle(event.target.value)} /></label><ImportRows subjects={review} onChange={setReview} /></> : <>
           <p className="modal-instruction">
-            Paste your schedule below, one subject per line. Supported formats (with optional grade):
+            One course per line. Include its code, description, units and an optional grade.
           </p>
+          <details className="record-format-help"><summary>See supported formats</summary>
           <ul className="modal-format-list">
-            <li><code>CS 111 - Introduction to Computing - 3 - 1.25</code></li>
-            <li><code>CS 111 &Tab; Introduction to Computing &Tab; 3 &Tab; 1.5</code></li>
+            <li><code>CS 111 - Introduction to Computing - 3 - 1.2</code></li>
+            <li><code>CS 111 [Tab] Introduction to Computing [Tab] 3 [Tab] 1.5</code></li>
             <li><code>CS 111, Introduction to Computing, 3, 1.0</code></li>
           </ul>
+          </details>
+          <label className="record-field-label" htmlFor="bulk-paste-textarea">Course rows</label>
           <textarea
             id="bulk-paste-textarea"
+            aria-label="Paste course rows"
             className="form-control bulk-textarea"
             rows={7}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder={`CS 111 - Introduction to Computing - 3 - 1.25\nGEC 11 - Understanding the Self - 3 - 1.5\nMATH 111 - Calculus 1 - 4 - 1.0`}
+            placeholder={`CS 111 - Introduction to Computing - 3 - 1.2\nGEC 11 - Understanding the Self - 3 - 1.5\nMATH 111 - Calculus 1 - 4 - 1.0`}
             style={{ resize: 'none' }}
           />
+          </>}
         </div>
 
         <div className="modal-footer">
-          <button type="button" className="btn btn-gold btn-sm" onClick={handleLoadSample}>
-            <i className="fa-solid fa-wand-magic-sparkles"></i> Load Sample
-          </button>
-          <button type="button" className="btn btn-secondary btn-sm" onClick={onClose}>
+          {!review && <button type="button" className="btn btn-secondary btn-sm" onClick={handleLoadSample}>
+            <FileText size={18} aria-hidden="true" /> Load Sample
+          </button>}
+          {review && <button type="button" className="btn btn-secondary" onClick={() => setReview(null)}>Back to text</button>}
+          <button type="button" className="btn btn-secondary btn-sm" onClick={close}>
             Cancel
           </button>
           <button type="button" className="btn btn-primary btn-sm" onClick={processBulkPaste} disabled={!text.trim()}>
-            <i className="fa-solid fa-check"></i> Import
+            <i className="fa-solid fa-check" aria-hidden="true"></i> {review ? 'Import reviewed courses' : 'Review courses'}
           </button>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { ClipboardPaste, FileText, Images, Trash2 } from 'lucide-react';
 import { useSemesterStore } from '../../store';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
@@ -9,6 +10,9 @@ interface ActionToolbarProps {
   onOpenBulkPaste: () => void;
   onOpenAchievements: () => void;
   onComputeAll?: () => void;
+  showAddSemester?: boolean;
+  showAchievements?: boolean;
+  group?: 'all' | 'imports' | 'records';
 }
 
 export const ActionToolbar: React.FC<ActionToolbarProps> = ({
@@ -18,22 +22,25 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
   onOpenBulkPaste,
   onOpenAchievements,
   onComputeAll,
+  showAddSemester = true,
+  showAchievements = true,
+  group = 'all',
 }) => {
   const { clearAll, semesters } = useSemesterStore();
   const [isClearAllModalOpen, setIsClearAllModalOpen] = useState(false);
+  const Container = 'div';
 
   const handleClearAll = () => {
     if (semesters.length === 0) return;
     setIsClearAllModalOpen(true);
   };
 
-  const handleExportPDF = () => {
-    window.print();
-  };
-
   return (
-    <div className="toolbar-card">
-      <div className="toolbar-section toolbar-actions">
+    <section className={`toolbar-card v2-tools-${group}`} aria-label={group === 'imports' ? 'Import grades' : 'Record tools'}>
+      <Container className="rd-tools">
+        <h2 className="v2-tools-label">Import grades</h2>
+        <div className="toolbar-section toolbar-actions">
+        {group !== 'imports' && <>
         {semesters.length > 0 && onComputeAll && (
           <button
             type="button"
@@ -46,76 +53,77 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           </button>
         )}
 
-        <button
+        {showAchievements && <button
           className="btn btn-gold btn-sm"
           onClick={onOpenAchievements}
           id="btn-achievements"
-          title="View Academic Achievements & Graduation Honors Radar"
+          title="Review saved semesters and pending courses"
         >
-          <i className="fa-solid fa-trophy"></i> Achievements
-        </button>
+          <i className="fa-solid fa-list-check"></i> Review record
+        </button>}
 
-        <button
+        {showAddSemester && <button
           className="btn btn-primary btn-sm"
           onClick={onAddSemester}
           id="btn-add-semester"
         >
           <i className="fa-solid fa-plus"></i> Add Semester
-        </button>
+        </button>}
 
+        </>}
+        {group !== 'records' && <>
         <button
+          type="button"
+          aria-haspopup="dialog"
           className="btn btn-secondary btn-sm"
           onClick={onOpenScanCor}
           id="btn-import-doc"
           title="Scan official COR PDF file"
         >
-          <i className="fa-solid fa-file-pdf" style={{ color: '#ef4444' }}></i> Scan COR (PDF)
+          <FileText size={18} aria-hidden="true" /> <span>Scan COR (PDF)</span>
         </button>
 
         <button
+          type="button"
+          aria-haspopup="dialog"
           className="btn btn-secondary btn-sm"
           onClick={onOpenScanPhoto}
           id="btn-scan-ss"
           title="Scan mobile screenshots or photos of grade sheet with OCR"
         >
-          <i className="fa-solid fa-camera" style={{ color: '#2563eb' }}></i> Scan Image
+          <Images size={18} aria-hidden="true" /> <span>Scan Image</span>
         </button>
 
         <button
+          type="button"
+          aria-haspopup="dialog"
           className="btn btn-secondary btn-sm"
           onClick={onOpenBulkPaste}
           id="btn-bulk-paste"
           title="Paste schedule text"
         >
-          <i className="fa-solid fa-paste"></i> Bulk Paste
+          <ClipboardPaste size={18} aria-hidden="true" /> <span>Bulk Paste</span>
         </button>
 
-        <button
-          className="btn btn-gold btn-sm"
-          onClick={handleExportPDF}
-          id="btn-export-pdf"
-          title="Export academic summary as PDF"
-        >
-          <i className="fa-solid fa-file-export"></i> Export to PDF
-        </button>
-
-        {semesters.length > 0 && (
+        </>}
           <button
+            type="button"
+            aria-haspopup="dialog"
             className="btn btn-danger btn-sm"
             onClick={handleClearAll}
             id="btn-reset"
             title="Clear all data"
+            disabled={semesters.length === 0}
           >
-            <i className="fa-solid fa-trash-can"></i> Clear All
+            <Trash2 size={18} aria-hidden="true" /> <span>Clear All</span>
           </button>
-        )}
-      </div>
+      </div></Container>
 
       {/* Clear All Confirmation Modal */}
       <ConfirmModal
         isOpen={isClearAllModalOpen}
         title="Clear All Semesters"
-        message="Are you sure you want to clear all semesters, subjects, and computed records? This action cannot be undone."
+        message={`This will remove ${semesters.length} saved ${semesters.length === 1 ? 'semester' : 'semesters'}, including every course and computed result in this browser. This action cannot be undone.`}
         confirmText="Clear All"
         onConfirm={() => {
           setIsClearAllModalOpen(false);
@@ -123,6 +131,6 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
         }}
         onCancel={() => setIsClearAllModalOpen(false)}
       />
-    </div>
+    </section>
   );
 };

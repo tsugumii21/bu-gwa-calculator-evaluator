@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { useSemesterStore } from '../../store';
 import type { Semester } from '../../types';
 import { X, Plus, Calendar } from 'lucide-react';
@@ -31,6 +32,7 @@ export const AddSemesterModal: React.FC<AddSemesterModalProps> = ({
   const [title, setTitle] = useState(nextPreset);
   const [underload, setUnderload] = useState(false);
 
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
   if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -41,7 +43,7 @@ export const AddSemesterModal: React.FC<AddSemesterModalProps> = ({
       id: crypto.randomUUID(),
       title: title.trim(),
       subjects: [
-        { code: '', name: '', grade: '1.25', units: 3.0 },
+        { code: '', name: '', grade: '', units: 3.0 },
       ],
       underload,
       computed: false,
@@ -52,14 +54,14 @@ export const AddSemesterModal: React.FC<AddSemesterModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 p-0 sm:p-4 backdrop-blur-sm">
-      <div className="card w-full sm:max-w-[480px] rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 border-slate-200 dark:border-slate-800">
+    <div className="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-semester-title" ref={dialogRef}>
+      <div className="modal-content card w-full sm:max-w-[480px] rounded-t-2xl sm:rounded-2xl p-5 sm:p-6 shadow-2xl animate-in slide-in-from-bottom sm:zoom-in-95 border-slate-200 dark:border-slate-800">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-2">
             <div className="p-2 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400">
               <Calendar className="h-5 w-5" />
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-50">
+            <h3 id="add-semester-title" className="text-base font-bold text-slate-900 dark:text-slate-50">
               Add New Semester
             </h3>
           </div>
@@ -75,7 +77,7 @@ export const AddSemesterModal: React.FC<AddSemesterModalProps> = ({
 
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+            <label htmlFor="new-semester-name" className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Semester Title
             </label>
             <input
@@ -84,7 +86,8 @@ export const AddSemesterModal: React.FC<AddSemesterModalProps> = ({
               onChange={(e) => setTitle(e.target.value)}
               className="w-full bg-slate-50 dark:bg-slate-850 border border-slate-200 dark:border-slate-750 rounded-md px-3 py-2 text-xs sm:text-sm text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-amber-500"
               placeholder="e.g. 1st Year - 1st Semester"
-              autoFocus
+              id="new-semester-name"
+              data-dialog-initial-focus
             />
           </div>
 

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { useSemesterStore } from '../../store';
 import { calculateCumulativeStats, calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
 import { isMidyearTerm } from '../../core/honor-rules';
@@ -17,6 +18,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
   const semesters = useSemesterStore((s) => s.semesters);
   const computeSemester = useSemesterStore((s) => s.computeSemester);
 
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
   if (!isOpen) return null;
 
   const stats = calculateCumulativeStats(semesters);
@@ -36,6 +38,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
   return (
     <div
       className="modal-overlay"
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title-achieve"

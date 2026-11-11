@@ -46,7 +46,7 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
 
   return (
     <tr>
-      <td style={{ width: '22%' }}>
+      <td data-label="Course code" style={{ width: '22%' }}>
         <input
           type="text"
           className="form-control-sm"
@@ -61,7 +61,7 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           aria-label={`Course Code for ${rowIdentifier}`}
         />
       </td>
-      <td style={{ width: '43%' }}>
+      <td data-label="Description" style={{ width: '46%' }}>
         <input
           type="text"
           className="form-control-sm"
@@ -75,13 +75,13 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           aria-label={`Course Description for ${rowIdentifier}`}
         />
       </td>
-      <td style={{ width: '17%' }}>
+      <td data-label="Grade" style={{ width: '14%' }}>
         <div className="grade-input-wrapper" style={{ position: 'relative' }}>
           <input
             type="text"
             className={`form-control-sm ${isInvalidGrade ? 'input-error-border' : ''}`}
             value={localGrade}
-            placeholder="e.g. 1.2"
+            placeholder="Pending"
             inputMode="decimal"
             enterKeyHint="next"
             onChange={(e) => setLocalGrade(e.target.value)}
@@ -117,7 +117,7 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           )}
         </div>
       </td>
-      <td style={{ width: '10%' }}>
+      <td data-label="Units" style={{ width: '12%' }}>
         <input
           type="number"
           className="form-control-sm"
@@ -132,11 +132,11 @@ export const SubjectRow: React.FC<SubjectRowProps> = ({
           aria-label={`Credit Units for ${rowIdentifier}`}
         />
       </td>
-      <td style={{ width: '8%', textAlign: 'center' }}>
+      <td data-label="Remove course" style={{ width: '6%', textAlign: 'center' }}>
         <button
           type="button"
           className="btn btn-danger btn-sm"
-          style={{ minWidth: 38, minHeight: 38, margin: 'auto' }}
+          style={{ minWidth: 48, minHeight: 48, margin: 'auto' }}
           onClick={onRemove}
           title="Remove Subject"
           aria-label={`Remove subject ${rowIdentifier}`}

@@ -1,8 +1,7 @@
 import React, { useMemo } from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import type { Semester } from '../../types';
-import { calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
-import { isMidyearTerm } from '../../core/honor-rules';
-import { HONOR_MESSAGES } from '../../core/constants';
+import { buildCalculationReport } from '../../core/calculation-report';
 
 interface TermHonorModalProps {
   isOpen: boolean;
@@ -14,99 +13,35 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
   const details = useMemo(() => {
     if (!semester) return null;
 
-    const semGWA = calculateSemesterGWA(semester);
-    const semUnits = calculateSemesterUnits(semester);
-
-    let lowestGradeInSem = 1.0;
-    let hasFailOrInc = false;
-
-    if (semester.subjects) {
-      semester.subjects.forEach((sub) => {
-        const num = parseFloat(sub.grade);
-        if (
-          sub.grade === '5.0' ||
-          sub.grade === '5.00' ||
-          num === 5.0 ||
-          sub.grade === 'INC'
-        ) {
-          hasFailOrInc = true;
-        }
-        if (!isNaN(num) && num > lowestGradeInSem) {
-          lowestGradeInSem = num;
-        }
-      });
-    }
-
-    let category: 'PL' | 'DL' | 'REGULAR' | 'UNDERLOAD' = 'REGULAR';
-    let title = 'Good Academic Standing';
-    let badgeClass = 'card-emerald';
-    let icon = 'fa-bullseye';
-    let subtext = `${semester.title} • Semester GPA: ${semGWA.toFixed(4)}`;
-    let headerIcon = 'fa-chart-line text-primary';
-    let headerText = 'Semester Performance Summary';
-    const isMidyear = isMidyearTerm(semester.title);
-
-    if (semUnits >= 15 && !hasFailOrInc && !semester.underload && !isMidyear) {
-      if (semGWA <= 1.45 && lowestGradeInSem <= 1.75) {
-        category = 'PL';
-        title = "President's Lister";
-        badgeClass = 'card-gold';
-        icon = 'fa-crown';
-        subtext = `${semester.title} • Semester GPA: ${semGWA.toFixed(4)}`;
-        headerIcon = 'fa-crown text-gold';
-        headerText = "President's Lister Qualification";
-      } else if (semGWA <= 1.75 && lowestGradeInSem <= 2.5) {
-        category = 'DL';
-        title = "Dean's Lister";
-        badgeClass = 'card-azure';
-        icon = 'fa-medal';
-        subtext = `${semester.title} • Semester GPA: ${semGWA.toFixed(4)}`;
-        headerIcon = 'fa-medal text-gold';
-        headerText = "Dean's Lister Qualification";
-      }
-    }
-
-    if (category === 'REGULAR') {
-      if (semester.underload) {
-        category = 'UNDERLOAD';
-        title = 'Underloaded Term';
-        badgeClass = 'card-amber';
-        icon = 'fa-scale-balanced';
-        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Underloaded Term`;
-        headerIcon = 'fa-scale-balanced text-warning';
-        headerText = 'Underloaded Term Summary';
-      } else if (isMidyear) {
-        title = 'Midyear Term Performance';
-        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Midyear courses count toward cumulative GWA`;
-        headerText = 'Midyear Term Summary';
-      } else if (hasFailOrInc) {
-        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Disqualified due to 5.0 / INC grade`;
-      } else if (semUnits < 15 && semUnits > 0) {
-        subtext = `${semester.title} (GPA: ${semGWA.toFixed(4)}) • Regular load (< 15 units, not eligible for PL/DL)`;
-      }
-    }
-
-    // Pick a quote based on category
-    const quotes = HONOR_MESSAGES[category] || HONOR_MESSAGES.REGULAR;
-    const quote = quotes[Math.floor(Math.random() * quotes.length)] || quotes[0];
-
+    const report = buildCalculationReport([semester]);
+    const honor = report.termHonor;
+    const isPresident = honor?.level === 'president';
+    const isDean = honor?.level === 'dean';
+    const isRecognized = isPresident || isDean;
+    const isGood = report.standing.level === 'good';
+    const icon = isPresident ? 'fa-crown' : isDean ? 'fa-medal' : isGood ? 'fa-bullseye' : 'fa-circle-exclamation';
+    const average = report.stats.gradedUnits ? report.stats.cumulativeGWA.toFixed(4) : '—';
     return {
-      semGWA,
-      title,
-      badgeClass,
+      title: honor?.label ?? report.standing.label,
+      badgeClass: isPresident ? 'card-gold' : isDean ? 'card-azure' : isGood ? 'card-emerald' : 'card-amber',
       icon,
-      subtext,
-      headerIcon,
-      headerText,
-      quote,
+      subtext: `${semester.title} • Semester GWA: ${average}`,
+      reason: report.errors[0] ?? honor?.reason ?? report.standing.reason,
+      headerIcon: `${icon} ${isRecognized ? 'text-gold' : 'text-primary'}`,
+      headerText: 'Semester recognition estimate',
+      quote: isPresident ? 'You turned steady effort into an exceptional term. Carry that discipline into your next chapter.'
+        : isDean ? 'Your progress is earned, one lesson at a time. Let this term remind you what consistent effort can build.'
+        : 'A title is one milestone, not the measure of your potential. Choose your next step and keep moving.',
     };
   }, [semester]);
 
+  const dialogRef = useAccessibleDialog(isOpen && !!semester && !!details, onClose);
   if (!isOpen || !semester || !details) return null;
 
   return (
     <div
       className="modal-overlay"
+      ref={dialogRef}
       id="term-honor-modal"
       role="dialog"
       aria-modal="true"
@@ -136,6 +71,7 @@ export const TermHonorModal: React.FC<TermHonorModalProps> = ({ isOpen, onClose,
               <div className="achieve-details">
                 <strong className="achieve-title">{details.title}</strong>
                 <span className="achieve-subtext">{details.subtext}</span>
+                <span className="achieve-subtext">{details.reason}</span>
               </div>
             </div>
 

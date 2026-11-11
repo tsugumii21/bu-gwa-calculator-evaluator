@@ -24,7 +24,7 @@ export const HandbookPolicies: React.FC = () => {
           <i className="fa-solid fa-table-list text-primary"></i> Official Academic Grading Scale (Discrete Tenths)
         </h3>
         <div className="policy-citation-banner banner-blue">
-          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VI, Section 13–15 (Page 28) · BOR Res. 89 s. 2006
+          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Section III, Grading System, printed p. 18 / PDF p. 28
         </div>
         <p className="guide-note">
           Official grade ratings, percentage equivalents, and adjectival descriptions codified in the Bicol University grading system:
@@ -105,7 +105,7 @@ export const HandbookPolicies: React.FC = () => {
           <i className="fa-solid fa-award text-gold"></i> Semester Academic Recognition Criteria (PL &amp; DL)
         </h3>
         <div className="policy-citation-banner banner-gold">
-          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII, Section 28–29 (Page 34–35) · BOR Res. 89 s. 2006
+          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Section IV, Scholarships &amp; Financial Assistance, printed pp. 31–32 / PDF pp. 41–42
         </div>
         <p className="guide-note">
           Official semestral honor roll thresholds and course grade caps per Bicol University Academic Policies:
@@ -124,14 +124,14 @@ export const HandbookPolicies: React.FC = () => {
               <tr>
                 <td><strong className="honor-text-pl">President's Lister (PL)</strong></td>
                 <td><strong>1.0000 – 1.4500</strong></td>
-                <td><strong>Max 1.75</strong> (No subject below 1.75)</td>
-                <td>Regular semester, full regular load (&ge; 15 units), zero 5.0 or INC marks</td>
+                <td><strong>Max 2.40</strong></td>
+                <td>Prescribed curriculum load and complete grades</td>
               </tr>
               <tr>
                 <td><strong className="honor-text-dl">Dean's Lister (DL)</strong></td>
-                <td><strong>1.4600 – 1.7500</strong></td>
-                <td><strong>Max 2.50</strong> (No subject below 2.50)</td>
-                <td>Regular semester, full regular load (&ge; 15 units), zero 5.0 or INC marks</td>
+                <td><strong>&gt; 1.4500 through 1.7500</strong></td>
+                <td><strong>Max 2.40</strong></td>
+                <td>Prescribed curriculum load and complete grades</td>
               </tr>
             </tbody>
           </table>
@@ -144,7 +144,7 @@ export const HandbookPolicies: React.FC = () => {
           <i className="fa-solid fa-graduation-cap text-gold"></i> Latin Graduation Honors Criteria (Degree-Wide)
         </h3>
         <div className="policy-citation-banner banner-orange">
-          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII, Section 30 (Page 36) · BOR Res. 89 s. 2006
+          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31
         </div>
         <p className="guide-note">
           Cumulative degree requirements and lifetime conditions for Latin Graduation Honors:
@@ -166,12 +166,12 @@ export const HandbookPolicies: React.FC = () => {
               </tr>
               <tr>
                 <td><strong className="honor-text-magna">Magna Cum Laude</strong></td>
-                <td><strong>1.2501 – 1.4500</strong></td>
+                <td><strong>&gt; 1.2500 through 1.4500</strong></td>
                 <td>Full regular load every semester, zero lifetime 5.0 / 4.0 / unremoved INC marks</td>
               </tr>
               <tr>
                 <td><strong className="honor-text-cum">Cum Laude</strong></td>
-                <td><strong>1.4501 – 1.7500</strong></td>
+                <td><strong>&gt; 1.4500 through 1.7500</strong></td>
                 <td>Full regular load every semester, zero lifetime 5.0 / 4.0 / unremoved INC marks</td>
               </tr>
             </tbody>
@@ -185,7 +185,7 @@ export const HandbookPolicies: React.FC = () => {
           <i className="fa-solid fa-sun text-gold"></i> Midyear / Summer Term Policy &amp; Academic Governance
         </h3>
         <div className="policy-citation-banner banner-blue">
-          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII &amp; X · BOR Resolution 89 s. 2006
+          <i className="fa-solid fa-book"></i> Bicol University Student Handbook: See Section III, Academic Load, and Section IV, Academic Distinctions
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: 14, marginTop: 14 }}>
@@ -215,7 +215,7 @@ export const HandbookPolicies: React.FC = () => {
               No President's / Dean's Lister in Summer
             </strong>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-              Per Article X of the BU Student Handbook, semestral academic honors (PL and DL) require a regular semester sprint of at least <strong>15 graded units</strong>. Because midyear terms carry 3–9 units, midyear terms are strictly exempt from PL/DL honor rolls.
+              The calculator reserves term distinctions for regular semesters and leaves Midyear out of its regular-term underload check. Confirm official requirements with your college.
             </p>
           </div>
 
@@ -230,7 +230,7 @@ export const HandbookPolicies: React.FC = () => {
               Authorized Summer Load (Not Underloaded)
             </strong>
             <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', lineHeight: 1.5, margin: 0 }}>
-              Enrolling in 3–9 units during a midyear term is the prescribed authorized load. It does <strong>NOT</strong> count as an underload and does <strong>NOT</strong> disqualify you from graduating with Latin Honors (Summa, Magna, Cum Laude).
+              The app skips its regular-term underload check for Midyear. Your college can confirm prescribed loads and official eligibility.
             </p>
           </div>
         </div>
@@ -264,7 +264,7 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-calculator"></i> Grading System &amp; GWA Math
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VI, Section 13–15 (Page 28)
+                  Section III, Grading System, printed p. 18 / PDF p. 28
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(1) ? 'is-open' : ''}`}></i>
@@ -284,7 +284,7 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-scale-unbalanced"></i> Regular Academic Load &amp; Underload
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 18 (Page 31)
+                  Section III, Academic Load, printed p. 10 / PDF p. 20
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(2) ? 'is-open' : ''}`}></i>
@@ -304,14 +304,14 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-award"></i> President's &amp; Dean's Lister Honors
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 28–29 (Page 34–35)
+                  Section IV, Scholarships &amp; Financial Assistance, printed pp. 31–32 / PDF pp. 41–42
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(3) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(3) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                President's Lister requires GPA ≤ 1.4500 with no grade below 1.75. Dean's Lister requires GPA ≤ 1.7500 with no grade below 2.50. Both require full regular load (minimum 15 units) and zero 5.0 or INC marks.
+                PL applies through 1.4500. DL applies above 1.4500 through 1.7500. Both use a maximum numeric subject grade of 2.40 and the prescribed regular curriculum load.
               </p>
             </div>
           </div>
@@ -324,14 +324,14 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-graduation-cap"></i> Latin Graduation Honors
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 30 (Page 36)
+                  Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(4) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(4) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Summa Cum Laude (1.0000–1.2500), Magna Cum Laude (1.2501–1.4500), Cum Laude (1.4501–1.7500). Candidates must complete 100% of curriculum within prescribed timeframe with no underloaded semesters and zero failing (5.0) or unremoved INC marks.
+                Summa Cum Laude (1.0000–1.2500), Magna Cum Laude (above 1.2500 through 1.4500), Cum Laude (above 1.4500 through 1.7500). Candidates must complete 100% of curriculum within prescribed timeframe with no underloaded semesters and zero failing (5.0) or unremoved INC marks.
               </p>
             </div>
           </div>
@@ -344,7 +344,7 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-triangle-exclamation"></i> Incomplete (INC) Removal Timeline
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VI, Section 16 (Page 29)
+                  Section III, The Grade of Incomplete, printed p. 20 / PDF p. 30
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(5) ? 'is-open' : ''}`}></i>
@@ -364,14 +364,14 @@ export const HandbookPolicies: React.FC = () => {
                   <i className="fa-solid fa-landmark"></i> Maximum Residency Rule (MRR)
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article V, Section 10 (Page 24)
+                  Section III, Maximum Residence Rule, printed p. 17 / PDF p. 27
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(6) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(6) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Students must finish their degree within 1.5× normal program length (e.g. 6 years for a 4-year degree). Leaves of absence (LOA) must be officially filed with Dean or Registrar to avoid MRR lapse.
+                Maximum residence is the prescribed program duration plus one year (five years for a four-year program). Confirm applicable exceptions with the University.
               </p>
             </div>
           </div>

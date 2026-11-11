@@ -1,5 +1,7 @@
 import React from 'react';
+import { TriangleAlert, Trash2 } from 'lucide-react';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+import { RecordDialogHeader } from './record-dialog-header';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -28,33 +30,22 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay v2-record-overlay"
       id="delete-confirm-modal"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
+      aria-describedby="confirm-modal-description"
       ref={dialogRef}
       onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >
-      <div className="modal-content animate__animated animate__zoomIn animate__faster">
-        <div className="modal-header">
-          <h3 id="confirm-modal-title" style={{ margin: 0 }}>
-            <i className={`fa-solid fa-triangle-exclamation text-${confirmVariant}`}></i> {title}
-          </h3>
-          <button
-            type="button"
-            className="modal-close-btn"
-            onClick={onCancel}
-            aria-label="Close modal"
-          >
-            <i className="fa-solid fa-xmark"></i>
-          </button>
-        </div>
+      <div className="modal-content v2-record-dialog v2-confirm-dialog">
+        <RecordDialogHeader id="confirm-modal-title" title={title} icon={TriangleAlert} onClose={onCancel} eyebrow="MANAGE YOUR RECORD" />
 
         <div className="modal-body" style={{ padding: '20px' }}>
-          <p
+          <p id="confirm-modal-description"
             style={{
               margin: 0,
               fontSize: '0.92rem',
@@ -78,6 +69,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
           <button
             type="button"
             className="btn btn-secondary btn-sm"
+            data-dialog-initial-focus
             onClick={onCancel}
             style={{ minWidth: '80px', height: '36px' }}
           >
@@ -89,7 +81,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
             onClick={onConfirm}
             style={{ minWidth: '90px', height: '36px' }}
           >
-            <i className="fa-solid fa-trash-can"></i> {confirmText}
+            <Trash2 size={18} aria-hidden="true" /> {confirmText}
           </button>
         </div>
       </div>

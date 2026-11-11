@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 
 interface ImportSuccessModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
   semesterTitle,
   source = 'pdf',
 }) => {
+  const dialogRef = useAccessibleDialog(isOpen, onClose);
   if (!isOpen) return null;
 
   const isPdf = source === 'pdf';
@@ -25,6 +27,7 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
     <div
       className="modal-overlay"
       id="import-success-modal"
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title-import-success"
@@ -79,7 +82,7 @@ export const ImportSuccessModal: React.FC<ImportSuccessModalProps> = ({
           onClick={onClose}
           style={{ width: '100%', justifyContent: 'center', padding: '10px', fontWeight: 700 }}
         >
-          Great!
+          Review my courses
         </button>
       </div>
     </div>

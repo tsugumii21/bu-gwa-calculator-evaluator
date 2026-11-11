@@ -1,214 +1,63 @@
-import React, { useState } from 'react';
-import { useSemesterStore } from '../../store';
-import { calculateCumulativeStats } from '../../core/gwa-engine';
+import { MascotReference } from '../illustrations/mascot-reference';
+import { useSemesterStore, useAppStore } from '../../store';
+import { useScholarshipStore } from '../../store/scholarship-store';
+import { evaluateScholarship } from '../../core/scholarship';
 import { SCHOLARSHIP_PRESETS } from '../../core/constants';
 
-export const ScholarshipView: React.FC = () => {
-  const semesters = useSemesterStore((s) => s.semesters);
-  const stats = calculateCumulativeStats(semesters);
+const STATUS_COPY = {
+  unconfigured: ['Set your requirements first', 'Choose a starting point, check the values against your scholarship agreement, then confirm below.'],
+  invalid: ['Check your entries', 'Requirements must be between 1.00 and 5.00. Correct invalid grades or units in Calculator before reviewing.'],
+  incomplete: ['More information needed', 'Your record has missing grades or no graded baseline. Complete it before relying on this comparison.'],
+  unmet: ['Some entered criteria are not met', 'Review the evidence below. Your scholarship office determines retention and any exceptions.'],
+  met: ['Entered academic criteria met', 'The saved grades meet these entered checks. Other scholarship conditions still need review.'],
+} as const;
+const CHECK_LABELS = ['Cumulative GWA', 'Individual grade cap', 'Unresolved INC', 'Conditional or failing grades (4.00 / 5.00)'];
+const CHECK_STATUS = { met: 'Met', unmet: 'Not met', unknown: 'Unknown', 'not-required': 'Not required' };
 
-  const [selectedPreset, setSelectedPreset] = useState<string>('');
-  const [maxGWA, setMaxGWA] = useState<number>(2.5);
-  const [lowestGrade, setLowestGrade] = useState<number>(3.0);
-  const [noInc, setNoInc] = useState<boolean>(true);
-  const [noFail, setNoFail] = useState<boolean>(true);
-
+/** Result-first comparison of editable scholarship requirements and saved grades. */
+export function ScholarshipView() {
+  const semesters = useSemesterStore(state => state.semesters);
+  const setActiveTab = useAppStore(state => state.setActiveTab);
+  const { requirements, update } = useScholarshipStore();
+  const result = evaluateScholarship(semesters, requirements);
+  const [title, description] = STATUS_COPY[result.state];
   const applyPreset = (key: string) => {
-    setSelectedPreset(key);
-    if (key && key in SCHOLARSHIP_PRESETS) {
-      const p = SCHOLARSHIP_PRESETS[key as keyof typeof SCHOLARSHIP_PRESETS];
-      setMaxGWA(p.maxGWA);
-      setLowestGrade(p.lowestGrade);
-      setNoInc(p.noInc);
-      setNoFail(p.noFail);
-    }
+    const preset = SCHOLARSHIP_PRESETS[key as keyof typeof SCHOLARSHIP_PRESETS];
+    update(preset ? { preset: key, maxGWA: String(preset.maxGWA), lowestGrade: String(preset.lowestGrade), noInc: preset.noInc, noFail: preset.noFail } : { preset: '' });
   };
-
-  // Find lowest individual grade
-  let lowestIndividualGrade = 1.0;
-  semesters.forEach((sem) => {
-    sem.subjects.forEach((sub) => {
-      const g = parseFloat(sub.grade);
-      if (!isNaN(g) && g > lowestIndividualGrade) {
-        lowestIndividualGrade = g;
-      }
-    });
-  });
-
-  const hasData = stats.gradedUnits > 0;
-  const isGwaCompliant = hasData ? stats.cumulativeGWA <= maxGWA : false;
-  const isLowestCompliant = hasData ? lowestIndividualGrade <= lowestGrade : false;
-  const isIncCompliant = noInc ? !stats.hasInc : true;
-  const isFailCompliant = noFail ? !stats.hasFailingGrade : true;
-
-  const isOverallCompliant =
-    hasData && isGwaCompliant && isLowestCompliant && isIncCompliant && isFailCompliant;
-
-  return (
-    <div className="tab-content active" id="tab-scholarship">
-      <div className="section-header">
-        <h2><i className="fa-solid fa-graduation-cap"></i> Scholarship Retention Monitor</h2>
-        <p className="section-desc">Track whether your current academic performance meets scholarship retention criteria.</p>
-      </div>
-
-      <div className="sch-grid">
-        <div className="sim-panel sch-config-panel">
-          <h3 className="panel-title">Scholarship Requirements</h3>
-
-          <div className="form-group">
-            <label htmlFor="scholarship-preset">Quick Preset</label>
-            <select
-              id="scholarship-preset"
-              className="form-control"
-              value={selectedPreset}
-              onChange={(e) => applyPreset(e.target.value)}
-            >
-              <option value="">Select Scholarship</option>
-              <option value="dost">DOST-SEI Merit Scholarship</option>
-              <option value="ched_full">CHED Full Merit Scholarship</option>
-              <option value="ched_half">CHED Half Merit Scholarship</option>
-              <option value="tes">TES (Tertiary Education Subsidy)</option>
-              <option value="bu_athletic">BU Athletic Scholarship</option>
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="sch-max-gwa">Maximum Allowed GWA</label>
-            <input
-              type="number"
-              id="sch-max-gwa"
-              className="form-control"
-              value={maxGWA}
-              min="1.00"
-              max="5.00"
-              step="0.05"
-              inputMode="decimal"
-              onChange={(e) => setMaxGWA(parseFloat(e.target.value) || 2.5)}
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="sch-lowest-grade">Lowest Acceptable Individual Grade</label>
-            <input
-              type="number"
-              id="sch-lowest-grade"
-              className="form-control"
-              value={lowestGrade}
-              min="1.0"
-              max="5.0"
-              step="0.1"
-              inputMode="decimal"
-              onChange={(e) => setLowestGrade(parseFloat(e.target.value) || 3.0)}
-            />
-          </div>
-
-          <div className="form-group checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                id="sch-no-inc"
-                checked={noInc}
-                onChange={(e) => setNoInc(e.target.checked)}
-              />
-              <span>No Incomplete (INC) grades allowed</span>
-            </label>
-          </div>
-
-          <div className="form-group checkbox-group">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                id="sch-no-fail"
-                checked={noFail}
-                onChange={(e) => setNoFail(e.target.checked)}
-              />
-              <span>No Failing (5.0) grades allowed</span>
-            </label>
-          </div>
-        </div>
-
-        <div className="sim-panel sch-status-panel">
-          <div className="sch-status-container" id="sch-status-container">
-            <div className="sch-status-icon" id="sch-icon">
-              {!hasData ? (
-                <i className="fa-solid fa-circle-info text-gold"></i>
-              ) : isOverallCompliant ? (
-                <i className="fa-solid fa-circle-check text-success"></i>
-              ) : (
-                <i className="fa-solid fa-circle-xmark text-danger"></i>
-              )}
-            </div>
-            <div className="sch-status-text">
-              <h3 id="sch-status-title">
-                {!hasData
-                  ? 'Awaiting Data'
-                  : isOverallCompliant
-                    ? 'Compliant with Scholarship'
-                    : 'Non-Compliant / At Risk'}
-              </h3>
-              <p id="sch-status-desc">
-                {!hasData
-                  ? 'Add your subject grades in the Calculator tab to evaluate compliance.'
-                  : isOverallCompliant
-                    ? 'All current grades meet or exceed the selected scholarship retention criteria.'
-                    : 'One or more of your grades do not satisfy the retention guidelines.'}
-              </p>
-            </div>
-          </div>
-
-          <h3 className="panel-title" style={{ marginTop: 'var(--space-lg)' }}>Compliance Checklist</h3>
-          <ul className="sch-checklist">
-            <li id="chk-gwa">
-              {!hasData ? (
-                <>
-                  <i className="fa-solid fa-circle-dot text-muted"></i> GWA Threshold Check (Max {maxGWA.toFixed(2)})
-                </>
-              ) : (
-                <>
-                  <i className={`fa-solid ${isGwaCompliant ? 'fa-check text-success' : 'fa-xmark text-danger'}`}></i>{' '}
-                  {isGwaCompliant ? 'GWA Check Passed' : 'GWA Check Failed'} ({stats.cumulativeGWA.toFixed(4)} {isGwaCompliant ? '≤' : '>'} {maxGWA.toFixed(2)})
-                </>
-              )}
-            </li>
-            <li id="chk-grade">
-              {!hasData ? (
-                <>
-                  <i className="fa-solid fa-circle-dot text-muted"></i> Individual Grade Cap Check (Limit {lowestGrade.toFixed(2)})
-                </>
-              ) : (
-                <>
-                  <i className={`fa-solid ${isLowestCompliant ? 'fa-check text-success' : 'fa-xmark text-danger'}`}></i>{' '}
-                  {isLowestCompliant ? 'Grade Cap Passed' : 'Grade Cap Exceeded'} (Lowest: {lowestIndividualGrade.toFixed(2)} {isLowestCompliant ? '≤' : '>'} {lowestGrade.toFixed(2)})
-                </>
-              )}
-            </li>
-            <li id="chk-inc">
-              {!hasData ? (
-                <>
-                  <i className="fa-solid fa-circle-dot text-muted"></i> Incomplete (INC) Check
-                </>
-              ) : (
-                <>
-                  <i className={`fa-solid ${isIncCompliant ? 'fa-check text-success' : 'fa-xmark text-danger'}`}></i>{' '}
-                  {isIncCompliant ? 'No INC Grades Check Passed' : 'Disqualified: Unresolved INC Grade Found'}
-                </>
-              )}
-            </li>
-            <li id="chk-fail">
-              {!hasData ? (
-                <>
-                  <i className="fa-solid fa-circle-dot text-muted"></i> Failing Mark (5.0) Check
-                </>
-              ) : (
-                <>
-                  <i className={`fa-solid ${isFailCompliant ? 'fa-check text-success' : 'fa-xmark text-danger'}`}></i>{' '}
-                  {isFailCompliant ? 'No Failing Mark Check Passed' : `Disqualified: ${stats.failingCount} Failing Mark(s) Found`}
-                </>
-              )}
-            </li>
-          </ul>
-        </div>
-      </div>
+  const evidence = [
+    result.stats.gradedUnits ? `${result.stats.cumulativeGWA.toFixed(4)} · entered maximum ${requirements.maxGWA}` : 'No graded baseline yet',
+    result.worstGrade === null ? 'No numeric grades yet' : `${result.worstGrade.toFixed(2)} highest numeric grade · cap ${requirements.lowestGrade}`,
+    result.stats.hasInc ? 'INC found in the saved record' : 'No INC found in entered courses',
+    result.stats.hasFailingGrade ? `${result.stats.failingCount} conditional / failing marks found` : 'No 4.00 or 5.00 found in entered courses',
+  ];
+  return <div className="tab-content active v2-scholarship" id="tab-scholarship">
+    <header className="sch-heading sch-heading-with-scene">
+      <span className="sch-eyebrow">KEEP YOUR NEXT STEP IN SIGHT</span>
+      <h1>A little clarity.<br/>For your scholarship.</h1>
+      <MascotReference scene="scholarship" className="scholarship-scene" />
+      <p>Bring your requirements. See how your record compares.</p>
+    </header>
+    <section className="sch-overview" aria-label="Requirement check summary" data-state={result.state}>
+      <div><span className="sch-eyebrow">YOUR REQUIREMENT CHECK</span><h2 id="sch-status-title" aria-live="polite">{title}</h2><p>{description}</p><span className="sch-status-tag">Unofficial · academic checks only</span></div>
+      <dl><div><dt>Current cumulative GWA</dt><dd>{result.stats.gradedUnits ? result.stats.cumulativeGWA.toFixed(4) : '—'}</dd></div><div><dt>Graded units</dt><dd>{result.stats.gradedUnits || '—'}</dd></div><div><dt>Pending entries</dt><dd>{result.pending}</dd></div></dl>
+    </section>
+    <div className="sch-workspace">
+      <section className="sch-panel sch-requirements" aria-labelledby="sch-requirements-title"><span className="sch-step">01 / YOUR AGREEMENT</span><h2 id="sch-requirements-title">Set your requirements</h2><p className="sch-muted">Settings save on this browser. Reconfirm after each change.</p>
+        <label htmlFor="scholarship-preset">Start with an existing preset</label><select id="scholarship-preset" value={requirements.preset} onChange={event => applyPreset(event.target.value)}><option value="">Custom requirements</option>{Object.entries(SCHOLARSHIP_PRESETS).map(([key, preset]) => <option key={key} value={key}>{preset.name}</option>)}</select>
+        <p className="sch-caption">Presets are existing app examples, not verified current scholarship rules. Check your own agreement.</p>
+        <div className="sch-fields"><div><label htmlFor="sch-max-gwa">Maximum allowed GWA</label><input id="sch-max-gwa" type="number" min="1" max="5" step="0.05" value={requirements.maxGWA} onChange={event => update({ maxGWA: event.target.value })}/></div><div><label htmlFor="sch-lowest-grade">Highest numeric grade allowed</label><input id="sch-lowest-grade" type="number" min="1" max="5" step="0.05" value={requirements.lowestGrade} onChange={event => update({ lowestGrade: event.target.value })}/></div></div>
+        <label className="sch-checkbox"><input id="sch-no-inc" type="checkbox" checked={requirements.noInc} onChange={event => update({ noInc: event.target.checked })}/>No unresolved INC allowed</label>
+        <label className="sch-checkbox"><input id="sch-no-fail" type="checkbox" checked={requirements.noFail} onChange={event => update({ noFail: event.target.checked })}/>No conditional or failing grades allowed</label>
+        {result.invalidRequirements && <p role="alert">Enter both limits between 1.00 and 5.00.</p>}
+        <button className="sch-primary" disabled={result.invalidRequirements || requirements.confirmed} onClick={() => update({ confirmed: true })}>{requirements.confirmed ? 'Requirements confirmed' : 'Confirm these requirements'}</button>
+      </section>
+      <section className="sch-panel" aria-labelledby="sch-evidence-title"><span className="sch-step">02 / YOUR SAVED RECORD</span><h2 id="sch-evidence-title">Review the evidence</h2><p className="sch-muted">Uses all saved semesters, including uncomputed terms.</p>
+        <ul className="sch-evidence">{CHECK_LABELS.map((label, index) => <li key={label}><div><strong>{label}</strong><span>{evidence[index]}</span></div><b className="sch-check-state" data-state={requirements.confirmed && !result.invalidRequirements && !result.errors.length ? result.checks[index] : 'unknown'}>{requirements.confirmed && !result.invalidRequirements && !result.errors.length ? CHECK_STATUS[result.checks[index]] : 'Not assessed'}</b></li>)}</ul>
+        <aside className="sch-note"><strong>Still outside this check</strong><p>Required load, financial or residency conditions, service obligations, renewals and approved exceptions must be reviewed with your scholarship office.</p></aside>
+        {result.errors.length > 0 && <p role="alert">{result.errors[0]}</p>}
+        <button className="sch-secondary" onClick={() => setActiveTab('calculator')}>Review grades in Calculator</button>
+      </section>
     </div>
-  );
-};
+  </div>;
+}

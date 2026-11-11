@@ -91,6 +91,14 @@ export const SemesterList: React.FC<SemesterListProps> = ({
     <div id="semesters-container" aria-label="Semester cards">
       {semesters.length > 0 && (
         <div className="semester-list-header">
+          <label className="rd-semester-index">Jump to term
+            <select aria-label="Jump to semester" defaultValue="" onChange={e => {
+              setCollapsedMap(prev => ({ ...prev, [e.target.value]: false }));
+              const card = document.getElementById(`semester-${e.target.value}`);
+              card?.scrollIntoView({ block: 'start' });
+              card?.focus({ preventScroll: true });
+            }}><option value="" disabled>Select semester</option>{semesters.map(s => <option key={s.id} value={s.id}>{s.title}</option>)}</select>
+          </label>
           <span className="sem-badge-count">
             <i className="fa-solid fa-graduation-cap"></i> {semesters.length} {semesters.length === 1 ? 'Semester' : 'Semesters'} Recorded
           </span>

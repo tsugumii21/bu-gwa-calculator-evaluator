@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 
 export type InfoModalType = 'gwa' | 'honor' | 'latin-honor' | 'standing' | 'units' | null;
 
@@ -9,11 +10,13 @@ interface InfoModalProps {
 }
 
 export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) => {
+  const dialogRef = useAccessibleDialog(isOpen && !!type, onClose);
   if (!isOpen || !type) return null;
 
   return (
     <div
       className="modal-overlay"
+      ref={dialogRef}
       id="card-info-modal"
       role="dialog"
       aria-modal="true"

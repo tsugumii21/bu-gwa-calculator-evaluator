@@ -16,7 +16,7 @@ export interface SubjectTargetAllocatorProps {
 }
 
 export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ onOpenInfo }) => {
-  const { semesters, updateSubject } = useSemesterStore();
+  const { semesters } = useSemesterStore();
   const setActiveTab = useAppStore((s) => s.setActiveTab);
 
   const [selectedSemId, setSelectedSemId] = useState<string>(
@@ -43,7 +43,7 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
           id: `${sub.code || 'sub'}-${idx}`,
           code: sub.code || `SUBJ ${idx + 1}`,
           name: sub.name || `Course ${idx + 1}`,
-          units: sub.units || 3,
+          units: Math.max(0, sub.units),
           grade: !isNaN(numGrade) && numGrade >= 1.0 ? numGrade : 1.5,
           isLocked: false,
         };
@@ -108,24 +108,7 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
     return { status: 'achievable', requiredGrade, unlockedUnits };
   }, [items, targetGpa]);
 
-  const handleApplyToActiveSemester = () => {
-    if (!activeSemester) return;
-    if (calculation.status === 'impossible') {
-      alert('Cannot apply grades: the target is mathematically impossible.');
-      return;
-    }
-
-    items.forEach((item, index) => {
-      if (index < activeSemester.subjects.length) {
-        const assignedGrade = item.isLocked
-          ? item.grade.toFixed(2)
-          : Math.max(1.0, Math.min(3.0, calculation.requiredGrade)).toFixed(2);
-        updateSubject(activeSemester.id, index, { grade: assignedGrade });
-      }
-    });
-
-    alert(`Applied target grades to "${activeSemester.title}"!`);
-  };
+  const resetScenario = () => setItems(defaultCourses);
 
   if (semesters.length === 0) {
     return (
@@ -163,7 +146,7 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
             Per-Subject Target Grade Allocator (Reverse Solver)
           </h3>
           <p className="section-desc" style={{ marginTop: '4px', marginBottom: 0, fontSize: '0.82rem' }}>
-            Lock expected grades in specific courses (GEs or PE) to solve required minimum grades in major subjects.
+            Lock expected grades to explore the average needed in other courses. Blank grades start at a hypothetical 1.50 here; your record stays unchanged.
           </p>
         </div>
         {onOpenInfo && (
@@ -238,6 +221,7 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
             </label>
             <select
               className="form-control form-control-sm"
+              aria-label="Active semester for target allocator"
               value={selectedSemId}
               onChange={(e) => setSelectedSemId(e.target.value)}
               style={{ height: '36px', fontSize: '0.82rem', borderRadius: '8px' }}
@@ -315,8 +299,8 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
               <div>
                 <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary, #0f172a)' }}>
                   {calculation.status === 'impossible' && 'Mathematically Unreachable'}
-                  {calculation.status === 'guaranteed' && 'Target Already Guaranteed!'}
-                  {calculation.status === 'achievable' && 'Target Achievable!'}
+                  {calculation.status === 'guaranteed' && 'Passing average meets this target'}
+                  {calculation.status === 'achievable' && 'Scenario target achievable'}
                   {calculation.status === 'all_locked_met' && 'All Subjects Locked — Goal Met!'}
                   {calculation.status === 'all_locked_missed' && 'All Subjects Locked — Goal Missed'}
                 </div>
@@ -388,6 +372,7 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
                       {item.isLocked ? (
                         <select
                           className="form-control form-control-sm allocator-grade-select"
+                          aria-label={`Expected grade for ${item.code}`}
                           value={item.grade.toFixed(2)}
                           onChange={(e) => updateItemGrade(index, parseFloat(e.target.value))}
                           style={{ width: '74px', fontWeight: 700, fontSize: '0.82rem', height: '30px' }}
@@ -447,11 +432,10 @@ export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ 
               <button
                 type="button"
                 className="btn btn-primary btn-sm allocator-apply-btn"
-                onClick={handleApplyToActiveSemester}
-                disabled={calculation.status === 'impossible'}
+                onClick={resetScenario}
               >
                 <i className="fa-solid fa-check-double" style={{ marginRight: '6px' }}></i>
-                Apply Target Grades to {activeSemester.title}
+                Reset course scenario
               </button>
             </div>
           )}

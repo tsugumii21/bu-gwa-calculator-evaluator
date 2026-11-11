@@ -1,0 +1,86 @@
+/* Phase 3: calculator-only recipes; other feature pages keep their own styles. */
+.rd-calculator-main{flex:1;width:100%;min-width:0}
+.rd-calculator{--card-bg:var(--rd-surface);--card-header-bg:var(--rd-canvas);--input-bg:var(--rd-surface);--text-primary:var(--rd-text);--text-secondary:var(--rd-muted);--text-muted:var(--rd-muted);--border-color:var(--rd-border);--bu-blue:var(--rd-link);--rd-section-title:clamp(32px,3vw,48px)}
+.rd-calculator .rd-intro h2{font-size:clamp(40px,4vw,56px);line-height:1.08;font-weight:800;letter-spacing:-.035em;margin:0 0 24px}
+.rd-calculator .rd-intro{justify-content:flex-start}
+.rd-calculator .rd-note{margin-top:32px}
+.rd-calculator-workspace{min-width:0;padding:32px}
+.rd-calculator-heading{display:flex;align-items:center;gap:16px;justify-content:space-between;margin-bottom:24px}
+.rd-calculator-heading h1{font-size:var(--rd-section-title);font-weight:800;line-height:1.1;letter-spacing:-.035em;margin:0;max-width:24ch}
+.rd-calculator-heading .rd-sky{width:72px;height:72px}
+.rd-calculator-nudge{padding:12px 16px;border-radius:8px;background:var(--rd-pending-bg);color:var(--rd-pending);margin:0 0 24px}
+.rd-calculator .toolbar-card{background:none;box-shadow:none;border:0;padding:0;margin-bottom:24px}
+.rd-tools summary,.rd-record-details>summary{min-height:48px;padding:12px 0;color:var(--rd-link);font-weight:600;cursor:pointer}
+.rd-calculator .toolbar-actions{display:flex;flex-wrap:wrap;gap:8px;padding:16px 0}
+.rd-calculator button.btn{box-shadow:none;background:var(--rd-surface);color:var(--rd-link);border:1px solid var(--rd-border);font-size:14px;padding:8px 12px;min-height:48px;transform:none}
+.rd-calculator .semester-card button{min-width:48px!important;min-height:48px!important;max-height:none!important}
+.rd-calculator .btn.btn-compute-trigger,.rd-calculator .empty-state .btn-primary{background:var(--rd-action);color:var(--rd-on-action);border-color:transparent}
+.rd-calculator .semester-card{border:1px solid var(--rd-border);background:var(--rd-surface);border-radius:var(--rd-radius);box-shadow:none;margin-bottom:24px;overflow:visible}
+.rd-calculator .sem-header{background:transparent;padding:16px;border-bottom:1px solid var(--rd-border);gap:16px;flex-wrap:wrap}
+.rd-calculator .sem-header-left{min-width:0;flex:1;display:flex;flex-wrap:wrap;gap:8px}
+.rd-calculator .sem-header-right{display:flex;flex-wrap:wrap;gap:8px}
+.rd-calculator .sem-title-select{min-width:0;max-width:100%;width:100%;font:700 24px/1.2 Outfit,sans-serif;height:auto;min-height:48px;color:var(--rd-text);background:transparent;padding:8px;border:1px solid transparent}
+.rd-calculator .sem-modifiers-bar,.rd-calculator .sem-footer{background:transparent;padding:12px 16px;flex-wrap:wrap;gap:12px}
+.rd-calculator .sem-modifiers-toggles{flex-wrap:wrap;gap:12px}
+.rd-calculator .underload-toggle{min-height:48px;display:inline-flex;align-items:center;gap:8px;color:var(--rd-muted)}
+.rd-calculator .underload-info-btn{min-width:48px;min-height:48px;padding:8px;color:var(--rd-link)}
+.rd-calculator .form-control-sm{min-height:48px;min-width:0;background:var(--rd-surface);color:var(--rd-text);border-color:var(--rd-border);font-size:16px;padding:8px}
+.rd-calculator .subject-table{table-layout:fixed}
+.rd-calculator .subject-table th,.rd-calculator .subject-table td{padding:12px 4px;overflow-wrap:anywhere;background:transparent}
+.rd-calculator .subject-table th{font-size:10px;letter-spacing:.08em;color:var(--rd-muted)}
+.rd-calculator .subject-table th:last-child{font-size:8px;letter-spacing:0;white-space:nowrap}
+.rd-calculator .subject-table td:last-child button{padding:8px}
+.rd-calculator .subject-table td:last-child{padding-inline:0}
+.rd-calculator .semester-list-header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:0 0 16px;background:transparent;border:0;box-shadow:none;padding:0}
+.rd-semester-index{display:flex;align-items:center;gap:8px;max-width:100%;color:var(--rd-muted)}
+.rd-semester-index select{min-height:48px;max-width:100%;min-width:0;background:var(--rd-surface);color:var(--rd-text);border:1px solid var(--rd-border);border-radius:8px;padding:8px}
+.rd-calculator .empty-state{width:100%;max-width:none;background:var(--rd-surface);border:1px solid var(--rd-border);border-radius:var(--rd-radius);padding:48px 24px;box-shadow:none;color:var(--rd-text)}
+.rd-calculator .empty-state p{color:var(--rd-muted)}
+.rd-calculator-result{display:flex;align-items:center;gap:24px;padding:24px;background:var(--rd-summary);border:1px solid var(--rd-border);border-radius:var(--rd-radius);margin:24px 0}
+.rd-calculator-result .rd-eyebrow{display:block;margin:0 0 8px}
+.rd-calculator-result strong{font:800 48px/1 Outfit,sans-serif;font-variant-numeric:tabular-nums}
+.rd-calculator-result b{color:var(--rd-link)}
+.rd-calculator-result p{font-size:12px;margin:8px 0 0;color:var(--rd-muted)}
+.rd-calculator-result .rd-result-note{margin-left:auto;font:600 20px/1.3 Outfit,sans-serif;max-width:8ch;color:var(--rd-text)}
+.rd-record-details{margin-bottom:32px}
+.rd-calculator .sem-order-controls{display:flex;gap:8px}
+@media(min-width:769px){
+  .rd-calculator.rd-split{grid-template-columns:35% 65%}
+  .rd-calculator .rd-intro{padding:48px 32px}
+  .rd-calculator .table-responsive{padding:0 12px}
+}
+@media(min-width:769px) and (max-width:1100px){
+  .rd-calculator.rd-split{grid-template-columns:24% 76%}
+  .rd-calculator .rd-intro{padding:32px 16px}
+  .rd-calculator .rd-intro h2{font-size:32px}
+  .rd-calculator .rd-lede{font-size:16px}
+  .rd-calculator-workspace{padding:24px 16px}
+  .rd-calculator .table-responsive{overflow-x:auto}
+  .rd-calculator .subject-table{min-width:800px}
+}
+@media(max-width:768px){
+  .rd-calculator.rd-split{display:block}
+  .rd-calculator>.rd-intro{display:none}
+  .rd-calculator-workspace{padding:24px 16px}
+  .rd-calculator-heading .rd-sky{width:48px;height:48px}
+  .rd-calculator .sem-title-select{font-size:40px!important;height:auto!important;min-height:64px!important;max-height:none!important;line-height:1.2!important}
+  .rd-calculator .semester-card .sem-header-right button{min-height:48px!important;height:auto!important;min-width:48px!important;flex-basis:auto!important}
+  .rd-calculator .sem-modifiers-bar{flex-direction:column!important;align-items:flex-start!important}
+  .rd-calculator .sem-header-left{flex-basis:100%;flex-direction:column;align-items:flex-start}
+  .rd-calculator .sem-header-right{width:100%}
+  .rd-calculator .sem-header-right .btn-compute-trigger{flex:1}
+  .rd-calculator .subject-table,.rd-calculator .subject-table tbody{display:block;min-width:0;width:100%}
+  .rd-calculator .subject-table thead{display:none}
+  .rd-calculator .subject-table tbody tr{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px!important;padding:16px!important;margin:0!important;border:0!important;border-bottom:1px solid var(--rd-border)!important;border-radius:0!important;box-shadow:none!important}
+  .rd-calculator .subject-table tr td{display:block!important;width:auto!important;max-width:none!important;padding:0;border:0;min-width:0!important;text-align:left!important}
+  .rd-calculator .subject-table tr td::before{content:attr(data-label)!important;display:block!important;height:auto!important;font-size:12px!important;font-weight:600;color:var(--rd-muted);margin-bottom:8px!important}
+  .rd-calculator .subject-table td input.form-control-sm{height:48px!important;font-size:16px!important}
+  .rd-calculator .semester-card .subject-table td button.btn{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important}
+  .rd-calculator .subject-table td:nth-child(1),.rd-calculator .subject-table td:nth-child(2){grid-column:1/-1}
+  .rd-calculator .subject-table td:last-child{grid-column:1/-1}
+  .rd-calculator .subject-table td:last-child button{margin:0!important}
+  .rd-calculator-result{flex-wrap:wrap;padding:16px;gap:16px}
+  .rd-calculator-result .rd-result-note{display:none}
+  .rd-calculator .empty-state{padding:32px 16px}
+}
+@media print{.rd-calculator.rd-split{display:block}.rd-calculator>.rd-intro,.rd-calculator-heading,.rd-calculator-nudge,.rd-tools,.rd-semester-index{display:none}.rd-calculator-workspace{padding:0}}

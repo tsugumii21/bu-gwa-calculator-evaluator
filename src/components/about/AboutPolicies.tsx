@@ -47,7 +47,7 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-calculator"></i> Grading System & GWA Math
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VI, Section 13–15 (Page 28)
+                  Section III, Grading System, printed p. 18 / PDF p. 28
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(1) ? 'is-open' : ''}`}></i>
@@ -70,14 +70,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-award"></i> Term Honors (PL & DL)
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 28–29 (Page 34–35)
+                  Section IV, Scholarships &amp; Financial Assistance, printed pp. 31–32 / PDF pp. 41–42
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(2) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(2) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Establishes semester honor rolls: <strong>President's Lister</strong> requires GPA ≤ 1.4500 with no grade below 1.75; <strong>Dean's Lister</strong> requires GPA ≤ 1.7500 with no grade below 2.50. Both mandate regular load (min. 15 units) and zero INC or DRP.
+                PL applies through 1.4500. DL applies above 1.4500 through 1.7500. Both use a maximum numeric subject grade of 2.40 and the prescribed regular curriculum load.
               </p>
             </div>
           </div>
@@ -93,14 +93,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-medal"></i> Graduation Latin Honors
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 30 (Page 36)
+                  Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(3) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(3) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Defines graduation honor ceilings: <strong>Summa Cum Laude</strong> (1.0000–1.2500), <strong>Magna Cum Laude</strong> (1.2501–1.4500), and <strong>Cum Laude</strong> (1.4501–1.7500). Mandates 75% BU residency, regular curriculum progression, zero failing marks (5.0), and no unexcused underloading.
+                Defines graduation honor ceilings: <strong>Summa Cum Laude</strong> (1.0000–1.2500), <strong>Magna Cum Laude</strong> (above 1.2500 through 1.4500), and <strong>Cum Laude</strong> (above 1.4500 through 1.7500). Mandates 75% BU residency, regular curriculum progression, zero failing marks (5.0), and no unexcused underloading.
               </p>
             </div>
           </div>
@@ -116,7 +116,7 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-triangle-exclamation"></i> Underload Disqualification
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VIII, Section 30 & Article XI
+                  Section III, Graduation with Honors, printed p. 21 / PDF p. 31
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(4) ? 'is-open' : ''}`}></i>
@@ -139,14 +139,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-clock-rotate-left"></i> Incomplete (INC) 1-Year Rule
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article IX, Section 4 (Page 38)
+                  Section III, The Grade of Incomplete, printed p. 20 / PDF p. 30
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(5) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(5) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Incomplete marks must be satisfied within exactly <strong>one (1) calendar year</strong> from the end of the term incurred. Failure to complete requirements automatically converts the mark to 5.00 upon registrar audit and permanently removes Latin Honor eligibility.
+                Complete INC requirements within one school year. The College Registrar changes an overdue INC to failure on written instruction from the professor. The Dean may decide when the professor is unavailable.
               </p>
             </div>
           </div>
@@ -162,14 +162,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-shield-halved"></i> Retention & Scholastic Standing
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VII, Section 21–24 (Page 31–32)
+                  Section III, Scholastic Deficiency, printed p. 15 / PDF p. 25
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(6) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(6) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Defines college retention status: <strong>Good Standing</strong> (0 fails), <strong>Academic Warning</strong> (25–49% units failed), <strong>Academic Probation</strong> (50–75% units failed, load capped at 75% next term), and <strong>Dismissal Risk</strong> (&gt;75% failed or 2 consecutive probations).
+                One failed subject reduces the next term load. Two failed subjects lead to probation with at most 75% of regular load. Three or more failed subjects in a term, or a failure while on probation, trigger dismissal provisions.
               </p>
             </div>
           </div>
@@ -185,14 +185,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-ban"></i> Official Course Dropping (DRP)
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VII, Section 6 (Page 30)
+                  Section III, Dropping of Subjects, printed pp. 13–14 / PDF pp. 23–24
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(7) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(7) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Dropping must be officially filed with approvals from Instructor, Department Chair, and College Dean before the midterm exam period. Dropping unofficially (abandoning attendance) automatically results in a failing grade of 5.00.
+                File the prescribed form with Instructor and College Dean consent within three-fourths of the maximum prescribed class hours. After that period, certified illness or another valid reason may qualify for an exception.
               </p>
             </div>
           </div>
@@ -208,14 +208,14 @@ export const AboutPolicies: React.FC = () => {
                   <i className="fa-solid fa-arrow-right-arrow-left"></i> Program Shifting & Transfer
                 </div>
                 <strong style={{ display: 'block', fontSize: '0.88rem', color: 'var(--text-primary)', margin: 0 }}>
-                  Article VI, Section 11–12 (Page 26)
+                  Section III, Shifting Programs, printed p. 14 / PDF p. 24
                 </strong>
               </div>
               <i className={`fa-solid fa-chevron-down accordion-chevron ${openPolicies.has(8) ? 'is-open' : ''}`}></i>
             </div>
             <div className={`accordion-card-body ${openPolicies.has(8) ? 'is-expanded' : ''}`}>
               <p style={{ fontSize: '0.82rem', color: 'var(--text-secondary)', margin: '8px 0 0 0', lineHeight: 1.5 }}>
-                Cross-enrollment and internal degree shifting require meeting the destination college's minimum GWA cutoff (typically ≤ 2.25 or 2.00 in prerequisite subjects), dean endorsement, and university registrar clearance.
+                Shifting requires fewer than two failures, under half of the current program units completed, receiving Dean acceptance, the stated GPA of 2.40, and other admission requirements. Apply through the current Dean.
               </p>
             </div>
           </div>

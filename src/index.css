@@ -12,10 +12,32 @@
 @import "./css/mobile.css";
 @import "./css/redesign-tokens.css";
 @import "./css/redesign-layout.css";
+@import "./css/redesign-calculator.css";
 @import "./css/welcome-v2.css";
 @import "./css/shell-v2.css";
+@import "./css/calculator-v2.css";
 @import "./css/dialogs-v2.css";
+@import "./css/simulator-v2.css";
+@import "./css/scholarship-v2.css";
+@import "./css/handbook-v2.css";
+@import "./css/page-mascot.css";
 @import "./css/record-tools-v2.css";
+
+.mascot-reference > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.mascot-reference > img[data-mascot-theme="dark"],
+html[data-theme="dark"] .mascot-reference > img[data-mascot-theme="light"] {
+    display: none;
+}
+
+html[data-theme="dark"] .mascot-reference > img[data-mascot-theme="dark"] {
+    display: block;
+}
 
 /* Tabular numbers for numeric grades */
 .tabular-nums {
