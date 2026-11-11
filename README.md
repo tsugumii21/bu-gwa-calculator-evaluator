@@ -182,6 +182,8 @@ Semester records and settings are stored in this browser. Clearing site data als
 
 Gabay BU searches handbook excerpts and reviews your saved grades locally. If an existing browser key enables Gemini, online questions send the entered text, relevant handbook excerpts, and recent online conversation to Google. Keep student identifiers and grades out of online prompts. You can clear a previously saved key in the guide to use local mode.
 
+To see how the app handles your data, follow the code for [PDF parsing](src/components/scanner/pdf-parser.ts), [image OCR](src/components/scanner/scan-service.ts), [bulk paste](src/components/modals/BulkPasteModal.tsx), and [browser storage](src/store/index.ts). For Gabay BU, see [local grade review and handbook replies](src/components/ai/BuenoAiDrawer.tsx) and [the request sent to Gemini](src/components/ai/gemini-chat.ts).
+
 ---
 
 ## 👨‍💻 Author & Academic Credits

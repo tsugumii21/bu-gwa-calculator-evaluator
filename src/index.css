@@ -23,6 +23,21 @@
 @import "./css/page-mascot.css";
 @import "./css/record-tools-v2.css";
 
+.data-privacy-note {
+    margin: 8px 0 0;
+    color: var(--rd-muted, var(--text-muted));
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.data-privacy-note a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    white-space: nowrap;
+}
+
 .mascot-reference > img {
     display: block;
     width: 100%;

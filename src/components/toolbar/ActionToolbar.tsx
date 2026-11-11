@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ClipboardPaste, FileText, Images, Trash2 } from 'lucide-react';
 import { useSemesterStore } from '../../store';
+import { DataPrivacyNote } from '../common/data-privacy-note';
 import { ConfirmModal } from '../modals/ConfirmModal';
 
 interface ActionToolbarProps {
@@ -117,7 +118,11 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           >
             <Trash2 size={18} aria-hidden="true" /> <span>Clear All</span>
           </button>
-      </div></Container>
+        </div>
+        {group !== 'records' && (
+          <DataPrivacyNote>PDFs, images, and pasted grades are processed in this browser. Saved grades stay here.</DataPrivacyNote>
+        )}
+      </Container>
 
       {/* Clear All Confirmation Modal */}
       <ConfirmModal

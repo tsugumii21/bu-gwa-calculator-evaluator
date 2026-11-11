@@ -207,7 +207,6 @@ html[data-theme="dark"] .modal-overlay .v2-info-dialog{--info-accent-text:#ffb58
 }
 .gabay-shortcuts svg { flex-shrink: 0; }
 .gabay-online-note { margin: 0; }
-.gabay-online-note button { margin-top: 8px; }
 .gabay-warning, .gabay-loading { display: flex; align-items: center; gap: 8px; font-size: 13px; }
 .gabay-warning { color: var(--dialog-danger); }
 .gabay-loading { color: var(--dialog-muted); }
@@ -235,6 +234,7 @@ html[data-theme="dark"] .modal-overlay .v2-info-dialog{--info-accent-text:#ffb58
 .gabay-composer input { flex: 1; }
 .modal-overlay .gabay-composer .gabay-send { flex: 0 0 48px; padding: 0 !important; border-radius: 10px !important; }
 .gabay-footer p { margin-top: 8px; text-align: center; font-size: 12px; }
+.gabay-footer .data-privacy-note { margin: 0 0 8px; text-align: start; }
 
 @media (hover: hover) {
     .bueno-ai-floating-btn:hover { background: #ff995d; }

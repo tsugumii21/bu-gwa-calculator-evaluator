@@ -4,6 +4,7 @@ import { useAppStore, useSemesterStore } from '../../store';
 import { buildCalculationReport } from '../../core/calculation-report';
 import { searchHandbook } from '../../core/handbook-knowledge';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
+import { DataPrivacyNote } from '../common/data-privacy-note';
 import { MascotReference } from '../illustrations/mascot-reference';
 import { readGeminiReply, requestGeminiReply, type GeminiTurn } from './gemini-chat';
 
@@ -270,7 +271,6 @@ export const BuenoAiDrawer: React.FC = () => {
               </div>
 
               {geminiApiKey && <div className="v2-dialog-note gabay-online-note">
-                Questions go to Google when online. On shared devices, clear the saved key and avoid including personal details.
                 <button type="button" className="btn btn-secondary" onClick={clearStoredKey}>Clear saved key</button>
               </div>}
 
@@ -318,10 +318,16 @@ export const BuenoAiDrawer: React.FC = () => {
             </div>
 
             <footer className="gabay-footer">
+              <DataPrivacyNote id="gabay-data-privacy">
+                Review my grades runs in this browser. {geminiApiKey
+                  ? 'Google receives questions, handbook excerpts, and recent online chat. Leave out grades and student IDs.'
+                  : 'Handbook questions stay in this browser.'}
+              </DataPrivacyNote>
               <form className="gabay-composer" onSubmit={event => { event.preventDefault(); void executeSendPrompt(query); }}>
                 <input
                   type="text"
                   aria-label={`Question for ${GUIDE_NAME}`}
+                  aria-describedby="gabay-data-privacy"
                   className="form-control"
                   placeholder="Ask about BU academic policies…"
                   value={query}

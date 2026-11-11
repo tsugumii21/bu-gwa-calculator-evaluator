@@ -344,7 +344,7 @@ export const AboutDeveloper: React.FC = () => {
               BSIT Student at BU Polangui · Creator & Maintainer
             </p>
             <p style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', marginTop: 8, lineHeight: 1.5 }}>
-              Designed and developed as an open-source contribution to empower Bicol University students with modern, accessible, and precise academic tracking tools.
+              Built for Bicol University students. The source is available for public review.
             </p>
             <div className="dev-links" style={{ marginTop: 14, display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               <a
