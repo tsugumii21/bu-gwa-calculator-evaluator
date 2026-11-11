@@ -9,19 +9,24 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 ==============================================================================
 
 1. PROPRIETARY RIGHTS AND OWNERSHIP
-   The software, design, user interface, mathematical calculation engines,
-   custom stylesheets, scripts, algorithms, and documentation contained in
-   this repository are the exclusive proprietary intellectual property of
-   Allen Del Valle.
+   Allen Del Valle reserves all rights in the original project materials
+   he owns, including code, design, styles, artwork, and documentation.
+   Third-party materials, including dependencies, university marks, and
+   the Bicol University Student Handbook, remain subject to their own terms.
 
 2. PROHIBITION OF UNAUTHORIZED COPYING AND REDISTRIBUTION
-   Permission is hereby granted to access, use, and interact with the hosted
-   application solely for personal academic calculation and planning purposes.
-   
-   Strictly PROHIBITED without prior express written consent from the author:
-   a. Copying, duplicating, cloning, or distributing any source code, styles,
-      or assets from this project for public or commercial deployment.
-   b. Re-hosting, re-branding, or publishing derivative works of this software.
+   You may use the hosted application for personal academic planning and
+   inspect the public source. GitHub's Terms of Service govern viewing and
+   forking within GitHub. Rights granted by applicable law also apply.
+   Subject to those rights, all other rights are reserved.
+
+   The following uses of the original project materials require prior
+   written permission from Allen Del Valle:
+   a. Copying, publishing, or redistributing any part of the project
+      materials outside GitHub, in source or built form, whether modified
+      or unmodified and whether free of charge or for payment.
+   b. Re-hosting, re-branding, selling, sublicensing, or bundling project
+      materials or derivative works with another product or service.
    c. Claiming authorship, ownership, or affiliation with the original project.
    d. Removing, altering, or obscuring copyright notices, disclaimers, or
       author attributions.
