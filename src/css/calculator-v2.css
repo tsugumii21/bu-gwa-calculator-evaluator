@@ -135,7 +135,33 @@ html[data-theme="dark"] .calculator-study-scene{--study-window:#292d36;--study-d
 @media(min-width:1024px){.v2-calculator .v2-summary-card:last-child{grid-column:2/-1}}
 @media(max-width:1023px){.v2-calculator .v2-summary-card:last-child{grid-column:1/-1}}
 
-@media screen and (min-width: 1100px) and (max-height: 760px) {
+@media screen and (min-width: 1100px) and (min-height: 651px) {
+    .v2-calculator { padding-block: 24px 29px; }
+    .v2-calculator-intro { padding-right: 288px; }
+    .v2-calculator .rd-calculator-heading { margin-bottom: 22px; }
+    .v2-calculator .rd-calculator-heading h1 { font-size: 36px; }
+    .v2-calculator-intro .v2-mode-switch { margin-bottom: 12px; }
+    .v2-calculator-intro .v2-mode-switch button { padding: 10px 22px; font-size: 14px; }
+    .v2-calculator .v2-tools-label { font-size: 11px; }
+    .v2-calculator .toolbar-actions button { padding: 8px 14px; font-size: 13px; }
+    .v2-calculator .toolbar-actions svg { width: 16px; height: 16px; }
+    .v2-calculator .data-privacy-note { margin-top: 6px; font-size: 11px; }
+    .v2-calculator-sky { width: 252px; }
+    .v2-calculator > .v2-calculator-intro + p { font-size: 13px; margin: 14px 0 10px; }
+    .v2-calculator .v2-summary-cards { gap: 8px 10px; margin-bottom: 8px; }
+    .v2-calculator .v2-summary-card { padding: 16px 44px 16px 18px; gap: 10px; }
+    .v2-calculator .v2-summary-hero { padding: 22px; }
+    .v2-calculator .v2-summary-copy strong { font-size: 18px; }
+    .v2-calculator .v2-summary-hero strong { font-size: 50px; }
+    .v2-calculator .v2-summary-label, .v2-calculator .v2-summary-copy p { font-size: 11px; }
+    .v2-calculator .v2-summary-icon { width: 30px; height: 30px; }
+    .v2-calculator > .v2-unofficial { font-size: 11px; margin-bottom: 8px; }
+    .v2-calculator .v2-course-heading { margin-top: 8px; }
+    .v2-calculator .v2-course-heading h2 { font-size: 29px; }
+    .v2-calculator .v2-course-heading button { padding: 10px 22px; font-size: 14px; }
+}
+
+@media screen and (min-width: 1100px) and (max-height: 650px) {
     .v2-calculator { padding-block: 20px; }
     .v2-calculator-intro {
         display: flex;
