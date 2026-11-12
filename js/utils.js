@@ -19,7 +19,7 @@ function showUnderloadInfo() {
         body.innerHTML = `
             <div class="achieve-section" style="margin-bottom: 0;">
                 <div style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(234,88,12,0.1); border: 1px solid rgba(234,88,12,0.3); border-radius: var(--radius-sm); font-size: 0.82rem; color: var(--bu-orange); font-weight: 700; margin-bottom: 14px;">
-                    <i class="fa-solid fa-book"></i> BU Student Handbook Reference: Article VIII, Section 30 (Page 36)
+                    <i class="fa-solid fa-book"></i> BU Student Handbook Reference: Section III, Academic Load and Graduation with Honors, printed pp. 10, 20–21 / PDF pp. 20, 30–31
                 </div>
 
                 <div class="about-hero-box" style="padding: 16px 20px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 16px;">
@@ -31,9 +31,9 @@ function showUnderloadInfo() {
                 <div class="achieve-card alert-card-danger" style="margin-bottom: 16px;">
                     <div class="achieve-icon"><i class="fa-solid fa-triangle-exclamation text-danger" style="font-size: 1.8rem;"></i></div>
                     <div class="achieve-details">
-                        <strong style="font-size: 1rem; color: var(--color-danger);">Official Disqualification Rule (Art. VIII, Sec. 30):</strong>
+                        <strong style="font-size: 1rem; color: var(--color-danger);">Graduation with Honors (Section III)</strong>
                         <span class="achieve-subtext" style="display: block; margin-top: 4px; line-height: 1.55; color: var(--text-primary);">
-                            Carrying an underloaded term officially <strong>disqualifies</strong> a student candidate from <strong>Graduation Latin Honors</strong> (Summa, Magna, or Cum Laude) and <strong>Semester Academic Recognition</strong> (President's Lister or Dean's Lister).
+                            The Handbook excludes underloaded candidates from <strong>graduation honors</strong>. Confirm your prescribed load and any approved adjustment with your college.
                         </span>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ function showInfoModal(type) {
         bodyElem.innerHTML = `
             <div class="achieve-section" style="margin-bottom:0;">
                 <div style="display: flex; align-items: center; gap: 8px; padding: 8px 14px; background: rgba(245,158,11,0.12); border: 1px solid rgba(245,158,11,0.3); border-radius: var(--radius-sm); font-size: 0.82rem; color: ${clrGold}; font-weight: 700; margin-bottom: 14px;">
-                    <i class="fa-solid fa-book"></i> Bicol University Student Handbook: Article VIII, Section 28–29 (Page 34–35)
+                    <i class="fa-solid fa-book"></i> Bicol University Student Handbook: Section IV, Scholarships &amp; Academic Distinctions, printed pp. 31–32 / PDF pp. 41–42
                 </div>
                 <p style="font-size:0.92rem; line-height:1.6; color:var(--text-primary); margin-bottom:14px;">
                     Evaluates your term eligibility for semester academic recognition per Bicol University academic policies:
@@ -110,19 +110,19 @@ function showInfoModal(type) {
                         <strong style="color:${clrGold}; font-size:0.95rem; display:block; margin-bottom:4px;">President's Lister (PL)</strong>
                         <div style="font-size:0.84rem; color:var(--text-primary); line-height:1.5;">
                             <div><strong>GPA Cutoff:</strong> 1.0000 – 1.4500</div>
-                            <div><strong>Grade Cap:</strong> Max 1.75 (No grade below 1.75)</div>
+                            <div><strong>Grade Cap:</strong> 2.40 or better</div>
                         </div>
                     </div>
                     <div style="padding:12px 14px; background:var(--card-header-bg); border:1px solid var(--border-color); border-left:4px solid ${clrDeanBlue}; border-radius:8px;">
                         <strong style="color:${clrDeanBlue}; font-size:0.95rem; display:block; margin-bottom:4px;">Dean's Lister (DL)</strong>
                         <div style="font-size:0.84rem; color:var(--text-primary); line-height:1.5;">
-                            <div><strong>GPA Cutoff:</strong> 1.4600 – 1.7500</div>
-                            <div><strong>Grade Cap:</strong> Max 2.50 (No grade below 2.50)</div>
+                            <div><strong>GPA Cutoff:</strong> 1.4500 &lt; GWA ≤ 1.7500</div>
+                            <div><strong>Grade Cap:</strong> 2.40 or better</div>
                         </div>
                     </div>
                 </div>
                 <div style="padding: 10px 14px; background: rgba(234,88,12,0.06); border-left: 4px solid var(--bu-orange); border-radius: 4px; font-size: 0.84rem; color: var(--text-primary);">
-                    <strong>Essential Requirement (Art. VIII, Sec. 30):</strong> Candidate must carry a full regular academic load with zero failing marks (5.0) or unresolved INC grades.
+                    <strong>Term requirements:</strong> Check your prescribed regular curriculum load and resolve any incomplete grades.
                 </div>
             </div>
         `;

@@ -37,7 +37,7 @@ export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, 
         <div className="modal-body" id="underload-modal-body">
           <div className="achieve-section" style={{ marginBottom: 0 }}>
             <div className="underload-ref-badge">
-              <i className="fa-solid fa-book"></i> BU Student Handbook Reference: Article VIII, Section 30 (Page 36)
+              <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, Academic Load and Graduation with Honors, printed pp. 10, 20–21 / PDF pp. 20, 30–31
             </div>
 
             <div className="modal-callout-box">
@@ -52,7 +52,7 @@ export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, 
               </div>
               <div className="achieve-details">
                 <strong className="disqualification-title" style={{ fontSize: '0.95rem' }}>
-                  Official Disqualification Rule (Art. VIII, Sec. 30):
+                  Graduation with Honors (Section III)
                 </strong>
                 <span
                   className="achieve-subtext"
@@ -63,9 +63,8 @@ export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, 
                     fontSize: '0.82rem',
                   }}
                 >
-                  Carrying an unauthorized underloaded term officially <strong>disqualifies</strong> a student candidate from{' '}
-                  <strong>Graduation Latin Honors</strong> (Summa, Magna, or Cum Laude) and{' '}
-                  <strong>Semester Academic Recognition</strong> (President&apos;s Lister or Dean&apos;s Lister).
+                  The Handbook excludes underloaded candidates from <strong>graduation honors</strong>.
+                  Confirm your prescribed load and any approved adjustment with your college.
                 </span>
               </div>
             </div>
@@ -73,9 +72,9 @@ export const UnderloadInfoModal: React.FC<UnderloadInfoModalProps> = ({ isOpen, 
             <div className="modal-callout-box" style={{ marginBottom: '14px', fontSize: '0.84rem' }}>
               <strong><i className="fa-solid fa-circle-check text-success"></i> When is a low unit count NOT an underload?</strong>
               <ul style={{ margin: '6px 0 0 16px', padding: 0, lineHeight: 1.45 }}>
-                <li><strong>Midyear / Summer Terms:</strong> Summer sessions typically carry 3–9 units and are non-regular terms — they are never considered underloaded terms.</li>
+                <li><strong>Midyear / Summer Terms:</strong> The calculator checks underload for regular terms. Ask your college about your prescribed Midyear load.</li>
                 <li><strong>Curriculum Prescribed Loads:</strong> If your degree program curriculum officially prescribes fewer units (e.g. 9–12 units for graduating thesis, practicum, or OJT), this is an authorized regular load, not an unexcused underload.</li>
-                <li><strong>Official Excuses:</strong> Valid working-student endorsements, certified medical reasons, or unavailable phased-out subjects approved by the Dean.</li>
+                <li><strong>Approved adjustments:</strong> Ask your college how an approved load change affects eligibility.</li>
               </ul>
               <p style={{ marginTop: '8px', marginBottom: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
                 <em>Only check the <strong>&quot;Underloaded Term&quot;</strong> button on a semester if you had an unauthorized/unexcused reduced load below your prescribed curriculum.</em>

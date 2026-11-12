@@ -315,7 +315,7 @@ export const AboutGuide: React.FC = () => {
                 Forecasts your final cumulative graduation GWA by simulating remaining academic units and anticipated grade averages.
               </p>
               <div style={{ padding: '10px', borderRadius: '6px', background: 'var(--card-header-bg)', fontSize: '0.78rem', color: 'var(--text-primary)', marginBottom: '10px' }}>
-                <strong>Why Latin Honor Pace (not PL/DL)?</strong> President's Lister (≤1.4500) and Dean's Lister (≤1.7500) are <em>single-semester</em> honors with individual grade caps and minimum 15 units. The What-If Simulator projects <em>4-year cumulative graduation GWA</em>, which is governed by Latin Honor standards (Summa ≤1.2500, Magna ≤1.4500, Cum Laude ≤1.7500).
+                <strong>Why Latin Honor Pace?</strong> President's Lister and Dean's Lister apply to one semester. Both use a 2.40 subject cap and the prescribed regular curriculum load. The What-If Simulator projects cumulative GWA and compares it with the graduation honors ranges.
               </div>
               <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
                 <strong>Target Honor Finder:</strong> Reverse-calculates the exact minimum grade needed in your remaining units to graduate with your desired Latin honor.

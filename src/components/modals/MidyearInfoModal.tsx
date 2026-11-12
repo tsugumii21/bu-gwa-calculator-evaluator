@@ -36,10 +36,10 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
         <div className="modal-body" id="midyear-modal-body">
           <div className="achieve-section" style={{ marginBottom: 0 }}>
             <div className="handbook-ref-badge handbook-ref-gold" style={{ marginBottom: '12px' }}>
-              <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, printed pp. 20–21 / PDF pp. 30–31
+              <i className="fa-solid fa-book"></i> BU Student Handbook: Academic Load, printed pp. 10–11 / PDF pp. 20–21. Academic Distinctions, printed p. 32 / PDF p. 42.
             </div>
 
-            {/* 1. Why no PL / DL */}
+            {/* Term recognition */}
             <div
               className="achieve-card alert-card-warning"
               style={{
@@ -54,7 +54,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
               </div>
               <div className="achieve-details">
                 <strong style={{ fontSize: '0.94rem', color: 'var(--text-primary)' }}>
-                  Why Can&apos;t a Midyear Term Award PL or DL?
+                  How does the calculator treat Midyear recognition?
                 </strong>
                 <span
                   className="achieve-subtext"
@@ -98,8 +98,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
                     color: 'var(--text-secondary)',
                   }}
                 >
-                  <strong>YES, 100%.</strong> All passing and failing course grades, as well as credit units completed
-                  during midyear sessions, are fully computed into your cumulative 4-year undergraduate GWA.
+                  Final numeric Midyear grades with positive credit units count in your cumulative GWA using the same unit weighting as other terms.
                 </span>
               </div>
             </div>
@@ -139,9 +138,7 @@ export const MidyearInfoModal: React.FC<MidyearInfoModalProps> = ({ isOpen, onCl
             <div className="quote-box" style={{ marginTop: 0 }}>
               <i className="fa-solid fa-quote-left quote-icon"></i>
               <div className="quote-text">
-                <strong>Registrar Policy Reminder:</strong>
-                <br />
-                &quot;Midyear terms keep your graduation curriculum on schedule. Every grade counts toward your degree honor standing!&quot;
+                Ask your college to confirm your prescribed Midyear load and official eligibility.
               </div>
             </div>
           </div>

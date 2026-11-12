@@ -151,14 +151,14 @@ function evaluateSemesterComputeModal(semIndex) {
     let headerTitle = `<i class="fa-solid fa-chart-line text-primary"></i> Semester Performance Summary`;
 
     if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
-        if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
+        if (semGWA <= 1.4500 && lowestGradeInSem <= 2.40) {
             category = "PL";
             title = "President's Lister";
             badgeClass = "card-gold";
             icon = "fa-crown";
             subtext = `${escapeHtml(sem.title)} — Semester GPA: <strong>${semGWA.toFixed(4)}</strong>`;
             headerTitle = `<i class="fa-solid fa-crown text-gold"></i> President's Lister Qualification`;
-        } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
+        } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.40) {
             category = "DL";
             title = "Dean's Lister";
             badgeClass = "card-azure";
@@ -280,7 +280,7 @@ function evaluateLatinHonorsModal() {
                 <div class="achieve-details">
                     <strong style="font-size:0.95rem;">Not Eligible for Latin Graduation Honors</strong>
                     <span class="achieve-subtext" style="line-height:1.4; margin-top:4px; font-size:0.82rem;">
-                        Per the Bicol University Student Handbook (Art. VIII, Sec. 30), candidates must carry full regular load with zero academic deficiencies. Disqualified due to: <strong>${reasons.join(", ")}</strong>.
+                        The Handbook requires the prescribed regular curriculum load and numeric subject grades of 3.00 or better (Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31). Check these record flags: <strong>${reasons.join(", ")}</strong>.
                     </span>
                 </div>
             </div>
@@ -378,7 +378,7 @@ function evaluateLatinHonorsModal() {
                 </div>
             </div>
             <p style="font-size:0.78rem; color:var(--text-secondary); line-height:1.4;">
-                *Rules: Must carry full regular load every term with zero 5.0 or INC marks (Art. VIII, Sec. 30).
+                Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31. Check prescribed load, subject grades, and unresolved requirements with Bicol University.
             </p>
         </div>
     `;
@@ -502,11 +502,11 @@ function evaluateAcademicAchievements() {
             let statusBadge = "badge-success";
 
             if (semUnits > 0 && !hasFailOrInc && !sem.underload) {
-                if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
+                if (semGWA <= 1.4500 && lowestGradeInSem <= 2.40) {
                     statusTitle = "President's Lister (PL)";
                     statusBadge = "badge-pl";
                     totalPL++;
-                } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
+                } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.40) {
                     statusTitle = "Dean's Lister (DL)";
                     statusBadge = "badge-dl";
                     totalDL++;

@@ -197,7 +197,7 @@ export const AboutDeveloper: React.FC = () => {
             </div>
             <div className={`accordion-card-body ${openCapabilities.has(5) ? 'is-expanded' : ''}`}>
               <p>
-                Automated guards flagging underloaded semesters (&lt;15 units), unremoved INCs nearing the 1-year calendar deadline, and failing marks that void honor qualification.
+                Record checks for terms marked underloaded, unresolved INC grades, and subject grades that affect honors eligibility.
               </p>
               <div className="bento-chips">
                 <span className="bento-chip"><i className="fa-solid fa-check"></i> 1-Year INC Watch</span>

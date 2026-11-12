@@ -1,8 +1,8 @@
 import React from 'react';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { useSemesterStore } from '../../store';
-import { calculateCumulativeStats, calculateSemesterGWA, calculateSemesterUnits } from '../../core/gwa-engine';
-import { isMidyearTerm } from '../../core/honor-rules';
+import { calculateCumulativeStats, calculateSemesterUnits, calculateWeightedGrades, weightedAverage } from '../../core/gwa-engine';
+import { evaluateTermHonor, isMidyearTerm } from '../../core/honor-rules';
 
 interface AchievementsModalProps {
   isOpen: boolean;
@@ -219,46 +219,27 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                     );
                   }
 
-                  const semGWA = calculateSemesterGWA(sem);
+                  const weighted = calculateWeightedGrades(sem.subjects);
+                  const semGWA = weightedAverage(weighted);
                   const semUnits = calculateSemesterUnits(sem);
-
-                  let lowestGradeInSem = 1.0;
-                  let hasFailOrInc = false;
-
-                  sem.subjects.forEach((sub) => {
-                    const num = parseFloat(sub.grade);
-                    if (sub.grade === '5.0' || sub.grade === '5.00' || num === 5.0 || sub.grade === 'INC' || sub.grade === '4.0' || sub.grade === '4.00' || num === 4.0) {
-                      hasFailOrInc = true;
-                    }
-                    if (!isNaN(num) && num > lowestGradeInSem) lowestGradeInSem = num;
-                  });
-
-                  let statusTitle = 'Good Academic Standing';
+                  const honor = evaluateTermHonor(semGWA, sem.subjects, isUnderloaded, sem.title, isMidyear, false, weighted);
+                  let statusTitle = honor.label;
                   let statusBadge = 'badge-success';
 
-                  if (hasFailOrInc) {
+                  if (honor.label === 'Not Eligible') {
                     statusTitle = 'Academic Deficiency Detected';
                     statusBadge = 'badge-danger';
                   } else if (isMidyear) {
-                    statusTitle = 'Midyear Term (Exempt from PL/DL)';
+                    statusTitle = 'Midyear Term';
                     statusBadge = 'badge-info';
                   } else if (isUnderloaded) {
                     statusTitle = 'Underloaded Term';
                     statusBadge = 'badge-warning';
-                  } else if (semUnits >= 15) {
-                    if (semGWA <= 1.4500 && lowestGradeInSem <= 1.75) {
-                      statusTitle = "President's Lister (PL)";
-                      statusBadge = 'badge-pl';
-                    } else if (semGWA <= 1.7500 && lowestGradeInSem <= 2.50) {
-                      statusTitle = "Dean's Lister (DL)";
-                      statusBadge = 'badge-dl';
-                    } else if (semGWA > 1.7500 && semGWA <= 1.8500) {
-                      const gapToDL = semGWA - 1.7500;
-                      statusTitle = `Close to DL (Gap: ${gapToDL.toFixed(4)})`;
-                      statusBadge = 'badge-close';
-                    }
-                  } else if (semUnits > 0 && semUnits < 15) {
-                    statusTitle = 'Underloaded (< 15 Units)';
+                  } else if (honor.level === 'president') {
+                    statusBadge = 'badge-pl';
+                  } else if (honor.level === 'dean') {
+                    statusBadge = 'badge-dl';
+                  } else if (honor.label === 'Pending' || honor.label === 'Provisional') {
                     statusBadge = 'badge-warning';
                   }
 
@@ -268,7 +249,7 @@ export const AchievementsModal: React.FC<AchievementsModalProps> = ({
                         <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
                           <strong>{sem.title}</strong>
                           {isMidyear && (
-                            <span className="term-type-tag midyear-tag" title="Midyear/Summer term (exempt from PL/DL)">
+                            <span className="term-type-tag midyear-tag" title="Midyear or Summer term">
                               Midyear
                             </span>
                           )}

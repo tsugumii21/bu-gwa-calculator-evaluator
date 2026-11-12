@@ -68,7 +68,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
           {type === 'gwa' && (
             <div className="achieve-section" style={{ marginBottom: 0 }}>
               <div className="handbook-ref-badge handbook-ref-blue">
-                <i className="fa-solid fa-book"></i> BU Student Handbook: Article VI, Section 13–15 (Page 28)
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, Grading System, printed p. 18 / PDF p. 28
               </div>
               <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
                 The <strong>Cumulative GWA</strong> represents your overall weighted academic average across all courses taken at Bicol University per official academic policies (BOR Res. 89 s. 2006).
@@ -112,7 +112,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
           {type === 'honor' && (
             <div className="achieve-section" style={{ marginBottom: 0 }}>
               <div className="handbook-ref-badge handbook-ref-gold">
-                <i className="fa-solid fa-book"></i> BU Student Handbook: Article VIII, Section 28–29 (Page 34–35)
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Section IV, Scholarships &amp; Academic Distinctions, printed pp. 31–32 / PDF pp. 41–42
               </div>
               <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
                 Evaluates your term eligibility for semester academic recognition per Bicol University academic policies:
@@ -131,7 +131,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
                   </strong>
                   <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.45 }}>
                     <div><strong>GPA Cutoff:</strong> 1.0000 – 1.4500</div>
-                    <div><strong>Grade Cap:</strong> Max 1.75 (No grade below 1.75)</div>
+                    <div><strong>Subject-grade cap:</strong> 2.40</div>
                   </div>
                 </div>
                 <div
@@ -146,8 +146,8 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
                     Dean&apos;s Lister (DL)
                   </strong>
                   <div style={{ fontSize: '0.82rem', color: 'var(--text-primary)', lineHeight: 1.45 }}>
-                    <div><strong>GPA Cutoff:</strong> 1.4600 – 1.7500</div>
-                    <div><strong>Grade Cap:</strong> Max 2.50 (No grade below 2.50)</div>
+                    <div><strong>GPA Cutoff:</strong> 1.4500 &lt; GWA ≤ 1.7500</div>
+                    <div><strong>Subject-grade cap:</strong> 2.40</div>
                   </div>
                 </div>
               </div>
@@ -162,7 +162,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
                   lineHeight: 1.45,
                 }}
               >
-                <strong>Essential Requirement (Art. VIII, Sec. 28–29):</strong> Evaluated per single semester. Candidate must carry a regular academic load (minimum 15 units) with zero failing marks (5.0) and zero unremoved INC or DRP grades in that semester.
+                <strong>Term requirements:</strong> Check the prescribed regular curriculum load for that semester. Both distinctions require every numeric subject grade to be 2.40 or better. Resolve incomplete grades and confirm how any dropped courses affect your load.
               </div>
             </div>
           )}
@@ -170,10 +170,10 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
           {type === 'latin-honor' && (
             <div className="achieve-section" style={{ marginBottom: 0 }}>
               <div className="handbook-ref-badge handbook-ref-gold">
-                <i className="fa-solid fa-book"></i> BU Student Handbook: Article VIII, Section 30 (Page 36)
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31
               </div>
               <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                Graduation Latin Honors are conferred based on your overall <strong>Cumulative GWA across all 4 years</strong> of undergraduate study at Bicol University (BOR Res. 89 s. 2006):
+                Graduation Latin Honors use the <strong>cumulative weighted average for the degree</strong> alongside the University’s graduation eligibility requirements.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
                 <div
@@ -236,7 +236,7 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
                   lineHeight: 1.45,
                 }}
               >
-                <strong>Mandatory Graduation Criteria:</strong> Candidate must have completed at least 75% of academic credits at Bicol University, maintained regular semester loads without unexcused underloading, and must have ZERO failing marks (5.0) and zero unremoved INC grades throughout their entire academic residence.
+                <strong>Graduation requirements:</strong> Candidates must carry the prescribed regular curriculum load and have no numeric subject grade worse than 3.00. Bicol University verifies credited courses, residence, and degree completion.
               </div>
             </div>
           )}
@@ -244,22 +244,22 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
           {type === 'standing' && (
             <div className="achieve-section" style={{ marginBottom: 0 }}>
               <div className="handbook-ref-badge handbook-ref-green">
-                <i className="fa-solid fa-book"></i> BU Student Handbook: Article VII, Section 21–24 (Page 31–32)
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, Scholastic Deficiency, printed p. 15 / PDF p. 25
               </div>
               <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                Monitors official scholastic standing at Bicol University based on accumulated academic deficiencies (failing grades <strong>5.0</strong> or unresolved <strong>INC</strong> marks):
+                These are the Handbook’s next-term load rules for failing grades. Resolve any incomplete grades with your college.
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 <div className="standing-info-card" style={{ background: 'rgba(16,185,129,0.08)', borderLeft: '4px solid var(--color-success)' }}>
-                  <strong style={{ color: 'var(--color-success)', fontSize: '0.90rem' }}>Good Standing (0 Deficiencies):</strong>
+                  <strong style={{ color: 'var(--color-success)', fontSize: '0.90rem' }}>No recorded failing grades</strong>
                   <span style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)', fontSize: '0.82rem' }}>
-                    100% clean academic record. Full regular unit loading permitted.
+                    Your college determines official standing and enrollment load.
                   </span>
                 </div>
                 <div className="standing-info-card" style={{ background: 'rgba(245,158,11,0.08)', borderLeft: '4px solid var(--bu-gold)' }}>
-                  <strong style={{ color: 'var(--bu-gold)', fontSize: '0.90rem' }}>Academic Warning (1 Deficiency):</strong>
+                  <strong style={{ color: 'var(--bu-gold)', fontSize: '0.90rem' }}>One failing grade</strong>
                   <span style={{ display: 'block', marginTop: '2px', color: 'var(--text-primary)', fontSize: '0.82rem' }}>
-                    Carrying 1 failing mark. Academic load advisory applied for subsequent semester.
+                    The following term’s load is reduced by one subject of equivalent units.
                   </span>
                 </div>
                 <div className="standing-info-card" style={{ background: 'rgba(239,68,68,0.08)', borderLeft: '4px solid var(--color-danger)' }}>
@@ -275,14 +275,14 @@ export const InfoModal: React.FC<InfoModalProps> = ({ type, isOpen, onClose }) =
           {type === 'units' && (
             <div className="achieve-section" style={{ marginBottom: 0 }}>
               <div className="handbook-ref-badge handbook-ref-blue">
-                <i className="fa-solid fa-book"></i> BU Student Handbook: Article V, Section 8–10 (Page 22–24)
+                <i className="fa-solid fa-book"></i> BU Student Handbook: Section III, Academic Load, printed pp. 10–11 / PDF pp. 20–21
               </div>
               <p style={{ fontSize: '0.90rem', lineHeight: 1.55, color: 'var(--text-primary)', marginBottom: '12px' }}>
-                The <strong>Total Units</strong> metric tracks the cumulative sum of credit units earned across all recorded academic semesters.
+                <strong>Total Units</strong> adds the credit units entered across all recorded terms.
               </p>
               <ul style={{ fontSize: '0.84rem', color: 'var(--text-secondary)', lineHeight: 1.55, paddingLeft: '18px', margin: 0 }}>
                 <li>Monitors curriculum degree completion progress toward graduation requirements.</li>
-                <li>Verifies regular full-time student status each academic year per university standards.</li>
+                <li>Check each semester against the load prescribed by your curriculum.</li>
               </ul>
             </div>
           )}

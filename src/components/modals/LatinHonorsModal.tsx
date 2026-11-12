@@ -93,7 +93,7 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
                   <div className="achieve-details">
                     <strong style={{ fontSize: '0.95rem' }}>Not Eligible for Latin Graduation Honors</strong>
                     <span className="achieve-subtext" style={{ lineHeight: 1.4, marginTop: 4, fontSize: '0.82rem', display: 'block' }}>
-                      Per the Bicol University Student Handbook (Art. VIII, Sec. 30), candidates must carry full regular load with zero academic deficiencies. Disqualified due to:{' '}
+                      The Handbook requires the prescribed regular curriculum load and numeric subject grades of 3.00 or better (Section III, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31). Check these record flags:{' '}
                       <strong>
                         {[
                           stats.hasFailingGrade && 'Failing mark (5.0)',
@@ -277,7 +277,7 @@ export const LatinHonorsModal: React.FC<LatinHonorsModalProps> = ({
                 </div>
               </div>
               <p style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', lineHeight: 1.4, margin: 0 }}>
-                *Rules: Must carry full regular load every term with zero 5.0 or INC marks (Art. VIII, Sec. 30).
+                Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31. Check prescribed load, subject grades, and unresolved requirements with Bicol University.
               </p>
             </div>
           </div>
