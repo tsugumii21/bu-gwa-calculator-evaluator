@@ -21,6 +21,7 @@ interface StagedCorSemester {
   fileName: string;
   subjects: Subject[];
   totalUnits: number;
+  unreadableCourseCodes: string[];
 }
 
 export const CorScanModal: React.FC<CorScanModalProps> = ({
@@ -96,9 +97,12 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
             fileName: file.name,
             subjects: result.subjects,
             totalUnits: units,
+            unreadableCourseCodes: result.unreadableCourseCodes,
           });
         } else {
-          setFailedFiles(previous => [...previous, { id: crypto.randomUUID(), file, message: 'No COR schedule rows found.' }]);
+          const unreadable = result.unreadableCourseCodes.join(', ');
+          const message = unreadable ? 'Check the credit units for ' + unreadable + ' and enter these courses manually.' : 'No COR schedule rows found.';
+          setFailedFiles(previous => [...previous, { id: crypto.randomUUID(), file, message }]);
         }
       } catch (failure) {
         if (controller.signal.aborted) return;
@@ -339,6 +343,13 @@ export const CorScanModal: React.FC<CorScanModalProps> = ({
                           <i className="fa-solid fa-paperclip"></i> {sem.fileName}
                         </span>
                       </div>
+
+                      {sem.unreadableCourseCodes.length > 0 && (
+                        <p className="v2-dialog-note" role="status">
+                          Could not confirm credit units for {sem.unreadableCourseCodes.join(', ')}.
+                          {' '}These courses were skipped. Check your COR and enter them manually after importing.
+                        </p>
+                      )}
 
                       {isExpanded && (
                         <div className="staged-courses-preview">

@@ -6,6 +6,7 @@ import { ScanFailure } from '../../types/scan';
 export interface PdfCorParseResult {
   semesterTitle: string;
   subjects: Subject[];
+  unreadableCourseCodes: string[];
 }
 
 export const COR_LIMITS = { files: 8, bytes: 10 * 1024 * 1024, pages: 20, milliseconds: 30_000 } as const;
@@ -80,102 +81,77 @@ async function readPage(document: PDFDocumentProxy, pageNumber: number, signal: 
 
 const MAX_COURSE_UNITS = 12;
 const COURSE_CODE = /[A-Z][A-Z0-9.-]{1,14}?(?:[ \t]+(?:FIT|ELECT|ELEC))?[ \t]*\d+[A-Z]?(?:\.\d+)?/.source;
-const CODE_AT_START = new RegExp("^(" + COURSE_CODE + ")[ \\t]+", 'i');
-const PLAIN_COURSE_ROW = new RegExp("^(" + COURSE_CODE + ")[ \\t]+(.+?)[ \\t]+(\\d+(?:\\.\\d+)?)$", 'i');
-const METADATA = /^(?:SCHOOL YEAR|STUDENT NUMBER|ID NUMBER|SUBJECT CODE|COURSE CODE|ROOM|CLASS SCHEDULE)\b/i;
+const CODE_AT_START = new RegExp("^(" + COURSE_CODE + ")(?:[ \\t]+|$)", 'i');
+const PLAIN_COURSE_ROW = /^(.+?)[ \t]+(-?\d+(?:\.\d+)?)$/;
+const METADATA = /^(?:SCHOOL YEAR|STUDENT NUMBER|ID NUMBER|SUBJECT CODE|COURSE CODE|ROOM|(?:CLASS[ \t]+)?SCHEDULE)\b/i;
+const UNIT_COLUMNS = /\b(?:CREDIT(?:ED)?(?:[ \t]+UNITS?)?|UNITS?|LEC(?:TURE)?(?:[ \t]+(?:UNITS?|HOURS?))?|LAB(?:ORATORY)?(?:[ \t]+(?:UNITS?|HOURS?))?)\b/gi;
+const UNIT_RUN = /(?<!\S)-?\d+(?:\.\d+)?(?:[ \t]+-?\d+(?:\.\d+)?){2,}(?=[ \t]|$)/g;
 const normalizeCode = (code: string) => code.trim().toUpperCase().replace(/\s+/g, ' ').replace(/(?<=[A-Z])(?=\d+[A-Z]?(?:\.\d+)?$)/, ' ');
+
+function creditColumnFromHeader(line: string) {
+  const columns = line.match(UNIT_COLUMNS);
+  if (!columns?.some(column => /^LEC/i.test(column)) || !columns.some(column => /^LAB/i.test(column))) return undefined;
+  return columns.findIndex(column => /^(?:CREDIT|UNITS?$)/i.test(column));
+}
+
+function readCourseRow(body: string, creditColumn: number) {
+  const runs = [...body.matchAll(UNIT_RUN)];
+  if (runs.length > 1) return null;
+  const run = runs[0];
+  if (!run) {
+    const plain = body.match(PLAIN_COURSE_ROW);
+    // A pair of trailing decimals may be a schedule row with a missing unit column.
+    if (!plain || /(?:^|\s)-?\d+\.\d+$/.test(plain[1])) return null;
+    return { name: plain[1], units: Number(plain[2]) };
+  }
+
+  const values = run[0].split(/[ \t]+/);
+  // A title may end in a whole number before the three schedule columns.
+  const titleSuffix = values.length === 4 && /^\d+$/.test(values[0])
+    && values.slice(1).every(value => value.includes('.')) ? values.shift() : undefined;
+  if (values.length !== 3 || creditColumn < 0 || creditColumn >= values.length) return null;
+  if (values.some(value => !Number.isFinite(Number(value)) || Number(value) < 0)) return null;
+  const title = body.slice(0, run.index).trim();
+  if (!title) return null;
+  return { name: titleSuffix ? [title, titleSuffix].join(' ') : title, units: Number(values[creditColumn]) };
+}
 
 /** Parses course rows only within a COR schedule. */
 export function extractCORSubjectsFromText(text: string): PdfCorParseResult {
-  if (!text || text.trim().length === 0) {
-    return { semesterTitle: 'Scanned COR', subjects: [] };
-  }
-
-  const newSubjects: Subject[] = [];
-  let semesterTitle = 'Scanned COR';
-
-  // 1. Extract Semester Title (e.g., "AY 2025-2026 2nd Semester")
-  const syMatch =
-    text.match(/School Year:\s*(AY\s*[\d-]+\s*[\d\w\s]+Semester)/i) ||
-    text.match(/(AY\s*\d{4}-\d{4}\s*\d(?:st|nd|rd|th)?\s*Semester)/i);
-  if (syMatch) {
-    semesterTitle = syMatch[1].trim();
-  }
-
-  // Isolate the schedule for both row formats.
-  let scheduleText = text;
+  const syMatch = text.match(/School Year:\s*(AY\s*[\d-]+\s*[\d\w\s]+Semester)/i)
+    ?? text.match(/(AY\s*\d{4}-\d{4}\s*\d(?:st|nd|rd|th)?\s*Semester)/i);
+  const semesterTitle = syMatch?.[1].trim() || 'Scanned COR';
   const heading = text.match(/(?:^|\n)[ \t]*(?:CLASS[ \t]+)?SCHEDULE\b[ \t]*:?/i);
-  if (!heading || heading.index === undefined) return { semesterTitle, subjects: [] };
-  const schedStart = heading.index + heading[0].length;
-  const relativeEnd = text.slice(schedStart).search(/(?:^|\n)[ \t]*(?:TOTALS?\b|ASSESSED FEES\b)/i);
-  const schedEnd = relativeEnd === -1 ? -1 : schedStart + relativeEnd;
+  if (heading?.index === undefined) return { semesterTitle, subjects: [], unreadableCourseCodes: [] };
 
-  if (schedEnd >= schedStart) {
-    scheduleText = text.substring(schedStart, schedEnd);
-  } else {
-    scheduleText = text.substring(schedStart);
-  }
+  const schedule = text.slice(heading.index + heading[0].length).split(/\r?\n/);
+  const subjects = new Map<string, Subject>();
+  const unreadable = new Set<string>();
+  let creditColumn = 0;
 
-  const cleanSchedule = scheduleText.replace(/\r/g, '');
-
-  // 3. Locate each subject row by finding unit anchors: "3.0 2.0 1.0 BSIT-P-3A" or "3.0 3.0 0.0 BSIT-P-3A"
-  const anchorRegex = /(?<![\d.-])(\d+(?:\.\d+)?)[ \t]+(\d+(?:\.\d+)?)[ \t]+(\d+(?:\.\d+)?)[ \t]+([A-Z]{2,12}-[A-Z0-9-]+)/gi;
-
-  let aMatch: RegExpExecArray | null;
-  while ((aMatch = anchorRegex.exec(cleanSchedule)) !== null) {
-    const creditUnits = Number(aMatch[1]);
-    if (!Number.isFinite(creditUnits) || creditUnits > MAX_COURSE_UNITS) continue;
-    const anchorIndex = aMatch.index;
-
-    const rowStart = cleanSchedule.lastIndexOf('\n', anchorIndex) + 1;
-    const textBeforeAnchor = cleanSchedule.substring(rowStart, anchorIndex).trimStart();
-    if (METADATA.test(textBeforeAnchor)) continue;
-    const lastCodeMatch = textBeforeAnchor.match(CODE_AT_START);
-    if (lastCodeMatch) {
-      const code = normalizeCode(lastCodeMatch[1]);
-      // Course description is the exact text between the code end index and unit anchor start index
-      let name = textBeforeAnchor.slice(lastCodeMatch[0].length).trim();
-
-      // Clean up unwanted artifacts
-      name = name.replace(/^Subject\s+/i, '').replace(/^Code\s+/i, '').trim();
-
-      // Avoid duplicates
-      if (!newSubjects.some((s) => s.code === code)) {
-        newSubjects.push({
-          code,
-          name: name || 'Scanned Course',
-          grade: '',
-          units: creditUnits,
-        });
-      }
+  for (const rawLine of schedule) {
+    const line = rawLine.trim();
+    if (/^(?:TOTALS?|ASSESSED FEES)\b/i.test(line)) break;
+    const match = METADATA.test(line) ? null : line.match(CODE_AT_START);
+    if (!match) {
+      creditColumn = creditColumnFromHeader(line) ?? creditColumn;
+      continue;
     }
+
+    const code = normalizeCode(match[1]);
+    if (unreadable.has(code)) continue;
+    const row = readCourseRow(line.slice(match[0].length), creditColumn);
+    const previous = subjects.get(code);
+    if (!row || !Number.isFinite(row.units) || row.units < 0 || row.units > MAX_COURSE_UNITS
+      || (previous && previous.units !== row.units)) {
+      unreadable.add(code);
+      subjects.delete(code);
+      continue;
+    }
+
+    const name = row.name.replace(/^Subject\s+/i, '').replace(/^Code\s+/i, '').trim() || 'Scanned Course';
+    if (!previous) subjects.set(code, { code, name, units: row.units, grade: '' });
   }
 
-  // 4. Fallback if anchors were not detected
-  if (newSubjects.length === 0) {
-    const lines = cleanSchedule.split('\n');
-    lines.forEach((line) => {
-      const trimmed = line.trim();
-      if (!trimmed || METADATA.test(trimmed)) return;
-      const lMatch = trimmed.match(PLAIN_COURSE_ROW);
-      if (lMatch) {
-        const code = normalizeCode(lMatch[1]);
-        const units = Number(lMatch[3]);
-        if (!Number.isFinite(units) || units > MAX_COURSE_UNITS) return;
-        if (!newSubjects.some((s) => s.code === code)) {
-          newSubjects.push({
-            code,
-            name: lMatch[2].trim(),
-            grade: '',
-            units,
-          });
-        }
-      }
-    });
-  }
-
-  return {
-    semesterTitle,
-    subjects: newSubjects,
-  };
+  return { semesterTitle, subjects: [...subjects.values()], unreadableCourseCodes: [...unreadable] };
 }
