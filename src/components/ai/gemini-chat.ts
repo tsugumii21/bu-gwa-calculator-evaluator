@@ -1,7 +1,8 @@
 const REQUEST_DEADLINE_MS = 15_000;
 const MAX_HISTORY_TURNS = 8;
-const MODEL = 'gemini-3.5-flash';
-const ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+const MODEL = 'gemini-3.8-flash';
+export const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`;
+export const LOCAL_GEMINI_ENDPOINT = '/api/gabay';
 
 /** One turn shared with the online advisor. Local grade diagnostics stay separate. */
 export interface GeminiTurn {
@@ -15,16 +16,16 @@ function requestContent({ role, text }: GeminiTurn) {
 }
 
 /** Sends only conversation text and handbook context with a finite deadline. */
-export async function requestGeminiReply(apiKey: string, systemInstruction: string, history: GeminiTurn[], inquiry: string, signal: AbortSignal): Promise<Response> {
+export async function requestGeminiReply(apiKey: string | null, systemInstruction: string, history: GeminiTurn[], inquiry: string, signal: AbortSignal): Promise<Response> {
   const recent = history.slice(-MAX_HISTORY_TURNS);
-  const response = await fetch(ENDPOINT, {
+  const response = await fetch(apiKey === null ? LOCAL_GEMINI_ENDPOINT : GEMINI_ENDPOINT, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+    headers: { 'Content-Type': 'application/json', ...(apiKey === null ? {} : { 'x-goog-api-key': apiKey }) },
     signal: AbortSignal.any([signal, AbortSignal.timeout(REQUEST_DEADLINE_MS)]),
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: systemInstruction }] },
       contents: [...recent, { role: 'user', text: inquiry } satisfies GeminiTurn].map(requestContent),
-      generationConfig: { maxOutputTokens: 700, temperature: 0.25 },
+      generationConfig: { maxOutputTokens: 700, thinkingConfig: { thinkingLevel: 'LOW' } },
     }),
   });
   if (!response.ok) {

@@ -6,7 +6,7 @@ import { searchHandbook } from '../../core/handbook-knowledge';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { DataPrivacyNote } from '../common/data-privacy-note';
 import { MascotReference } from '../illustrations/mascot-reference';
-import { readGeminiReply, requestGeminiReply, type GeminiTurn } from './gemini-chat';
+import { LOCAL_GEMINI_ENDPOINT, readGeminiReply, requestGeminiReply, type GeminiTurn } from './gemini-chat';
 
 // Rate Limiter constants
 const COOLDOWN_SECONDS = 4;
@@ -34,6 +34,7 @@ export const BuenoAiDrawer: React.FC = () => {
   const close = () => { onlineRequest.current?.abort(); setIsOpen(false); };
   const dialogRef = useAccessibleDialog(isOpen, close);
   const [query, setQuery] = useState('');
+  const [hasServerKey, setHasServerKey] = useState(false);
 
   const [geminiApiKey, setGeminiApiKey] = useState(() => {
     try {
@@ -42,6 +43,7 @@ export const BuenoAiDrawer: React.FC = () => {
       return '';
     }
   });
+  const isOnline = hasServerKey || !!geminiApiKey;
 
   const [aiChatMessages, setAiChatMessages] = useState<{ sender: 'user' | 'ai'; text: string }[]>([]);
   const [isAiLoading, setIsAiLoading] = useState(false);
@@ -55,6 +57,14 @@ export const BuenoAiDrawer: React.FC = () => {
 
   const semesters = useSemesterStore((s) => s.semesters);
   useEffect(() => () => onlineRequest.current?.abort(), []);
+  useEffect(() => {
+    if (!isOpen || !['localhost', '127.0.0.1', '[::1]'].includes(location.hostname)) return;
+    const controller = new AbortController();
+    void fetch(LOCAL_GEMINI_ENDPOINT, { signal: controller.signal })
+      .then(response => setHasServerKey(response.status === 204))
+      .catch(() => { if (!controller.signal.aborted) setHasServerKey(false); });
+    return () => controller.abort();
+  }, [isOpen]);
 
   // Auto-scroll chat
   useEffect(() => {
@@ -82,6 +92,20 @@ export const BuenoAiDrawer: React.FC = () => {
       'When the excerpts do not establish an answer, say so and direct the student to their college.',
       evidence,
     ].join('\n\n');
+  };
+
+  const saveLocalKey = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const key = String(new FormData(event.currentTarget).get('apiKey') ?? '').trim();
+    if (!key) return;
+    try {
+      window.localStorage.setItem(LEGACY_KEY_STORAGE, key);
+      event.currentTarget.reset();
+      setGeminiApiKey(key);
+      setRateLimitWarning('');
+    } catch {
+      setRateLimitWarning('The browser could not save the Gemini key.');
+    }
   };
 
   const clearStoredKey = () => {
@@ -160,7 +184,7 @@ export const BuenoAiDrawer: React.FC = () => {
     const localReply = matched
       ? '**' + matched.title + '** (' + matched.handbookReference + ')\n\n' + matched.details
       : 'The local guide found no matching provision. Ask about grades, honors, INC, dropping, or shifting.';
-    if (!geminiApiKey) {
+    if (!isOnline) {
       append(localReply);
       return;
     }
@@ -169,7 +193,7 @@ export const BuenoAiDrawer: React.FC = () => {
     onlineRequest.current = controller;
     setIsAiLoading(true);
     try {
-      const response = await requestGeminiReply(geminiApiKey, buildSystemInstruction(trimmed), onlineHistory.current, trimmed, controller.signal);
+      const response = await requestGeminiReply(hasServerKey ? null : geminiApiKey, buildSystemInstruction(trimmed), onlineHistory.current, trimmed, controller.signal);
       const data = await response.json();
       const reply = readGeminiReply(data);
       if (controller.signal.aborted) return;
@@ -207,7 +231,7 @@ export const BuenoAiDrawer: React.FC = () => {
                 <div>
                   <div className="gabay-title">
                     <h2 id="bueno-helper-title">{GUIDE_NAME}</h2>
-                    <span className="gabay-mode">{geminiApiKey ? 'Online configured' : 'Local handbook'}</span>
+                    <span className="gabay-mode">{isOnline ? 'Online configured' : 'Local handbook'}</span>
                   </div>
                   <p>BU handbook and grade planning</p>
                 </div>
@@ -273,6 +297,10 @@ export const BuenoAiDrawer: React.FC = () => {
               {geminiApiKey && <div className="v2-dialog-note gabay-online-note">
                 <button type="button" className="btn btn-secondary" onClick={clearStoredKey}>Clear saved key</button>
               </div>}
+              {import.meta.env.DEV && !isOnline && <form className="gabay-composer" onSubmit={saveLocalKey}>
+                <input type="password" name="apiKey" aria-label="Gemini API key" placeholder="Gemini API key" autoComplete="off" required />
+                <button type="submit" className="btn btn-secondary">Save key</button>
+              </form>}
 
               {/* Rate Limit Warning Banner */}
               {rateLimitWarning && (
@@ -319,7 +347,7 @@ export const BuenoAiDrawer: React.FC = () => {
 
             <footer className="gabay-footer">
               <DataPrivacyNote id="gabay-data-privacy">
-                Review my grades runs in this browser. {geminiApiKey
+                Review my grades runs in this browser. {isOnline
                   ? 'Google receives questions, handbook excerpts, and recent online chat. Leave out grades and student IDs.'
                   : 'Handbook questions stay in this browser.'}
               </DataPrivacyNote>

@@ -180,7 +180,7 @@ BU GWA Calculator is an independent student project. For official grades, standi
 
 Semester records and settings are stored in this browser. Clearing site data also clears your saved records. PDF and screenshot imports are processed in the browser. The app may fetch public font and OCR resources.
 
-Gabay BU searches handbook excerpts and reviews your saved grades locally. If an existing browser key enables Gemini, online questions send the entered text, relevant handbook excerpts, and recent online conversation to Google. Keep student identifiers and grades out of online prompts. You can clear a previously saved key in the guide to use local mode.
+Gabay BU searches handbook excerpts and reviews your saved grades locally. To enable Gemini for local development and preview, set `GEMINI_API_KEY` in the ignored `.env.local` file and restart Vite. The server sends online questions, relevant handbook excerpts, and recent online conversation to Google. Keep student identifiers and grades out of online prompts. The static GitHub Pages deployment can use a previously saved browser key. You can remove that browser key from the guide.
 
 To see how the app handles your data, follow the code for [PDF parsing](src/components/scanner/pdf-parser.ts), [image OCR](src/components/scanner/scan-service.ts), [bulk paste](src/components/modals/BulkPasteModal.tsx), and [browser storage](src/store/index.ts). For Gabay BU, see [local grade review and handbook replies](src/components/ai/BuenoAiDrawer.tsx) and [the request sent to Gemini](src/components/ai/gemini-chat.ts).
 
