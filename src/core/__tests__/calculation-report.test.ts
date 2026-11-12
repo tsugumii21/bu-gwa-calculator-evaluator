@@ -11,13 +11,26 @@ describe('Latin honors progress', () => {
   const regularTerms = (count: number) => Array.from({ length: count }, (_, index) => term(`regular-${index}`, '1.6', 18));
   const targets = { regularSemesters: '8', creditUnits: '147' };
 
-  it('withholds a named honor with five regular semesters and a graded Midyear', () => {
-    const report = buildCalculationReport([...regularTerms(5), term('Midyear', '1.6', 3)], targets);
-    expect(report.latin).toEqual({ stage: 'progress', label: 'Eligibility pending', note: '5/6 completed regular semesters.' });
+  it('reports first-year progress without naming an honor', () => {
+    const { latin } = buildCalculationReport(regularTerms(2), targets);
+    expect(latin).toEqual({
+      stage: 'progress',
+      label: 'More grades and units needed',
+      note: '2 of 6 regular semesters complete · 36 of 147 curriculum units graded. Add the remaining grades and units to see a possible honor.',
+    });
   });
 
-  it('shows unofficial eligibility once six regular semesters are complete', () => {
-    expect(buildCalculationReport(regularTerms(6)).latin).toMatchObject({ stage: 'eligible', label: 'Eligible for Cum Laude' });
+  it('withholds a named honor with five regular semesters and a graded Midyear', () => {
+    const report = buildCalculationReport([...regularTerms(5), term('Midyear', '1.6', 3)], targets);
+    expect(report.latin).toMatchObject({ stage: 'progress', note: expect.stringContaining('5 of 6 regular semesters complete') });
+  });
+
+  it('shows a possible honor once six regular semesters are complete', () => {
+    expect(buildCalculationReport(regularTerms(6)).latin).toMatchObject({
+      stage: 'eligible',
+      label: 'Possible Cum Laude',
+      note: expect.stringContaining('Unofficial projection'),
+    });
   });
 
   it.each([

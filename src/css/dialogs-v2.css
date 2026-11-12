@@ -106,7 +106,7 @@ html[data-theme="dark"] .modal-overlay .v2-info-dialog{--info-accent-text:#ffb58
 .v2-info-dialog .modal-body li{padding-left:4px;margin:10px 0;font-weight:400}
 .v2-info-dialog .modal-body li::marker{color:var(--info-accent-text)}
 .modal-overlay .v2-info-dialog .v2-handbook-reference{color:var(--info-accent-text);background:var(--info-warm);border:1px solid var(--info-rule);padding:12px 16px;margin-bottom:20px;font-size:13px;line-height:1.6}
-.v2-info-dialog .v2-handbook-reference:hover{text-decoration:underline;text-underline-offset:3px}
+.v2-info-dialog a.v2-handbook-reference:hover{text-decoration:underline;text-underline-offset:3px}
 .v2-info-dialog .v2-help-card{background:var(--dialog-canvas);border:1px solid var(--info-rule);padding:16px 20px;border-radius:12px;margin:12px 0}
 .v2-info-dialog .v2-help-card>strong{display:block;color:var(--info-accent-text);font-weight:600;margin-bottom:6px}
 .v2-info-dialog .v2-help-card p{margin:4px 0;font-size:14px;line-height:1.65}

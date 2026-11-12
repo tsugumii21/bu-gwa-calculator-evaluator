@@ -2,6 +2,7 @@ import { useCallback } from 'react';
 import { Award, Crown, ShieldCheck, X } from 'lucide-react';
 
 import type { CalculationMode, buildCalculationReport } from '../../core/calculation-report';
+import { LATIN_ELIGIBILITY_SEMESTERS, LATIN_HONOR_RANGES } from '../../core/latin-honors';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { RESULT_MOMENTS, SUPPORT_MOMENT_INDEX } from '../illustrations/result-moments';
 import { MascotReference } from '../illustrations/mascot-reference';
@@ -9,6 +10,7 @@ import { MascotReference } from '../illustrations/mascot-reference';
 type Report = ReturnType<typeof buildCalculationReport>;
 type ResultProps = { report: Report; mode: CalculationMode; scope: string; isCurrent: boolean; moment?: number };
 export const UNOFFICIAL_NOTICE = 'Unofficial estimate for personal academic planning. Not an official Bicol University grade computation or confirmation of Latin honors. Final grades and eligibility are determined by the University Registrar.';
+export const LATIN_UNOFFICIAL_NOTICE = 'Unofficial planning estimate. Get your final Latin honors result from the Bicol University Office of the University Registrar.';
 
 /** Shared numeric evidence with an outcome-specific, accessible result presentation. */
 export function CalculationResult({ report, mode, isCurrent }: ResultProps) {
@@ -35,26 +37,31 @@ export function CalculationResult({ report, mode, isCurrent }: ResultProps) {
 }
 
 /** Explains the current eligibility estimate and the checks BU still needs to make. */
-export function HonorEvidence({ report }: { report: Report }) {
+export function LatinCalculationDetails({ report, isCurrent }: { report: Report; isCurrent: boolean }) {
+  const { totalPoints, gradedUnits, cumulativeGWA } = report.stats;
   return <div className="v2-honor-evidence">
-    <p>Graduation with Honors (2019 handbook, printed pp. 20–21 / PDF pp. 30–31) uses a unit-weighted GWA, no numeric grade worse than 3.00, and the prescribed regular curriculum load.</p>
-    <ul>{report.latinIssues.map(issue => <li key={issue}>{issue}</li>)}
-      <li>BU verifies credited courses, prescribed loads, degree completion, and applicable residence requirements.</li>
-    </ul>
+    <p>Multiply each final numeric grade by its credit units. Add those products, then divide by the total graded units. Midyear grades with positive units count. Blank grades, INC, and DRP are excluded from the average.</p>
+    <p><strong>Cumulative GWA = Σ (grade × units) ÷ total graded units</strong></p>
+    {isCurrent && gradedUnits > 0 && <p><strong>Your record:</strong> {totalPoints} ÷ {gradedUnits} = {cumulativeGWA.toFixed(4)}</p>}
+    <p>The app compares the unrounded GWA with the graduation honors ranges in the 2019 BU Student Handbook (printed pp. 20–21 / PDF pp. 30–31).</p>
+    <ul>{LATIN_HONOR_RANGES.map(({ label, range }) => <li key={label}><strong>{label}</strong> · {range}</li>)}</ul>
+    <p>With only your two first-year semesters, the app shows how many semesters and graded units you have entered. From {LATIN_ELIGIBILITY_SEMESTERS} completed regular semesters, it shows a possible honor if your record passes the grade and load checks. The app shows an unofficial graduation estimate once you meet both targets in Review record.</p>
+    <p>Graduation honors require the prescribed regular curriculum load and no numeric subject grade above 3.00. BU verifies credited courses, degree completion, and applicable residence requirements.</p>
+    {isCurrent && report.latinIssues.length > 0 && <ul>{report.latinIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
   </div>;
 }
 
 function ResultDetails({ report, mode, isCurrent }: ResultProps) {
-  return <details className="result-evidence">
+  return <details className="result-evidence" open={mode === 'latin' && isCurrent}>
     <summary>{mode === 'latin' ? 'Calculation & graduation requirements' : 'Calculation & recognition details'}</summary>
     <p>Recorded units: <strong>{report.stats.totalUnits}</strong>. Recorded units are not necessarily earned credits.</p>
     {!isCurrent ? <p>Your entries changed. Compute again to update this result.</p> : <>
       {mode === 'gwa' && <p>{report.termHonor?.reason}</p>}
       <p>{report.standing.reason}</p>
-      <p>GWA = Σ (grade × units) ÷ Σ graded units. Comparisons use the unrounded average.</p>
-      {mode === 'latin' && <HonorEvidence report={report} />}
+      {mode === 'gwa' && <p>GWA = Σ (grade × units) ÷ Σ graded units. Comparisons use the unrounded average.</p>}
     </>}
-    <p>{UNOFFICIAL_NOTICE}</p>
+    {mode === 'latin' && <LatinCalculationDetails report={report} isCurrent={isCurrent} />}
+    {mode === 'gwa' && <p>{UNOFFICIAL_NOTICE}</p>}
   </details>;
 }
 
@@ -74,8 +81,9 @@ export function CalculationDialog(props: ResultProps & { isOpen: boolean; onClos
       <CalculationResult {...props} />
       <blockquote className="result-quote">“{moment[1]}”</blockquote>
       {outcomeNote && <p className="result-provisional">{outcomeNote}</p>}
+      {mode === 'latin' && <p className="result-notice">{LATIN_UNOFFICIAL_NOTICE}</p>}
       <ResultDetails {...props} />
-      <footer className="result-footer"><p className="result-notice">Unofficial academic estimate{mode === 'latin' ? ' · only Bicol University issues official honors results' : ''}</p>
+      <footer className="result-footer">{mode === 'gwa' && <p className="result-notice">Unofficial academic estimate</p>}
         <button type="button" className="result-return" onClick={close}>Back to my courses</button></footer>
     </div>
   </div>;

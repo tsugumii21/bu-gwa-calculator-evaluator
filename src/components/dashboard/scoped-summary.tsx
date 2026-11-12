@@ -17,7 +17,7 @@ export function ScopedSummary({ report, mode, scope, isCurrent }: {
     { topic: 'standing', label: 'Academic standing', value: standing, note: hasResult ? report.standing.reason : 'Compute to review this scope', icon: 'shield-halved', tone: 'green' },
     { topic: 'units', label: 'Recorded units', value: String(stats.totalUnits), note: `${stats.totalCourses} ${stats.totalCourses === 1 ? 'course' : 'courses'} entered · not earned credits`, icon: 'layer-group', tone: 'purple' },
   ];
-  return <CalculatorHelp key={mode} mode={mode}>{open => <section className="v2-summary-cards" aria-label="Academic summary dashboard" aria-live="polite">
+  return <CalculatorHelp key={mode} mode={mode} report={report} isCurrent={hasResult}>{open => <section className="v2-summary-cards" aria-label="Academic summary dashboard" aria-live="polite">
     {cards.map((card, index) => <article className={`v2-summary-card ${index === 0 ? 'v2-summary-hero' : ''}`} key={card.label}>
       <span className={`v2-summary-icon v2-summary-${card.tone}`} aria-hidden="true"><i className={`fa-solid fa-${card.icon}`} /></span>
       <div className="v2-summary-copy"><span className="v2-summary-label">{card.label}</span><strong>{card.value}</strong><p>{card.note}</p></div>

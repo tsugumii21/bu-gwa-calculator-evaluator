@@ -9,7 +9,7 @@ import { PhotoScanModal } from '../scanner/PhotoScanModal';
 import { ImportSuccessModal } from '../modals/ImportSuccessModal';
 import { ScrollToTopBtn } from '../common/ScrollToTopBtn';
 import { MascotReference } from '../illustrations/mascot-reference';
-import { CalculationDialog, HonorEvidence, UNOFFICIAL_NOTICE } from './calculation-result';
+import { CalculationDialog, LATIN_UNOFFICIAL_NOTICE, UNOFFICIAL_NOTICE } from './calculation-result';
 import { CalculatorRecords } from './calculator-records';
 import { ScopedSummary } from './scoped-summary';
 import { ComputationDialog } from '../animations/computation-dialog';
@@ -120,8 +120,7 @@ export const CalculatorView: React.FC = () => {
       </div>
       <p>{mode === 'gwa' ? 'One semester at a time. Your other saved terms stay safe.' : 'Your full record, together. Add every semester you need, including midyear terms.'}</p>
       <ScopedSummary report={report} mode={mode} scope={scope} isCurrent={isCurrent} terms={terms} />
-      {isCurrent && mode === 'latin' && <details className="result-evidence"><summary>Graduation requirements to verify</summary><HonorEvidence report={report} /></details>}
-      <p className="v2-unofficial">{UNOFFICIAL_NOTICE}</p>
+      <p className="v2-unofficial">{mode === 'latin' ? LATIN_UNOFFICIAL_NOTICE : UNOFFICIAL_NOTICE}</p>
       {isCurrent && <button type="button" onClick={() => setIsResultOpen(true)}>View result details</button>}
       {mode === 'latin' && <button type="button" id="btn-achievements" onClick={() => setIsAchievementsOpen(true)}>Review record</button>}
       {/* ── PRINT ONLY OFFICIAL ACADEMIC TRANSCRIPT HEADER ── */}
