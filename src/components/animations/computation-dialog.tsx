@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
-import { getRandomAnimation, type AnimationEntry } from './animations';
+import type { AnimationEntry } from './animations';
 import { LottieLoader } from './LottieLoader';
 
 const PRESENTATION_DURATION_MS = 2_700;
 const ARTWORK_READY_TIMEOUT_MS = 4_000;
 
 /** Presents one local study scene; the reveal track and result handoff share one clock. */
-export function ComputationDialog({ scope, onFinish, minimumDurationMs = PRESENTATION_DURATION_MS }: { scope: string; onFinish: () => void; minimumDurationMs?: number }) {
+export function ComputationDialog({ scope, animation, onFinish, minimumDurationMs = PRESENTATION_DURATION_MS }: { scope: string; animation: AnimationEntry; onFinish: () => void; minimumDurationMs?: number }) {
   const finishRef = useRef(onFinish);
   finishRef.current = onFinish;
-  const chosen = useRef<AnimationEntry | null>(null);
   const hasFinished = useRef(false);
   const isMounted = useRef(true);
   const fillRef = useRef<HTMLDivElement>(null);
-  const [animation, setAnimation] = useState<AnimationEntry | null>(null);
+  const mountedAt = useRef(performance.now());
+  const [shouldAnimate] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [isReady, setIsReady] = useState(false);
   const [hasArtworkError, setHasArtworkError] = useState(false);
   const duration = Number.isFinite(minimumDurationMs) ? Math.max(0, minimumDurationMs) : PRESENTATION_DURATION_MS;
@@ -25,7 +25,13 @@ export function ComputationDialog({ scope, onFinish, minimumDurationMs = PRESENT
     finishRef.current();
   }, []);
   const ref = useAccessibleDialog(true, finish);
-  const ready = useCallback(() => { if (isMounted.current && !hasFinished.current) setIsReady(true); }, []);
+  const ready = useCallback(() => {
+    if (!isMounted.current || hasFinished.current) return;
+    if (import.meta.env.DEV && ref.current) {
+      ref.current.dataset.artworkReadyMs = (performance.now() - mountedAt.current).toFixed(1);
+    }
+    setIsReady(true);
+  }, [ref]);
   const failArtwork = useCallback(() => {
     if (!isMounted.current || hasFinished.current) return;
     setHasArtworkError(true);
@@ -35,18 +41,14 @@ export function ComputationDialog({ scope, onFinish, minimumDurationMs = PRESENT
   useEffect(() => {
     isMounted.current = true;
     let frame = 0;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (!shouldAnimate) {
       frame = requestAnimationFrame(finish);
-    } else {
-      // The ref survives StrictMode's effect replay, so the shuffle bag advances only once.
-      chosen.current ??= getRandomAnimation('compute');
-      setAnimation(chosen.current);
     }
     return () => { isMounted.current = false; cancelAnimationFrame(frame); };
-  }, [finish]);
+  }, [finish, shouldAnimate]);
 
   useEffect(() => {
-    if (!animation || isReady) return;
+    if (isReady) return;
     const deadline = setTimeout(failArtwork, ARTWORK_READY_TIMEOUT_MS);
     return () => clearTimeout(deadline);
   }, [animation, isReady, failArtwork]);
@@ -71,10 +73,10 @@ export function ComputationDialog({ scope, onFinish, minimumDurationMs = PRESENT
   return <div className="modal-overlay v2-computing-overlay" role="dialog" aria-modal="true" aria-labelledby="computing-title" ref={ref}>
     <div className={`modal-content v2-computing-dialog${isReady ? ' is-presenting' : ''}`} style={{ '--compute-duration': `${duration}ms` } as CSSProperties}>
       <button type="button" className="compute-skip" onClick={finish}>Skip animation <kbd>Esc</kbd></button>
-      <div className="compute-animation" aria-hidden="true" data-animation-id={animation?.id}>
-        {hasArtworkError ? <span className="compute-fallback">Your next step starts here.</span> : animation
-          ? <LottieLoader key={animation.id} src={animation.src} data={animation.data} className="legacy-compute-lottie" onReady={ready} onError={failArtwork} />
-          : <span className="compute-static">Getting your result ready</span>}
+      <div className="compute-animation" aria-hidden="true" data-animation-id={animation.id}>
+        {!shouldAnimate ? <span className="compute-static">Getting your result ready</span>
+          : hasArtworkError ? <span className="compute-fallback">Your next step starts here.</span>
+          : <LottieLoader key={animation.id} src={animation.src} data={animation.data} className="legacy-compute-lottie" onReady={ready} onError={failArtwork} />}
       </div>
       <h2 id="computing-title">Preparing your result</h2>
       <p className="compute-scope">{scope}</p>

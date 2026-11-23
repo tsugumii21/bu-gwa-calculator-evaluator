@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAppStore, useSemesterStore } from '../../store';
 import { buildCalculationReport, selectCalculationTerms, type CalculationMode } from '../../core/calculation-report';
 import { ActionToolbar } from '../toolbar/ActionToolbar';
@@ -13,6 +13,8 @@ import { CalculationDialog, LATIN_UNOFFICIAL_NOTICE, UNOFFICIAL_NOTICE } from '.
 import { CalculatorRecords } from './calculator-records';
 import { ScopedSummary } from './scoped-summary';
 import { ComputationDialog } from '../animations/computation-dialog';
+import { getRandomAnimation, peekNextAnimation, type AnimationEntry } from '../animations/animations';
+import { loadLottieAsset } from '../animations/lottie-assets';
 import { chooseResultMoment, type ResultMomentPool } from '../illustrations/result-moments';
 
 const COMPUTATION_VIEWING_DURATION_MS = 2_700;
@@ -37,8 +39,32 @@ export const CalculatorView: React.FC = () => {
 
   const [alertMessage, setAlertMessage] = useState<string | null>(null);
   const [isComputing, setIsComputing] = useState(false);
+  const [computationAnimation, setComputationAnimation] = useState<AnimationEntry | null>(null);
   const [resultMoment, setResultMoment] = useState(-1);
   const pendingComputation = useRef('');
+
+  const preloadComputation = useCallback(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const next = peekNextAnimation('compute');
+    // Warm-up failure is retryable when the visible loader subscribes.
+    if (next.src) void loadLottieAsset(next.src);
+  }, []);
+
+  useEffect(() => {
+    if (isComputing) return;
+    if ('requestIdleCallback' in window) {
+      const idle = window.requestIdleCallback(preloadComputation, { timeout: 1_000 });
+      return () => window.cancelIdleCallback(idle);
+    }
+    const timer = setTimeout(preloadComputation, 0);
+    return () => clearTimeout(timer);
+  }, [isComputing, preloadComputation]);
+
+  const handleComputeIntent = (event: React.SyntheticEvent<HTMLElement>) => {
+    if (!isComputing && event.target instanceof Element && event.target.closest('.btn-compute-trigger')) {
+      preloadComputation();
+    }
+  };
 
   const handleComputeAll = () => {
     if (pendingComputation.current) return;
@@ -48,6 +74,7 @@ export const CalculatorView: React.FC = () => {
     }
     setAlertMessage(null);
     pendingComputation.current = `${mode}:${report.signature}`;
+    setComputationAnimation(getRandomAnimation('compute'));
     setIsComputing(true);
   };
 
@@ -109,7 +136,7 @@ export const CalculatorView: React.FC = () => {
   };
 
   return (
-    <div className="rd-welcome rd-calculator v2-calculator">
+    <div className="rd-welcome rd-calculator v2-calculator" onFocusCapture={handleComputeIntent} onPointerOver={handleComputeIntent}>
       <div className="v2-calculator-intro">
       <div className="rd-calculator-heading"><h1>Hey, Bueño Student.<br />Here’s where you stand.</h1></div>
       <MascotReference scene="calculator" className="v2-calculator-sky" />
@@ -167,7 +194,7 @@ export const CalculatorView: React.FC = () => {
 
 
       {/* SEMESTERS CONTAINER */}
-      {isComputing && <ComputationDialog scope={scope} onFinish={finishComputation} minimumDurationMs={COMPUTATION_VIEWING_DURATION_MS} />}
+      {isComputing && computationAnimation && <ComputationDialog scope={scope} animation={computationAnimation} onFinish={finishComputation} minimumDurationMs={COMPUTATION_VIEWING_DURATION_MS} />}
       <CalculationDialog report={report} mode={mode} scope={scope} isCurrent={isCurrent} isOpen={isResultOpen} onClose={closeResult} moment={Math.max(0, resultMoment)} />
 
       {/* MODALS */}

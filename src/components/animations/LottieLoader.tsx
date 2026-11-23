@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Lottie from 'lottie-react';
 import { Loader2 } from 'lucide-react';
+import { getCachedLottieAsset, loadLottieAsset } from './lottie-assets';
 
 interface LottieLoaderProps {
   src?: string;
@@ -12,10 +13,6 @@ interface LottieLoaderProps {
   onReady?: () => void;
   onError?: () => void;
 }
-
-// In-memory cache for fetched animation JSONs (zero latency on repeat calculations)
-const lottieJsonCache = new Map<string, object>();
-const ANIMATION_LOAD_TIMEOUT_MS = 4_000;
 
 export const LottieLoader: React.FC<LottieLoaderProps> = ({
   src,
@@ -33,36 +30,22 @@ export const LottieLoader: React.FC<LottieLoaderProps> = ({
 
   useEffect(() => {
     let isMounted = true;
-    const controller = new AbortController();
+    if (data || !src || getCachedLottieAsset(src)) return;
     setLoaded({ source: src });
-    if (data || !src || lottieJsonCache.has(src)) return;
-    const deadline = setTimeout(() => controller.abort(), ANIMATION_LOAD_TIMEOUT_MS);
-    fetch(src, { signal: controller.signal })
-        .then((res) => {
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          return res.json();
-        })
-        .then((fetched) => {
-          if (!fetched || typeof fetched !== 'object' || !Array.isArray(fetched.layers)) throw new Error('Invalid animation data');
-          if (!isMounted) return;
-          lottieJsonCache.set(src, fetched);
-          setLoaded({ source: src, data: fetched });
-        })
-        .catch(() => {
-          if (!isMounted) return;
-          setLoaded({ source: src, hasError: true });
-          callbacks.current.onError?.();
-        })
-        .finally(() => clearTimeout(deadline));
-    return () => {
-      isMounted = false;
-      controller.abort();
-      clearTimeout(deadline);
-    };
+    void loadLottieAsset(src).then(result => {
+      if (!isMounted) return;
+      if (result.ok) setLoaded({ source: src, data: result.data });
+      else {
+        setLoaded({ source: src, hasError: true });
+        callbacks.current.onError?.();
+      }
+    });
+    // Other consumers may share this request, so only detach this subscriber.
+    return () => { isMounted = false; };
   }, [src, data]);
 
   // A changed source must never display the previous source's cached state.
-  const activeData = data || (loaded.source === src ? loaded.data : undefined) || (src ? lottieJsonCache.get(src) : undefined);
+  const activeData = data || (loaded.source === src ? loaded.data : undefined) || (src ? getCachedLottieAsset(src) : undefined);
   const hasError = loaded.source === src && loaded.hasError;
 
   if (hasError || !activeData) {
