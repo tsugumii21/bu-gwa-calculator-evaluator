@@ -68,7 +68,7 @@ Enter grades manually, paste rows, or review imported courses before saving them
 | **Simulator** | Project cumulative GWA from future units and grades, estimate grades needed to reach a target, and inspect semester trends. |
 | **Scholarship** | Compare saved grades with requirements from your scholarship agreement. Editable presets are starting points to review before confirming. |
 | **Handbook** | Browse academic policy summaries with printed and PDF page references and open the bundled handbook. |
-| **Gabay BU** | Look up curated handbook guidance and review your saved grades locally. The app can also use Gemini when an existing browser key is present. |
+| **BU Academic Guide** | Look up curated handbook guidance and review your saved grades locally. The app can also use Gemini when an existing browser key is present. |
 
 ---
 
@@ -110,7 +110,7 @@ npm ci
 npm run dev
 ```
 
-Open the local URL printed by Vite. The calculator, local imports, and local Gabay BU guide require no environment variables or API key. OCR may download its engine and language data on first use.
+Open the local URL printed by Vite. The calculator, local imports, and local BU Academic Guide guide require no environment variables or API key. OCR may download its engine and language data on first use.
 
 | Command | Purpose |
 |---|---|
@@ -156,7 +156,7 @@ BU-GWA Calculator/
 │   │   ├── simulator/                # SimulatorView, SubjectTargetAllocator
 │   │   ├── charts/                   # SVG semester trends
 │   │   ├── modals/                   # LatinHonorsModal, AchievementsModal, ConfirmModal
-│   │   ├── ai/                       # Gabay BU and optional Gemini transport
+│   │   ├── ai/                       # BU Academic Guide and optional Gemini transport
 │   │   ├── scholarship/              # Editable scholarship requirements and results
 │   │   ├── handbook/                 # Handbook, policy references, usage guide, and about
 │   │   └── illustrations/            # Shared illustrations and theme-specific mascot artwork
@@ -180,9 +180,9 @@ BU GWA Calculator is an independent student project. For official grades, standi
 
 Semester records and settings are stored in this browser. Clearing site data also clears your saved records. PDF and screenshot imports are processed in the browser. The app may fetch public font and OCR resources.
 
-Gabay BU searches handbook excerpts and reviews your saved grades locally. To enable Gemini for local development and preview, set `GEMINI_API_KEY` in the ignored `.env.local` file and restart Vite. The server sends online questions, relevant handbook excerpts, and recent online conversation to Google. Keep student identifiers and grades out of online prompts. The static GitHub Pages deployment can use a previously saved browser key. You can remove that browser key from the guide.
+BU Academic Guide searches handbook excerpts and reviews your saved grades locally. To enable Gemini for local development and preview, set `GEMINI_API_KEY` in the ignored `.env.local` file and restart Vite. The server sends online questions, relevant handbook excerpts, and recent online conversation to Google. Keep student identifiers and grades out of online prompts. The static GitHub Pages deployment can use a previously saved browser key. You can remove that browser key from the guide.
 
-To see how the app handles your data, follow the code for [PDF parsing](src/components/scanner/pdf-parser.ts), [image OCR](src/components/scanner/scan-service.ts), [bulk paste](src/components/modals/BulkPasteModal.tsx), and [browser storage](src/store/index.ts). For Gabay BU, see [local grade review and handbook replies](src/components/ai/BuenoAiDrawer.tsx) and [the request sent to Gemini](src/components/ai/gemini-chat.ts).
+To see how the app handles your data, follow the code for [PDF parsing](src/components/scanner/pdf-parser.ts), [image OCR](src/components/scanner/scan-service.ts), [bulk paste](src/components/modals/BulkPasteModal.tsx), and [browser storage](src/store/index.ts). For BU Academic Guide, see [local grade review and handbook replies](src/components/ai/BuenoAiDrawer.tsx) and [the request sent to Gemini](src/components/ai/gemini-chat.ts).
 
 ---
 
