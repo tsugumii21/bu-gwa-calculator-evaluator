@@ -14,7 +14,7 @@ const MAX_REQUESTS_PER_MINUTE = 8;
 const MINUTE_MS = 60_000;
 const MAX_INQUIRY_LENGTH = 1_200;
 const LEGACY_KEY_STORAGE = 'bu_gemini_api_key';
-const GUIDE_NAME = 'Gabay BU';
+const GUIDE_NAME = 'BU Academic Guide';
 
 function GabayAvatar() {
   return <svg className="gabay-avatar" viewBox="0 0 40 40" aria-hidden="true" focusable="false">

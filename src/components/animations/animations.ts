@@ -158,7 +158,7 @@ function shuffleArray<T>(array: T[]): T[] {
  * 2. An animation NEVER plays twice in a row across bag boundary reshuffles.
  * 3. Distribution across all 5 JSON animations is 100% fair and randomized.
  */
-export function getRandomAnimation(category: AnimationCategory): AnimationEntry {
+export function peekNextAnimation(category: AnimationCategory): AnimationEntry {
   const pool = ANIMATION_REGISTRY[category];
   if (!pool || pool.length === 0) {
     throw new Error(`No animations registered for category: ${category}`);
@@ -187,14 +187,20 @@ export function getRandomAnimation(category: AnimationCategory): AnimationEntry 
     }
   }
 
-  // Pop next index from deck
-  const chosenIdx = bag.shift()!;
-  lastIdx = chosenIdx;
-
-  // Persist state
+  // Persist the prepared deck without consuming it; StrictMode and warm-up are idempotent.
   memoryBags[category] = bag;
   memoryLastIdx[category] = lastIdx;
   saveStoredBag(category, bag, lastIdx);
+  return pool[bag[0]];
+}
 
-  return pool[chosenIdx];
+/** Consumes the preloaded next scene only when the user starts a valid computation. */
+export function getRandomAnimation(category: AnimationCategory): AnimationEntry {
+  const scene = peekNextAnimation(category);
+  const bag = memoryBags[category];
+  if (!bag) return scene;
+  const chosenIdx = bag.shift()!;
+  memoryLastIdx[category] = chosenIdx;
+  saveStoredBag(category, bag, chosenIdx);
+  return scene;
 }

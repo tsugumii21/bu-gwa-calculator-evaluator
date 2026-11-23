@@ -9,6 +9,9 @@ import { MascotReference } from '../illustrations/mascot-reference';
 
 type Report = ReturnType<typeof buildCalculationReport>;
 type ResultProps = { report: Report; mode: CalculationMode; scope: string; isCurrent: boolean; moment?: number };
+const RESULT_SCENES = {
+  president: 'results-president', dean: 'results-dean', latin: 'results-high-honors', none: 'results-support',
+} as const;
 export const UNOFFICIAL_NOTICE = 'Unofficial estimate for personal academic planning. Not an official Bicol University grade computation or confirmation of Latin honors. Final grades and eligibility are determined by the University Registrar.';
 export const LATIN_UNOFFICIAL_NOTICE = 'Unofficial planning estimate. Get your final Latin honors result from the Bicol University Office of the University Registrar.';
 
@@ -26,7 +29,7 @@ export function CalculationResult({ report, mode, isCurrent }: ResultProps) {
         <span className="result-average-label">{mode === 'gwa' ? 'Semester GWA' : 'Cumulative GWA'}</span>
         <span className={`result-honor result-honor-${tone}`}><Icon size={18} aria-hidden="true" />{honor}</span>
       </div>
-      <MascotReference scene={isCurrent && level !== 'none' ? 'results-high-honors' : 'results-support'} className="result-mascot" />
+      <MascotReference scene={RESULT_SCENES[isCurrent ? level : 'none']} className="result-mascot" />
     </div>
     <dl className="result-counts">
       <div><dt>courses</dt><dd>{report.stats.totalCourses}</dd></div>

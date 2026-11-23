@@ -107,6 +107,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
         </button>
 
         </>}
+          <div className="toolbar-record-actions" role="group" aria-label="Remove saved records">
           <button
             type="button"
             aria-haspopup="dialog"
@@ -118,6 +119,7 @@ export const ActionToolbar: React.FC<ActionToolbarProps> = ({
           >
             <Trash2 size={18} aria-hidden="true" /> <span>Clear All</span>
           </button>
+          </div>
         </div>
         {group !== 'records' && (
           <DataPrivacyNote>PDFs, images, and pasted grades are processed in this browser. Saved grades stay here.</DataPrivacyNote>

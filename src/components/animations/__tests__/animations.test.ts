@@ -8,6 +8,26 @@ function storage(initial: Record<string, string> = {}) {
 beforeEach(() => { vi.resetModules(); vi.unstubAllGlobals(); });
 
 describe('computation scene selection', () => {
+  it('previews the same next scene repeatedly without consuming the cycle', async () => {
+    vi.stubGlobal('sessionStorage', storage());
+    const { peekNextAnimation, getRandomAnimation } = await import('../animations');
+    const preview = peekNextAnimation('compute');
+    const repeated = Array.from({ length: 10 }, () => peekNextAnimation('compute'));
+    expect(repeated.every(scene => scene.id === preview.id) && getRandomAnimation('compute').id === preview.id).toBe(true);
+  });
+
+  it('preserves fairness when every actual selection is preceded by preloading', async () => {
+    vi.stubGlobal('sessionStorage', storage());
+    const { peekNextAnimation, getRandomAnimation } = await import('../animations');
+    const scenes = Array.from({ length: 20 }, () => {
+      peekNextAnimation('compute');
+      peekNextAnimation('compute');
+      return getRandomAnimation('compute').id;
+    });
+    expect([0, 5, 10, 15].every(start => new Set(scenes.slice(start, start + 5)).size === 5)
+      && scenes.every((scene, index) => index === 0 || scene !== scenes[index - 1])).toBe(true);
+  });
+
   it('plays all five scenes per cycle without repeating at cycle boundaries', async () => {
     vi.stubGlobal('sessionStorage', storage());
     const { getRandomAnimation } = await import('../animations');
