@@ -9,7 +9,7 @@ export interface DegreeRequirements {
   creditUnits: string;
 }
 
-export const LATIN_ELIGIBILITY_SEMESTERS = 6;
+export const MIN_CURRICULUM_SEMESTERS = 1;
 
 export const LATIN_HONOR_RANGES = Object.values(HONOR_THRESHOLDS).map((rule, index, rules) => ({
   label: rule.label,
@@ -19,8 +19,19 @@ export const LATIN_HONOR_RANGES = Object.values(HONOR_THRESHOLDS).map((rule, ind
 export function readDegreeTargets(requirements?: DegreeRequirements) {
   const semesters = Number(requirements?.regularSemesters);
   const units = Number(requirements?.creditUnits);
-  return Number.isSafeInteger(semesters) && semesters >= LATIN_ELIGIBILITY_SEMESTERS
+  return Number.isSafeInteger(semesters) && semesters >= MIN_CURRICULUM_SEMESTERS
     && Number.isFinite(units) && units > 0 ? { semesters, units } : null;
+}
+
+/** Optional targets must both be valid when either value is supplied. */
+export function degreeTargetErrors(requirements?: DegreeRequirements) {
+  if (!requirements?.regularSemesters.trim() && !requirements?.creditUnits.trim()) return { semesters: null, units: null };
+  const semesters = Number(requirements?.regularSemesters);
+  const units = Number(requirements?.creditUnits);
+  return {
+    semesters: Number.isSafeInteger(semesters) && semesters >= MIN_CURRICULUM_SEMESTERS ? null : 'Enter a positive whole number of regular semesters, or clear both targets.',
+    units: Number.isFinite(units) && units > 0 ? null : 'Enter a positive degree-credit unit total, or clear both targets.',
+  };
 }
 
 function countCompletedRegularSemesters(terms: Semester[]) {
@@ -32,7 +43,7 @@ function countCompletedRegularSemesters(terms: Semester[]) {
   return new Set(completed.map(term => term.id)).size;
 }
 
-/** Estimates progress from the saved record. Residence and curriculum credit are verified by BU. */
+/** Describes entered coverage independently of the numerical range; only BU verifies eligibility. */
 export function evaluateLatinProgress({
   terms, gradedUnits, issues, bracket, requirements,
 }: {
@@ -44,22 +55,23 @@ export function evaluateLatinProgress({
 }) {
   const completed = countCompletedRegularSemesters(terms);
   const targets = readDegreeTargets(requirements);
-  if (completed < LATIN_ELIGIBILITY_SEMESTERS) {
-    const units = targets ? `${gradedUnits} of ${targets.units} curriculum units graded` : `${gradedUnits} graded units entered`;
-    return { stage: 'progress', label: 'More grades and units needed',
-      note: `${completed} of ${LATIN_ELIGIBILITY_SEMESTERS} regular semesters complete · ${units}. Add the remaining grades and units to see a possible honor.` } as const;
-  }
-  if (issues.length || !bracket || bracket.level === 'pending') {
-    return { stage: 'review', label: 'Eligibility needs review', note: issues[0] ?? 'Complete your graded record.' } as const;
-  }
-  if (bracket.level === 'regular') {
-    return { stage: 'outside', label: 'Outside Latin honors range', note: 'The cumulative GWA is above 1.7500.' } as const;
-  }
-  if (targets && completed >= targets.semesters && gradedUnits >= targets.units) {
-    return { stage: 'estimate', label: bracket.label, note: 'Unofficial graduation estimate. Await official BU results.' } as const;
-  }
-  const progress = targets
-    ? `${completed}/${targets.semesters} regular semesters · ${gradedUnits}/${targets.units} graded units.`
-    : 'Set your curriculum targets in Review record.';
-  return { stage: 'eligible', label: `Possible ${bracket.label}`, note: `Unofficial projection · ${progress}` } as const;
+  const coverage = { completedSemesters: completed, targets };
+  if (issues.length) return { ...coverage, stage: 'review', label: 'Requirements need review', note: issues[0] } as const;
+  if (!bracket || bracket.level === 'pending') return {
+    ...coverage, stage: 'pending', label: 'No numeric average yet', note: 'Enter a valid numeric grade with positive credit units.',
+  } as const;
+  const targetErrors = degreeTargetErrors(requirements);
+  if (targetErrors.semesters || targetErrors.units) return {
+    ...coverage, stage: 'review', label: 'Curriculum targets need review', note: targetErrors.semesters ?? targetErrors.units!,
+  } as const;
+  if (!targets) return { ...coverage, stage: 'progress', label: 'Degree coverage not confirmed',
+    note: 'Add optional curriculum targets to compare entered coverage. BU must verify degree completion.',
+  } as const;
+  if (completed >= targets.semesters && gradedUnits >= targets.units) return {
+    ...coverage, stage: 'targets-met', label: 'Entered targets reached',
+    note: 'BU must still verify credited courses, prescribed loads, residence and degree completion. Target totals do not establish eligibility.',
+  } as const;
+  return { ...coverage, stage: 'progress', label: 'Partial record',
+    note: `${completed}/${targets.semesters} regular semesters with grades · ${gradedUnits}/${targets.units} graded units. These entered totals do not verify curriculum completion.`,
+  } as const;
 }

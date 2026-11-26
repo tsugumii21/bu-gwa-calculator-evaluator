@@ -143,3 +143,133 @@ body:has(.v2-record-overlay){overflow:hidden}
 @media(min-width:769px){#photo-scan-modal .bucket-thumb-item{grid-template-columns:96px minmax(0,1fr) auto}}
 @media(max-width:768px){#photo-scan-modal .bucket-thumb-item{grid-template-columns:80px minmax(0,1fr)}#photo-scan-modal .bucket-thumb-item>.bucket-thumb-img{width:80px;height:64px}#photo-scan-modal .bucket-thumb-del-btn{grid-column:1/-1;justify-self:end}#photo-scan-modal .bucket-title-group{flex-basis:100%}#photo-scan-modal .bucket-remove-btn{margin-left:auto}#photo-scan-modal .scan-processing-panel{padding:12px 16px}#photo-scan-modal .scan-processing-panel+.modal-footer .scan-import-feedback{min-height:80px}}
 @media(prefers-reduced-motion:reduce){#photo-scan-modal .scan-activity.is-active{animation:none}}
+/* Photo import workbench: compact semester groups, protected exits and one scroll owner. */
+#photo-scan-modal { --photo-gap:8px;--photo-space:16px;--photo-section:24px;--photo-touch:48px;--photo-helper:13px;--photo-thumb:56px;--photo-code:96px;--photo-grade:72px;--photo-units:64px;--photo-radius:8px; }
+#photo-scan-modal .photo-workbench { --dialog-width-limit:660px;--dialog-height-limit:calc(min(85vh,85svh) - 2px);box-sizing:border-box;max-height:var(--dialog-height-limit)!important; }
+#photo-scan-modal .photo-sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+#photo-scan-modal [hidden] { display:none!important; }
+#photo-scan-modal :is(.photo-intro,.photo-helper,.photo-course-source,.photo-field-error,.photo-field-warning,.photo-feedback p) { margin:0;font:400 var(--photo-helper)/1.6 var(--font-body); }
+#photo-scan-modal .photo-intro { color:var(--dialog-text);font-size:14px; }
+#photo-scan-modal .photo-helper,#photo-scan-modal .photo-course-source { color:var(--dialog-muted); }
+#photo-scan-modal .photo-batch-count { margin-block:var(--photo-gap) var(--photo-space);font-variant-numeric:tabular-nums; }
+#photo-scan-modal .photo-stage { border:0;padding:0;margin:0;min-width:0; }
+#photo-scan-modal .photo-bucket-list { display:grid;gap:var(--photo-space); }
+#photo-scan-modal .photo-semester-group { min-width:0;border:1px solid var(--record-rule);border-radius:var(--photo-radius);padding:var(--photo-space);background:var(--dialog-surface); }
+#photo-scan-modal .photo-semester-group.is-drop-target { outline:2px solid var(--record-accent-ink);outline-offset:2px;background:var(--record-warm); }
+#photo-scan-modal .photo-semester-heading { display:flex;align-items:center;gap:var(--photo-gap); }
+#photo-scan-modal .photo-semester-name { display:flex;align-items:center;gap:var(--photo-gap);min-width:0;flex:1;border-bottom:1px solid var(--record-rule); }
+#photo-scan-modal .photo-semester-name svg { flex-shrink:0; }
+#photo-scan-modal .photo-semester-name input { width:100%;border:0!important;border-radius:0;background:transparent!important;min-width:0;padding:var(--photo-gap)!important;font-weight:600!important; }
+#photo-scan-modal .photo-semester-group>.photo-helper { margin-top:var(--photo-gap); }
+#photo-scan-modal button.photo-icon { display:grid;place-items:center;flex:0 0 var(--photo-touch);width:var(--photo-touch)!important;min-width:var(--photo-touch)!important;height:var(--photo-touch)!important;padding:var(--photo-gap)!important;background:transparent;border:1px solid transparent;border-radius:var(--photo-radius);color:var(--dialog-muted); }
+#photo-scan-modal button.photo-danger { color:var(--dialog-danger); }
+#photo-scan-modal .photo-icon svg { display:block;flex-shrink:0; }
+#photo-scan-modal .photo-drag-handle { cursor:grab;touch-action:auto; }
+#photo-scan-modal .photo-image-list { display:grid;gap:var(--photo-gap); }
+#photo-scan-modal .photo-image-row { display:grid;align-items:center;gap:var(--photo-gap);padding-block:var(--photo-gap);border-bottom:1px solid var(--record-rule);min-width:0; }
+#photo-scan-modal .photo-image-row.is-dragging { opacity:.45; }
+#photo-scan-modal .photo-image-row img { width:var(--photo-thumb);height:var(--photo-touch);object-fit:contain;background:var(--dialog-canvas);border-radius:4px; }
+#photo-scan-modal .photo-image-label { min-width:0; }
+#photo-scan-modal .photo-image-label strong { display:block;font:500 var(--photo-helper)/1.5 var(--font-body); }
+#photo-scan-modal .photo-image-label span { display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dialog-muted);font-size:var(--photo-helper); }
+#photo-scan-modal .photo-move { min-width:0; }
+#photo-scan-modal .photo-move select { width:100%;max-width:100%;padding:var(--photo-gap);font-size:var(--photo-helper)!important; }
+#photo-scan-modal .photo-drop-button { display:flex;align-items:center;justify-content:center;gap:var(--photo-gap);width:100%;margin-top:var(--photo-space);padding:var(--photo-gap) var(--photo-space);min-height:var(--photo-touch);border:1px dashed var(--dialog-border);border-radius:var(--photo-radius);background:var(--dialog-canvas);color:var(--dialog-text);font:500 var(--photo-helper)/1.5 var(--font-body); }
+#photo-scan-modal .photo-drop-button svg { flex-shrink:0; }
+#photo-scan-modal .photo-add-semester { width:100%;margin-top:var(--photo-space); }
+#photo-scan-modal .photo-privacy { display:flex;align-items:start;gap:var(--photo-gap);margin:var(--photo-space) 0 0;font:400 var(--photo-helper)/1.6 var(--font-body);color:var(--dialog-muted); }
+#photo-scan-modal .photo-privacy svg { flex-shrink:0;margin-top:3px;color:var(--record-accent-ink); }
+#photo-scan-modal .photo-review-summary { margin:0 0 var(--photo-space);font:700 18px/1.4 var(--font-display);color:var(--dialog-text); }
+#photo-scan-modal .photo-review-summary:focus { outline:none; }
+#photo-scan-modal .photo-review-corrections { margin-bottom:var(--photo-space); }
+#photo-scan-modal .photo-review-groups { display:grid;gap:var(--photo-gap); }
+#photo-scan-modal .photo-review-semester { min-width:0;border:1px solid var(--record-rule);border-radius:var(--photo-radius);overflow:clip; }
+#photo-scan-modal .photo-review-toggle { width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:var(--photo-space);padding:var(--photo-space);border:0;background:var(--dialog-surface);color:var(--dialog-text); }
+#photo-scan-modal .photo-review-toggle>span { min-width:0; }
+#photo-scan-modal .photo-review-toggle strong { display:block;font:600 15px/1.5 var(--font-body);overflow-wrap:anywhere; }
+#photo-scan-modal .photo-review-toggle small { display:block;font:400 var(--photo-helper)/1.6 var(--font-body);color:var(--dialog-muted);font-variant-numeric:tabular-nums; }
+#photo-scan-modal .photo-review-toggle svg { flex-shrink:0;transition:transform 150ms ease; }
+#photo-scan-modal .photo-review-toggle[aria-expanded="true"] svg { transform:rotate(180deg); }
+#photo-scan-modal .photo-review-content { min-width:0;padding:var(--photo-space);border-top:1px solid var(--record-rule); }
+#photo-scan-modal .photo-source-images { margin-bottom:var(--photo-space); }
+#photo-scan-modal summary { min-height:var(--photo-touch);align-content:center;cursor:pointer;color:var(--record-accent-ink);font-size:var(--photo-helper);font-weight:600; }
+#photo-scan-modal .photo-source-images img { display:block;width:100%;height:auto; }
+#photo-scan-modal .photo-source-images figure { margin:var(--photo-gap) 0; }
+#photo-scan-modal .photo-source-images figcaption { font-size:var(--photo-helper);color:var(--dialog-muted); }
+#photo-scan-modal .photo-course-row { padding-block:var(--photo-gap);border-bottom:1px solid var(--record-rule);scroll-margin-block:var(--photo-space);min-width:0; }
+#photo-scan-modal .photo-course-fields { display:grid;gap:var(--photo-gap);align-items:start;min-width:0; }
+#photo-scan-modal .photo-course-fields label { display:grid;min-width:0;gap:var(--photo-gap);font-size:var(--photo-helper);color:var(--dialog-text); }
+#photo-scan-modal .photo-course-fields input { width:100%;min-width:0;padding:var(--photo-gap)!important; }
+#photo-scan-modal .photo-course-fields input[aria-invalid="true"] { border-color:var(--dialog-danger)!important; }
+#photo-scan-modal .photo-field-error { color:var(--dialog-danger); }
+#photo-scan-modal .photo-field-warning { color:var(--record-accent-ink); }
+#photo-scan-modal .photo-course-source { margin-top:var(--photo-gap); }
+#photo-scan-modal .photo-conflict { display:flex;align-items:center;flex-wrap:wrap;gap:var(--photo-gap);font-size:var(--photo-helper);margin-top:var(--photo-gap); }
+#photo-scan-modal .photo-add-course { margin-top:var(--photo-space); }
+#photo-scan-modal .photo-scan-outcomes { margin-top:var(--photo-space); }
+#photo-scan-modal .photo-image-outcome { display:flex;gap:var(--photo-gap);align-items:center;justify-content:space-between;padding-block:var(--photo-gap);border-bottom:1px solid var(--record-rule); }
+#photo-scan-modal .photo-image-outcome p { min-width:0;margin:0;font-size:var(--photo-helper);overflow-wrap:anywhere; }
+#photo-scan-modal .photo-image-outcome span { display:block;color:var(--dialog-muted); }
+#photo-scan-modal .photo-scan-outcomes details p { margin-block:var(--photo-gap);overflow-wrap:anywhere; }
+#photo-scan-modal .photo-progress { flex-shrink:0;padding:var(--photo-gap) var(--photo-section);border-top:1px solid var(--record-rule);background:var(--dialog-canvas); }
+#photo-scan-modal .photo-progress p { margin:0 0 var(--photo-gap);font-size:var(--photo-helper); }
+#photo-scan-modal .photo-workbench-footer { display:flex;flex-wrap:wrap;gap:var(--photo-gap); }
+#photo-scan-modal .photo-feedback { flex:1 1 100%;min-width:0;color:var(--dialog-muted);font-size:var(--photo-helper); }
+#photo-scan-modal .photo-feedback:empty { display:none; }
+#photo-scan-modal .photo-feedback [role="alert"] { color:var(--dialog-danger);border:0;padding:0; }
+#photo-scan-modal .photo-exit-prompt p { margin:0;line-height:1.7; }
+#photo-scan-modal .photo-exit-prompt .photo-helper { margin-top:var(--photo-space); }
+@media screen and (min-width:769px) {
+  #photo-scan-modal .photo-image-row { grid-template-columns:var(--photo-touch) var(--photo-thumb) minmax(0,1fr) 100px var(--photo-touch); }
+  #photo-scan-modal .photo-image-row:not(:has(.photo-move)) { grid-template-columns:var(--photo-touch) var(--photo-thumb) minmax(0,1fr) var(--photo-touch); }
+  #photo-scan-modal .photo-course-columns,#photo-scan-modal .photo-course-fields { display:grid;grid-template-columns:var(--photo-code) minmax(0,1fr) var(--photo-grade) var(--photo-units) var(--photo-touch);gap:var(--photo-gap); }
+  #photo-scan-modal .photo-course-columns { font-size:var(--photo-helper);font-weight:600; }
+  #photo-scan-modal .photo-course-fields label>span { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+}
+@media screen and (max-width:768px) {
+  #photo-scan-modal .photo-semester-group,#photo-scan-modal .photo-review-content { padding:var(--photo-gap); }
+  #photo-scan-modal .photo-image-row { grid-template-columns:var(--photo-touch) var(--photo-thumb) minmax(0,1fr) var(--photo-touch); }
+  #photo-scan-modal .photo-image-label { grid-column:3;grid-row:1; }
+  #photo-scan-modal .photo-image-row>.photo-danger { grid-column:4;grid-row:1; }
+  #photo-scan-modal .photo-move { grid-column:2/5;grid-row:2; }
+  #photo-scan-modal .photo-move select { font-size:16px!important; }
+  #photo-scan-modal .photo-course-columns { display:none; }
+  #photo-scan-modal .photo-course-fields { grid-template-columns:minmax(0,1fr) minmax(0,1fr) var(--photo-touch); }
+  #photo-scan-modal .photo-course-fields label:nth-child(1) { grid-column:1/3; }
+  #photo-scan-modal .photo-course-fields label:nth-child(2) { grid-column:1/-1;grid-row:2; }
+  #photo-scan-modal .photo-course-fields label:nth-child(3) { grid-column:1;grid-row:3; }
+  #photo-scan-modal .photo-course-fields label:nth-child(4) { grid-column:2/4;grid-row:3; }
+  #photo-scan-modal .photo-course-fields>.photo-danger { grid-column:3;grid-row:1;align-self:end; }
+  #photo-scan-modal .photo-workbench-footer { display:flex!important; }
+  #photo-scan-modal .photo-workbench-footer>.btn { flex:1;min-width:0!important; }
+  #photo-scan-modal .photo-image-outcome { flex-wrap:wrap; }
+}
+@media (hover:hover) {
+  #photo-scan-modal .photo-icon:hover,#photo-scan-modal .photo-review-toggle:hover { background:var(--record-warm); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #photo-scan-modal .photo-workbench,#photo-scan-modal .photo-workbench * { animation:none!important;transition:none!important;scroll-behavior:auto!important; }
+}
+
+/* Curriculum review and shared Latin explanation inherit the approved dialog palette. */
+.modal-overlay .v2-info-dialog:has(:is(.v2-curriculum-review,.v2-honor-evidence)) { --dialog-width-limit:660px;--dialog-height-limit:calc(min(85vh,85svh) - 2px);--curriculum-gap:8px;--curriculum-space:16px;--curriculum-section:24px;--curriculum-helper:13px; }
+.v2-info-dialog .v2-curriculum-review h3,.v2-info-dialog .v2-honor-evidence h3 { margin:var(--curriculum-section) 0 var(--curriculum-gap);font:700 20px/1.3 var(--font-display);color:var(--dialog-text); }
+.v2-info-dialog .v2-curriculum-review>h3:first-child,.v2-info-dialog .v2-honor-evidence>h3:first-child { margin-top:0; }
+.v2-info-dialog .v2-curriculum-review p { margin:0 0 var(--curriculum-space); }
+.v2-info-dialog .v2-record-coverage { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--curriculum-space);margin:var(--curriculum-space) 0;padding:var(--curriculum-space);background:var(--dialog-canvas);border-radius:8px;font-variant-numeric:tabular-nums; }
+.v2-info-dialog .v2-record-coverage dt { color:var(--dialog-muted);font-size:var(--curriculum-helper); }
+.v2-info-dialog .v2-record-coverage dd { margin:0;font:700 24px/1.4 var(--font-display); }
+.v2-info-dialog .v2-curriculum-fields { display:grid;gap:var(--curriculum-space);margin-block:var(--curriculum-space); }
+.v2-info-dialog .v2-curriculum-fields .form-group { margin:0;min-width:0; }
+.v2-info-dialog .v2-curriculum-fields label { display:block;margin-bottom:var(--curriculum-gap);font-size:14px; }
+.v2-info-dialog .v2-curriculum-fields input { width:100%;min-width:0;min-height:48px;font-size:16px!important; }
+.v2-info-dialog .v2-curriculum-fields [role="alert"] { margin-top:var(--curriculum-gap);color:var(--dialog-danger);font-size:var(--curriculum-helper); }
+.v2-info-dialog .v2-curriculum-review .v2-curriculum-list { list-style:none;padding:0;margin:0; }
+.v2-info-dialog .v2-curriculum-review .v2-curriculum-list li { display:flex;align-items:center;justify-content:space-between;gap:var(--curriculum-space);padding:var(--curriculum-space) 0;border-bottom:1px solid var(--info-rule); }
+.v2-info-dialog .v2-curriculum-list li>div { display:grid;gap:4px;min-width:0;overflow-wrap:anywhere; }
+.v2-info-dialog .v2-curriculum-list li span { font-size:var(--curriculum-helper); }
+.v2-info-dialog .v2-curriculum-list button { min-height:48px;flex-shrink:0;white-space:normal; }
+.modal-overlay .v2-info-dialog:has(:is(.v2-curriculum-review,.v2-honor-evidence)) .modal-footer .btn-primary { background:var(--dialog-accent)!important;color:var(--rd-on-action)!important;border-color:transparent!important; }
+.v2-info-dialog .v2-curriculum-review .v2-unofficial,.v2-info-dialog .v2-honor-evidence .v2-reference-note { font-size:var(--curriculum-helper); }
+@media screen and (min-width:769px) { .v2-info-dialog .v2-curriculum-fields { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media screen and (max-width:768px) { .v2-info-dialog .v2-curriculum-list li { align-items:stretch;flex-direction:column; } }

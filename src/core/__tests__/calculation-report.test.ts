@@ -1,35 +1,62 @@
 import { describe, expect, it } from 'vitest';
 import type { Semester } from '../../types';
-import { buildCalculationReport, selectCalculationTerms } from '../calculation-report';
+import { buildCalculationReport, buildSavedRecordEvidence, selectCalculationTerms } from '../calculation-report';
+import { degreeTargetErrors, readDegreeTargets } from '../latin-honors';
 
 const term = (id: string, grade: string, units: number): Semester => ({
   id, title: id, computed: false, underload: false, regularLoadConfirmed: true,
   subjects: [{ code: '', name: '', grade, units }],
 });
 
+describe('saved record evidence', () => {
+  it('explains fractional weighted points without changing the baseline', () => {
+    const terms = [term('first', '1.6', 3.0001), term('second', '2.2', 1.25)];
+    const evidence = buildSavedRecordEvidence(terms);
+    expect(evidence.semesters.map(({ points, units }) => ({ points, units })))
+      .toEqual(terms.map(item => { const stats = buildCalculationReport([item]).stats; return { points: stats.totalPoints, units: stats.gradedUnits }; }));
+  });
+  it.each([['', 3, 'Pending grade'], ['INC', 3, 'Incomplete (INC)'], ['DRP', 3, 'Dropped (DRP)'],
+    ['1.0', 0, 'Zero-credit course'], ['bad', 3, 'Invalid entry — review in Calculator'],
+    ['1.0', -1, 'Invalid entry — review in Calculator']])('explains exclusion of %s / %s units', (grade, units, reason) => {
+    expect(buildSavedRecordEvidence([term('entry', String(grade), Number(units))]).semesters[0].courses[0])
+      .toMatchObject({ name: 'Course 1', points: null, exclusion: reason });
+  });
+  it.each(['4.0', '5.0'])('includes %s even though recognition may be restricted', grade => {
+    expect(buildSavedRecordEvidence([term('numeric', grade, 3)]).semesters[0].courses[0])
+      .toMatchObject({ points: Number(grade) * 3, exclusion: null });
+  });
+  it('preserves invalid-record notices alongside valid-entry subtotals', () => {
+    const record = term('mixed', '1.5', 3);
+    record.subjects.push({ code: 'BAD', name: '', grade: '1.11', units: 3 });
+    const evidence = buildSavedRecordEvidence([record]);
+    expect({ errors: evidence.errors.length, points: evidence.semesters[0].points }).toEqual({ errors: 1, points: 4.5 });
+  });
+});
+
 describe('Latin honors progress', () => {
   const regularTerms = (count: number) => Array.from({ length: count }, (_, index) => term(`regular-${index}`, '1.6', 18));
   const targets = { regularSemesters: '8', creditUnits: '147' };
 
-  it('reports first-year progress without naming an honor', () => {
-    const { latin } = buildCalculationReport(regularTerms(2), targets);
-    expect(latin).toEqual({
+  it('separates a first-year numerical range from incomplete curriculum coverage', () => {
+    const report = buildCalculationReport(regularTerms(2), targets);
+    expect({ range: report.bracket, ...report.latin }).toMatchObject({
+      range: 'Cum Laude',
       stage: 'progress',
-      label: 'More grades and units needed',
-      note: '2 of 6 regular semesters complete · 36 of 147 curriculum units graded. Add the remaining grades and units to see a possible honor.',
+      label: 'Partial record',
+      note: expect.stringContaining('2/8 regular semesters'),
     });
   });
 
-  it('withholds a named honor with five regular semesters and a graded Midyear', () => {
+  it('includes Midyear units without counting Midyear as a regular semester', () => {
     const report = buildCalculationReport([...regularTerms(5), term('Midyear', '1.6', 3)], targets);
-    expect(report.latin).toMatchObject({ stage: 'progress', note: expect.stringContaining('5 of 6 regular semesters complete') });
+    expect(report.latin).toMatchObject({ stage: 'progress', completedSemesters: 5, note: expect.stringContaining('93/147 graded units') });
   });
 
-  it('shows a possible honor once six regular semesters are complete', () => {
+  it('does not infer residence or eligibility from six entered semesters', () => {
     expect(buildCalculationReport(regularTerms(6)).latin).toMatchObject({
-      stage: 'eligible',
-      label: 'Possible Cum Laude',
-      note: expect.stringContaining('Unofficial projection'),
+      stage: 'progress',
+      label: 'Degree coverage not confirmed',
+      targets: null,
     });
   });
 
@@ -37,13 +64,13 @@ describe('Latin honors progress', () => {
     [regularTerms(8), targets],
     [[...regularTerms(7), term('Midyear', '1.6', 30)], targets],
     [regularTerms(8), { ...targets, creditUnits: '' }],
-  ])('keeps eligibility when either curriculum target is missing or unmet', (terms, requirements) => {
-    expect(buildCalculationReport(terms, requirements).latin.stage).toBe('eligible');
+  ])('never treats incomplete targets as graduation eligibility', (terms, requirements) => {
+    expect(buildCalculationReport(terms, requirements).latin.stage).not.toBe('targets-met');
   });
 
-  it('uses Midyear credits toward the unit target and keeps the completed result unofficial', () => {
+  it('uses Midyear credits toward targets without awarding graduation honors', () => {
     const report = buildCalculationReport([...regularTerms(8), term('Midyear', '1.6', 3)], targets);
-    expect(report.latin).toEqual({ stage: 'estimate', label: 'Cum Laude', note: 'Unofficial graduation estimate. Await official BU results.' });
+    expect(report.latin).toMatchObject({ stage: 'targets-met', label: 'Entered targets reached', note: expect.stringContaining('BU must still verify') });
   });
 
   it.each([
@@ -53,6 +80,31 @@ describe('Latin honors progress', () => {
     term('dropped', 'DRP', 3),
   ])('withholds a named result when an entered course or load needs review', blocker => {
     expect(buildCalculationReport([...regularTerms(8), blocker], targets).latin.stage).toBe('review');
+  });
+
+  it.each([
+    { ...term('underload', '1.2', 3), underload: true },
+    term('conditional', '4.0', 0), term('failure', '5.0', 3), term('inc', 'INC', 3),
+    term('pending', '', 3), term('dropped', 'DRP', 3),
+  ])('reveals early record issues without waiting for six semesters', blocker => {
+    expect(buildCalculationReport([term('first', '1.5', 3), blocker], targets).latin.stage).toBe('review');
+  });
+
+  it('accepts a program target shorter than six terms without claiming residence verification', () => {
+    expect(readDegreeTargets({ regularSemesters: '4', creditUnits: '72' })).toEqual({ semesters: 4, units: 72 });
+  });
+
+  it.each([
+    [{ regularSemesters: '', creditUnits: '' }, { semesters: null, units: null }],
+    [{ regularSemesters: '4', creditUnits: '' }, { semesters: null, units: expect.any(String) }],
+    [{ regularSemesters: '1.5', creditUnits: '-1' }, { semesters: expect.any(String), units: expect.any(String) }],
+  ])('validates optional targets without inventing missing values', (requirements, errors) => {
+    expect(degreeTargetErrors(requirements)).toEqual(errors);
+  });
+
+  it('calculates a range when targets are incomplete while reporting the target problem', () => {
+    const report = buildCalculationReport(regularTerms(1), { regularSemesters: '4', creditUnits: '' });
+    expect({ range: report.bracket, label: report.latin.label }).toEqual({ range: 'Cum Laude', label: 'Curriculum targets need review' });
   });
 
   it('invalidates a computed result when the curriculum targets change', () => {
@@ -150,6 +202,9 @@ describe('handbook evidence and recognition are separate', () => {
   });
   it('does not combine failures from different terms into current probation', () => {
     expect(buildCalculationReport([term('first', '5.0', 3), term('second', '5.0', 3)]).standing.label).toBe('Record needs review');
+  });
+  it('keeps known failures visible while other semesters still have pending grades', () => {
+    expect(buildCalculationReport([term('failed', '5.0', 3), term('pending', '', 3)]).standing.label).toBe('Record needs review');
   });
   it('keeps a 2.5 from disqualifying the separate Latin grade condition', () => {
     expect(buildCalculationReport([term('latin', '2.5', 15)]).latinIssues).toEqual([]);

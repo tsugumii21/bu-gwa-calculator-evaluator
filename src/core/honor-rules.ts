@@ -12,6 +12,7 @@ import type {
 } from '../types';
 import { HONOR_THRESHOLDS, HONORS_UNIT_MILESTONES, TERM_HONOR_THRESHOLDS, isValidBUGrade } from './constants';
 import { calculateWeightedGrades, compareWeightedCutoff, isMidyearTerm, parseGrade, weightedAverage } from './gwa-engine';
+import { requiredFutureAverage } from './simulation';
 
 export { isMidyearTerm } from './gwa-engine';
 
@@ -308,14 +309,7 @@ export function calculateTargetGrade(
   futureUnits: number,
   targetGWA: number,
 ): number | null {
-  if (futureUnits <= 0) return null;
-
-  const currentTotalPoints = currentGWA * currentUnits;
-  const requiredTotalPoints = targetGWA * (currentUnits + futureUnits);
-  const neededFuturePoints = requiredTotalPoints - currentTotalPoints;
-  const requiredAverageGrade = neededFuturePoints / futureUnits;
-
-  return requiredAverageGrade;
+  return requiredFutureAverage(currentGWA * currentUnits, currentUnits, futureUnits, targetGWA);
 }
 
 /**
