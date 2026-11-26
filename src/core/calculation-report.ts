@@ -6,6 +6,35 @@ import { evaluateLatinProgress, type DegreeRequirements } from './latin-honors';
 
 export type CalculationMode = 'gwa' | 'latin';
 
+/** Read-only contribution of one saved course to the weighted baseline. */
+export interface SavedCourseEvidence {
+  name: string;
+  grade: string;
+  units: number;
+  points: number | null;
+  exclusion: string | null;
+}
+
+function savedCourseEvidence(subject: Semester['subjects'][number], index: number): SavedCourseEvidence {
+  const grade = subject.grade.trim().toUpperCase();
+  const exclusion = !Number.isFinite(subject.units) || subject.units < 0 || (grade && !isValidBUGrade(grade))
+    ? 'Invalid entry — review in Calculator' : !grade ? 'Pending grade' : grade === 'INC' ? 'Incomplete (INC)'
+      : grade === 'DRP' ? 'Dropped (DRP)' : subject.units === 0 ? 'Zero-credit course' : null;
+  const stats = calculateCumulativeStats([{ id: '', title: '', computed: false, underload: false, subjects: [subject] }]);
+  return { name: subject.code || subject.name || `Course ${index + 1}`, grade, units: subject.units,
+    points: exclusion ? null : stats.totalPoints, exclusion };
+}
+
+/** Explains the same numeric rows and exact weighted totals used by the planner. */
+export function buildSavedRecordEvidence(terms: Semester[]) {
+  const semesters = terms.map(term => {
+    const stats = calculateCumulativeStats([term]);
+    return { id: term.id, title: term.title, points: stats.totalPoints, units: stats.gradedUnits,
+      courses: term.subjects.map(savedCourseEvidence) };
+  });
+  return { semesters, errors: validateCalculationEntries(terms) };
+}
+
 /** Academic evidence within this scope, without inferring an official enrollment decision. */
 export interface ScopedAcademicStanding {
   level: StandingLevel | 'pending' | 'review';
@@ -32,15 +61,15 @@ export function validateCalculationEntries(terms: Semester[]) {
 
 function scopeStanding(terms: Semester[], stats: CumulativeStats, pending: number, hasErrors: boolean): ScopedAcademicStanding {
   if (hasErrors) return { level: 'review', label: 'Record needs review', reason: 'Correct invalid course entries before reviewing standing.' };
-  if (!stats.gradedUnits || pending || terms.some(term => !term.subjects.length)) return {
-    level: 'pending', label: 'Pending review', reason: 'Complete the record and resolve pending or INC grades before reviewing standing.',
-  };
   const grades = terms.flatMap(term => term.subjects.map(subject => parseGrade(subject.grade)));
   const failures = grades.filter(grade => grade === 5).length;
-  if (terms.length > 1 && (failures || grades.includes(4))) return {
+  if ((terms.length > 1 || pending) && (failures || grades.includes(4))) return {
     level: 'review', label: 'Record needs review', reason: 'Conditional or failing grades are present. Review each semester separately; cumulative counts do not establish current probation.',
   };
   if (grades.includes(4)) return { level: 'review', label: 'Conditional grade needs review', reason: 'A 4.00 conditional grade is recorded; resolve it with your college.' };
+  if (!stats.gradedUnits || pending || terms.some(term => !term.subjects.length)) return {
+    level: 'pending', label: 'Pending review', reason: 'Complete the record and resolve pending or INC grades before reviewing standing.',
+  };
   if (failures) {
     const standing = evaluateAcademicStanding({ ...stats, failingCount: failures });
     return { level: standing.level, label: standing.label, reason: `${standing.description}. Semester advisory only; confirm restrictions with your college.` };

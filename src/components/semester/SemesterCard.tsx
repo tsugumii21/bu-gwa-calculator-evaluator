@@ -104,7 +104,7 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                   {semester.title}
                 </span>
                 <div className="sem-collapsed-badges">
-                  {semester.computed && honorBadgeData && (
+                  {showRecognition && semester.computed && honorBadgeData && (
                     <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
                       GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{showRecognition ? honorBadgeData.honorCode : 'Entered grades'}</strong>
                     </span>
@@ -120,8 +120,8 @@ export const SemesterCard: React.FC<SemesterCardProps> = ({
                   onChange={(e) => updateSemester(semester.id, { title: e.target.value })}
                   aria-label="Semester Title"
                 />
-                {!semester.computed && <span className="rd-pending">Awaiting computation</span>}
-                {semester.computed && honorBadgeData && (
+                {showRecognition && !semester.computed && <span className="rd-pending">Awaiting computation</span>}
+                {showRecognition && semester.computed && honorBadgeData && (
                   <span className={`sem-result-pill ${honorBadgeData.pillClass}`}>
                     GPA: <strong>{semGWA.toFixed(4)}</strong> &nbsp;•&nbsp; <strong>{showRecognition ? honorBadgeData.honorCode : 'Entered grades'}</strong>
                   </span>

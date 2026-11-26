@@ -27,6 +27,7 @@ export const CalculatorView: React.FC = () => {
   const degreeRequirements = useAppStore(s => s.degreeRequirements);
   const [mode, setMode] = useState<CalculationMode>('gwa');
   const [selectedId, setSelectedId] = useState('');
+  const [collapsedTerms, setCollapsedTerms] = useState<Record<string, boolean>>({});
   const activeId = semesters.some(term => term.id === selectedId) ? selectedId : semesters[0]?.id ?? '';
   const terms = selectCalculationTerms(semesters, mode, activeId);
   const report = buildCalculationReport(terms, mode === 'latin' ? degreeRequirements : undefined);
@@ -92,7 +93,7 @@ export const CalculatorView: React.FC = () => {
     setComputedSignature(`${mode}:${report.signature}`);
     const pool: ResultMomentPool = mode === 'gwa'
       ? report.termHonor?.level === 'president' ? 'president' : report.termHonor?.level === 'dean' ? 'dean' : 'support'
-      : report.latin.stage === 'estimate' ? 'latin' : 'support';
+      : report.latin.stage === 'targets-met' && report.bracket && !report.bracket.startsWith('Outside') ? 'latin' : 'support';
     setResultMoment(previous => chooseResultMoment(pool, previous));
     setIsResultOpen(true);
   };
@@ -103,6 +104,24 @@ export const CalculatorView: React.FC = () => {
   const [isAchievementsOpen, setIsAchievementsOpen] = useState(false);
   const [isCorScanOpen, setIsCorScanOpen] = useState(false);
   const [isPhotoScanOpen, setIsPhotoScanOpen] = useState(false);
+  const requestedSemesterFocus = useRef<string | null>(null);
+  useEffect(() => {
+    if (isAchievementsOpen || !requestedSemesterFocus.current) return;
+    const id = requestedSemesterFocus.current;
+    requestedSemesterFocus.current = null;
+    const frame = requestAnimationFrame(() => {
+      const card = document.getElementById(`semester-${id}`);
+      card?.focus({ preventScroll: true });
+      card?.scrollIntoView({ block: 'start' });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [isAchievementsOpen]);
+  const editRecordSemester = (id: string) => {
+    requestedSemesterFocus.current = id;
+    setSelectedId(id);
+    setCollapsedTerms(previous => ({ ...previous, [id]: false }));
+    setIsAchievementsOpen(false);
+  };
   const [successInfo, setSuccessInfo] = useState<{
     isOpen: boolean;
     count: number;
@@ -136,7 +155,7 @@ export const CalculatorView: React.FC = () => {
   };
 
   return (
-    <div className="rd-welcome rd-calculator v2-calculator" onFocusCapture={handleComputeIntent} onPointerOver={handleComputeIntent}>
+    <div className="rd-welcome rd-calculator v2-calculator" data-mode={mode} onFocusCapture={handleComputeIntent} onPointerOver={handleComputeIntent}>
       <div className="v2-calculator-intro">
       <div className="rd-calculator-heading"><h1>Hey, Bueño Student.<br />Here’s where you stand.</h1></div>
       <MascotReference scene="calculator" className="v2-calculator-sky" />
@@ -145,11 +164,15 @@ export const CalculatorView: React.FC = () => {
       </div>
       <ActionToolbar group="imports" onAddSemester={handleAddSemester} onOpenScanCor={() => setIsCorScanOpen(true)} onOpenScanPhoto={() => setIsPhotoScanOpen(true)} onOpenBulkPaste={() => setIsBulkPasteOpen(true)} onOpenAchievements={() => setIsAchievementsOpen(true)} />
       </div>
-      <p>{mode === 'gwa' ? 'One semester at a time. Your other saved terms stay safe.' : 'Your full record, together. Add every semester you need, including midyear terms.'}</p>
-      <ScopedSummary report={report} mode={mode} scope={scope} isCurrent={isCurrent} terms={terms} />
+      <p>{mode === 'gwa' ? 'One semester at a time. Your other saved terms stay safe.' : 'All saved semesters are included, including Midyear. Enter the courses credited toward your degree.'}</p>
+      {mode === 'latin' && <div className="v2-latin-actions">
+        <button type="button" className="btn btn-compute-trigger" onClick={handleComputeAll} disabled={isComputing}>Compute Latin honors <span aria-hidden="true">→</span></button>
+        <button type="button" id="btn-achievements" aria-haspopup="dialog" onClick={() => setIsAchievementsOpen(true)}>Record &amp; curriculum</button>
+        <p>{scope} · one combined calculation</p>
+      </div>}
+      <ScopedSummary report={report} mode={mode} scope={scope} isCurrent={isCurrent} isStale={computedSignature.startsWith(`${mode}:`) && !isCurrent} terms={terms} />
       <p className="v2-unofficial">{mode === 'latin' ? LATIN_UNOFFICIAL_NOTICE : UNOFFICIAL_NOTICE}</p>
       {isCurrent && <button type="button" onClick={() => setIsResultOpen(true)}>View result details</button>}
-      {mode === 'latin' && <button type="button" id="btn-achievements" onClick={() => setIsAchievementsOpen(true)}>Review record</button>}
       {/* ── PRINT ONLY OFFICIAL ACADEMIC TRANSCRIPT HEADER ── */}
       <div className="print-transcript-header">
         <h2>BICOL UNIVERSITY</h2>
@@ -190,7 +213,8 @@ export const CalculatorView: React.FC = () => {
       )}
 
       {/* TOOLBAR */}
-      <CalculatorRecords semesters={semesters} selectedId={activeId} mode={mode} onSelect={setSelectedId} onAdd={handleAddSemester} onCompute={handleComputeAll} />
+      <CalculatorRecords semesters={semesters} selectedId={activeId} mode={mode} onSelect={setSelectedId} onAdd={handleAddSemester} onCompute={handleComputeAll}
+        collapsedTerms={collapsedTerms} onToggleCollapse={id => setCollapsedTerms(previous => ({ ...previous, [id]: !previous[id] }))} />
 
 
       {/* SEMESTERS CONTAINER */}
@@ -207,6 +231,7 @@ export const CalculatorView: React.FC = () => {
       <RecordReviewDialog
         isOpen={isAchievementsOpen}
         onClose={() => setIsAchievementsOpen(false)}
+        onEditSemester={editRecordSemester}
       />
 
       <CorScanModal

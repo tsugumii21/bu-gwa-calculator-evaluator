@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { Award, Crown, ShieldCheck, X } from 'lucide-react';
 
 import type { CalculationMode, buildCalculationReport } from '../../core/calculation-report';
-import { LATIN_ELIGIBILITY_SEMESTERS, LATIN_HONOR_RANGES } from '../../core/latin-honors';
+import { LATIN_HONOR_RANGES } from '../../core/latin-honors';
 import { useAccessibleDialog } from '../../hooks/useAccessibleDialog';
 import { RESULT_MOMENTS, SUPPORT_MOMENT_INDEX } from '../illustrations/result-moments';
 import { MascotReference } from '../illustrations/mascot-reference';
@@ -13,12 +13,13 @@ const RESULT_SCENES = {
   president: 'results-president', dean: 'results-dean', latin: 'results-high-honors', none: 'results-support',
 } as const;
 export const UNOFFICIAL_NOTICE = 'Unofficial estimate for personal academic planning. Not an official Bicol University grade computation or confirmation of Latin honors. Final grades and eligibility are determined by the University Registrar.';
-export const LATIN_UNOFFICIAL_NOTICE = 'Unofficial planning estimate. Get your final Latin honors result from the Bicol University Office of the University Registrar.';
+export const LATIN_UNOFFICIAL_NOTICE = 'Unofficial estimate based on the grades entered. Final graduation honors are determined by the Bicol University Office of the University Registrar.';
 
 /** Shared numeric evidence with an outcome-specific, accessible result presentation. */
 export function CalculationResult({ report, mode, isCurrent }: ResultProps) {
-  const honor = !isCurrent ? 'Awaiting recomputation' : mode === 'gwa' ? report.termHonor?.label ?? 'Pending' : report.latin.label;
-  const level = mode === 'gwa' ? report.termHonor?.level ?? 'none' : report.latin.stage === 'estimate' ? 'latin' : 'none';
+  const honor = !isCurrent ? 'Awaiting recomputation' : mode === 'gwa' ? report.termHonor?.label ?? 'Pending'
+    : report.bracket?.startsWith('Outside') ? 'Outside Latin honors range' : `Current range: ${report.bracket ?? 'Not available'}`;
+  const level = mode === 'gwa' ? report.termHonor?.level ?? 'none' : report.latin.stage === 'targets-met' && report.bracket && !report.bracket.startsWith('Outside') ? 'latin' : 'none';
   const Icon = level === 'president' ? Crown : level === 'dean' || level === 'latin' ? Award : ShieldCheck;
   const isPending = !isCurrent || (mode === 'gwa' ? ['Pending', 'Provisional'].includes(honor) : level === 'none');
   const tone = isPending ? 'pending' : level === 'none' ? report.standing.level : level;
@@ -39,18 +40,30 @@ export function CalculationResult({ report, mode, isCurrent }: ResultProps) {
   </section>;
 }
 
-/** Explains the current eligibility estimate and the checks BU still needs to make. */
+/** One explanation for the full-record range, evidence and requirements that BU must verify. */
 export function LatinCalculationDetails({ report, isCurrent }: { report: Report; isCurrent: boolean }) {
   const { totalPoints, gradedUnits, cumulativeGWA } = report.stats;
   return <div className="v2-honor-evidence">
-    <p>Multiply each final numeric grade by its credit units. Add those products, then divide by the total graded units. Midyear grades with positive units count. Blank grades, INC, and DRP are excluded from the average.</p>
-    <p><strong>Cumulative GWA = Σ (grade × units) ÷ total graded units</strong></p>
-    {isCurrent && gradedUnits > 0 && <p><strong>Your record:</strong> {totalPoints} ÷ {gradedUnits} = {cumulativeGWA.toFixed(4)}</p>}
-    <p>The app compares the unrounded GWA with the graduation honors ranges in the 2019 BU Student Handbook (printed pp. 20–21 / PDF pp. 30–31).</p>
+    <h3>Which grades count?</h3>
+    <p>One calculation combines all saved semesters, including Midyear. Use the courses credited toward your degree. Valid numeric grades with positive credit units contribute to the cumulative GWA.</p>
+    <p>Blank grades, INC, DRP and zero-credit courses do not contribute to the numeric average. Excluding a course from the average does not resolve a missing grade or load issue. Numeric 4.00 and 5.00 grades still count in the average and require review.</p>
+    <h3>Where does the number come from?</h3>
+    <p>Multiply each grade by its credit units, add the products across every semester, then divide by the total graded units. Do not average semester GWAs equally.</p>
+    <p className="v2-latin-formula"><strong>Cumulative GWA = Σ (grade × units) ÷ total graded units</strong></p>
+    {isCurrent && gradedUnits > 0 && <p><strong>Your record:</strong> {totalPoints} weighted points ÷ {gradedUnits} graded units = <strong>{cumulativeGWA.toFixed(4)}</strong>.</p>}
+    <p><strong>Example:</strong> Semester 1 has a 1.00 grade in 3 units; Semester 2 has a 2.00 grade in 6 units. (1.00 × 3 + 2.00 × 6) ÷ 9 = 1.6667. The different unit totals give Semester 2 more weight.</p>
+    <h3>What range does it meet?</h3>
+    <p>The calculator displays cumulative GWA to four decimal places and compares it with these handbook ranges:</p>
     <ul>{LATIN_HONOR_RANGES.map(({ label, range }) => <li key={label}><strong>{label}</strong> · {range}</li>)}</ul>
-    <p>With only your two first-year semesters, the app shows how many semesters and graded units you have entered. From {LATIN_ELIGIBILITY_SEMESTERS} completed regular semesters, it shows a possible honor if your record passes the grade and load checks. The app shows an unofficial graduation estimate once you meet both targets in Review record.</p>
-    <p>Graduation honors require the prescribed regular curriculum load and no numeric subject grade above 3.00. BU verifies credited courses, degree completion, and applicable residence requirements.</p>
+    <p>A GWA above 1.7500 is outside these ranges.</p>
+    <h3>What can affect eligibility?</h3>
+    <p>The handbook also requires the prescribed curriculum and regular loads, applicable residence, and no numeric subject grade above 3.00. Pending grades, INC, conditional or failing grades, underload and dropped-course load changes require review.</p>
+    <p>BU verifies degree credits, repeated or transferred courses, curriculum completion and residence. Residence must be confirmed from official enrollment records. Entered semester and unit totals cannot establish these conditions.</p>
+    <h3>What does your result mean?</h3>
+    <ul><li><strong>Current range:</strong> the range of the grades entered, not an earned honor or a forecast of future grades.</li><li><strong>Partial record:</strong> the entered totals have not reached your optional curriculum targets.</li><li><strong>Requirements need review:</strong> recorded grades or load information need attention.</li><li><strong>Entered targets reached:</strong> your entered totals meet your targets; official completion and eligibility remain unverified.</li></ul>
+    {isCurrent && <p><strong>{report.latin.label}.</strong> {report.latin.note}</p>}
     {isCurrent && report.latinIssues.length > 0 && <ul>{report.latinIssues.map(issue => <li key={issue}>{issue}</li>)}</ul>}
+    <p className="v2-reference-note">BU Student Handbook, Reprinted Version 2019, Graduation with Honors, printed pp. 20–21 / PDF pp. 30–31.</p>
   </div>;
 }
 
@@ -83,7 +96,7 @@ export function CalculationDialog(props: ResultProps & { isOpen: boolean; onClos
         <button type="button" className="result-close" onClick={close} aria-label="Close calculation result"><X size={24} aria-hidden="true" /></button></header>
       <CalculationResult {...props} />
       <blockquote className="result-quote">“{moment[1]}”</blockquote>
-      {outcomeNote && <p className="result-provisional">{outcomeNote}</p>}
+      {outcomeNote && <p className="result-provisional">{mode === 'latin' && <strong>{report.latin.label}. </strong>}{outcomeNote}</p>}
       {mode === 'latin' && <p className="result-notice">{LATIN_UNOFFICIAL_NOTICE}</p>}
       <ResultDetails {...props} />
       <footer className="result-footer">{mode === 'gwa' && <p className="result-notice">Unofficial academic estimate</p>}
