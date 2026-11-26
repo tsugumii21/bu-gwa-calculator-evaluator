@@ -1,446 +1,118 @@
-import React, { useState, useMemo } from 'react';
-import { useSemesterStore, useAppStore } from '../../store';
-import { GRADE_OPTIONS } from '../../core/constants';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight, Download, Plus, Undo2, X } from 'lucide-react';
 
-interface AllocatorItem {
-  id: string;
-  code: string;
-  name: string;
-  units: number;
-  grade: number;
-  isLocked: boolean;
+import type { Semester } from '../../types';
+import type { PlannedCourse, ScenarioDraft } from '../../core/scenario-planner';
+import { parseGrade } from '../../core/gwa-engine';
+import { SIMULATION_MAX_UNITS, addSimulationTotals, EMPTY_SIMULATION_TOTALS, simulationNumbers, simulationTotals } from '../../core/simulation';
+import { SIMULATOR_MAX_COURSES } from '../../store/simulator-store';
+
+const DESKTOP_PAGE_SIZE = 6;
+const MOBILE_PAGE_SIZE = 4;
+const MOBILE_QUERY = '(max-width: 768px)';
+interface CourseProps {
+  draft: ScenarioDraft; semesters: Semester[];
+  onImport: (id: string) => void;
+  onUpdate: (id: string, changes: Partial<PlannedCourse>) => void;
+  onRemove: (id: string) => void;
+  onAdd: () => string | null; onUndo: () => string | null; canUndo: boolean;
+}
+function unfinishedField(course: PlannedCourse, isForecast: boolean) {
+  const units = Number(course.units);
+  if (!course.units.trim() || !Number.isFinite(units) || units < 0 || units > SIMULATION_MAX_UNITS) return 'units';
+  if ((isForecast && units > 0 && !course.grade) || (course.grade && parseGrade(course.grade) === null)) return 'grade';
+  return null;
 }
 
-export interface SubjectTargetAllocatorProps {
-  onOpenInfo?: () => void;
-}
-
-export const SubjectTargetAllocator: React.FC<SubjectTargetAllocatorProps> = ({ onOpenInfo }) => {
-  const { semesters } = useSemesterStore();
-  const setActiveTab = useAppStore((s) => s.setActiveTab);
-
-  const [selectedSemId, setSelectedSemId] = useState<string>(
-    semesters.length > 0 ? semesters[semesters.length - 1].id : ''
-  );
-
-  const activeSemester = useMemo(() => {
-    return semesters.find((s) => s.id === selectedSemId) || semesters[0] || null;
-  }, [semesters, selectedSemId]);
-
-  const [targetGpa, setTargetGpa] = useState<number>(1.45);
-
-  const defaultCourses: AllocatorItem[] = useMemo(() => {
-    if (activeSemester && activeSemester.subjects.length > 0) {
-      const validSubjects = activeSemester.subjects.filter(
-        (sub) => (sub.code && sub.code.trim() !== '') || (sub.name && sub.name.trim() !== '')
-      );
-
-      if (validSubjects.length === 0) return [];
-
-      return validSubjects.map((sub, idx) => {
-        const numGrade = parseFloat(sub.grade);
-        return {
-          id: `${sub.code || 'sub'}-${idx}`,
-          code: sub.code || `SUBJ ${idx + 1}`,
-          name: sub.name || `Course ${idx + 1}`,
-          units: Math.max(0, sub.units),
-          grade: !isNaN(numGrade) && numGrade >= 1.0 ? numGrade : 1.5,
-          isLocked: false,
-        };
-      });
-    }
-
-    return [];
-  }, [activeSemester]);
-
-  const [items, setItems] = useState<AllocatorItem[]>(defaultCourses);
-
-  React.useEffect(() => {
-    setItems(defaultCourses);
-  }, [defaultCourses]);
-
-  const toggleLock = (index: number) => {
-    setItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, isLocked: !item.isLocked } : item))
-    );
+/** Pages presentation only; the scenario engine always receives every course. */
+export function SubjectTargetAllocator({ draft, semesters, onImport, onUpdate, onRemove, onAdd, onUndo, canUndo }: CourseProps) {
+  const [pageSize, setPageSize] = useState(() => window.matchMedia(MOBILE_QUERY).matches ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE);
+  const [anchor, setAnchor] = useState(0);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [selected, setSelected] = useState(draft.sourceSemesterId || '');
+  const [replacePending, setReplacePending] = useState(false);
+  const [notice, setNotice] = useState('');
+  const pendingFocus = useRef<{ id: string; field: string } | null>(null);
+  const addRef = useRef<HTMLButtonElement>(null);
+  const importable = semesters.filter(term => term.subjects.some(subject => !subject.grade.trim()));
+  const count = draft.courses.length;
+  const page = Math.floor(Math.min(anchor, Math.max(0, count - 1)) / pageSize);
+  const start = page * pageSize;
+  const pageCount = Math.max(1, Math.ceil(count / pageSize));
+  const unfinished = draft.courses.flatMap((course, index) => unfinishedField(course, draft.question.kind === 'forecast') ? [index] : []);
+  const hiddenUnfinished = unfinished.filter(index => index < start || index >= start + pageSize).length;
+  const units = simulationNumbers(draft.courses.reduce((total, course) => {
+    const value = Number(course.units);
+    return Number.isFinite(value) && value > 0 && value <= SIMULATION_MAX_UNITS ? addSimulationTotals(total, simulationTotals(value, 0)) : total;
+  }, EMPTY_SIMULATION_TOTALS)).units;
+  const assigned = draft.courses.filter(course => parseGrade(course.grade) !== null).length;
+  useEffect(() => {
+    const query = window.matchMedia(MOBILE_QUERY);
+    const resize = () => setPageSize(query.matches ? MOBILE_PAGE_SIZE : DESKTOP_PAGE_SIZE);
+    query.addEventListener('change', resize);
+    return () => query.removeEventListener('change', resize);
+  }, []);
+  useLayoutEffect(() => {
+    const target = pendingFocus.current;
+    if (!target) return;
+    const index = draft.courses.findIndex(course => course.id === target.id);
+    if (index >= 0 && (index < start || index >= start + pageSize)) { setAnchor(index); return; }
+    const input = document.getElementById(`plan-${target.field}-${target.id}`);
+    if (input) { input.focus(); pendingFocus.current = null; }
+  }, [draft.courses, start, pageSize]);
+  const reveal = (id: string | null, index: number, field = 'units') => {
+    if (!id) { addRef.current?.focus(); return; }
+    pendingFocus.current = { id, field }; setAnchor(index);
+    // Same-page navigation needs focus even when the page index does not change.
+    const input = document.getElementById(`plan-${field}-${id}`);
+    if (input) { input.focus(); pendingFocus.current = null; }
   };
-
-  const updateItemGrade = (index: number, newGrade: number) => {
-    setItems((prev) =>
-      prev.map((item, i) => (i === index ? { ...item, grade: newGrade } : item))
-    );
+  const add = () => {
+    const id = onAdd();
+    if (!id) { setNotice(`Maximum ${SIMULATOR_MAX_COURSES} courses per scenario.`); return; }
+    reveal(id, count); setNotice(`Course ${count + 1} added. Enter its units.`);
   };
-
-  const calculation = useMemo(() => {
-    const totalUnits = items.reduce((sum, item) => sum + item.units, 0);
-    if (totalUnits === 0) return { status: 'empty', requiredGrade: 0, unlockedUnits: 0 };
-
-    const totalTargetPoints = targetGpa * totalUnits;
-
-    const lockedUnits = items
-      .filter((i) => i.isLocked)
-      .reduce((sum, i) => sum + i.units, 0);
-
-    const lockedPoints = items
-      .filter((i) => i.isLocked)
-      .reduce((sum, i) => sum + i.grade * i.units, 0);
-
-    const unlockedUnits = totalUnits - lockedUnits;
-
-    if (unlockedUnits === 0) {
-      const currentAvg = lockedPoints / totalUnits;
-      return {
-        status: currentAvg <= targetGpa ? 'all_locked_met' : 'all_locked_missed',
-        requiredGrade: currentAvg,
-        unlockedUnits: 0,
-      };
-    }
-
-    const remainingPointsNeeded = totalTargetPoints - lockedPoints;
-    const requiredGrade = remainingPointsNeeded / unlockedUnits;
-
-    if (requiredGrade < 1.0) {
-      return { status: 'impossible', requiredGrade, unlockedUnits };
-    }
-    if (requiredGrade > 3.0) {
-      return { status: 'guaranteed', requiredGrade, unlockedUnits };
-    }
-    return { status: 'achievable', requiredGrade, unlockedUnits };
-  }, [items, targetGpa]);
-
-  const resetScenario = () => setItems(defaultCourses);
-
-  if (semesters.length === 0) {
-    return (
-      <div
-        className="sim-panel"
-        style={{
-          marginTop: '24px',
-          padding: '28px 20px',
-          textAlign: 'center',
-          background: 'var(--card-header-bg, #f1f5f9)',
-          borderRadius: '12px',
-          border: '1px dashed var(--border-color, #e2e8f0)',
-        }}
-      >
-        <i
-          className="fa-solid fa-bullseye text-primary"
-          style={{ fontSize: '2.2rem', marginBottom: '10px', opacity: 0.8 }}
-        ></i>
-        <h4 style={{ margin: '0 0 4px 0', fontSize: '1.05rem', color: 'var(--text-primary, #0f172a)' }}>
-          Per-Subject Target Grade Allocator (Reverse Solver)
-        </h4>
-        <p style={{ margin: 0, fontSize: '0.82rem', color: 'var(--text-muted, #94a3b8)' }}>
-          Record semesters with subjects in the Calculator to solve required target grades per course.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="sim-panel" style={{ marginTop: '24px', padding: '20px' }}>
-      <div className="section-header" style={{ marginBottom: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
-        <div>
-          <h3 className="panel-title" style={{ fontSize: '1.15rem', margin: 0 }}>
-            <i className="fa-solid fa-bullseye text-primary" style={{ marginRight: '8px' }}></i>
-            Per-Subject Target Grade Allocator (Reverse Solver)
-          </h3>
-          <p className="section-desc" style={{ marginTop: '4px', marginBottom: 0, fontSize: '0.82rem' }}>
-            Lock expected grades to explore the average needed in other courses. Blank grades start at a hypothetical 1.50 here; your record stays unchanged.
-          </p>
-        </div>
-        {onOpenInfo && (
-          <button
-            type="button"
-            className="sim-help-btn"
-            onClick={onOpenInfo}
-            title="How does Target Grade Allocator work?"
-            aria-label="Target Allocator Reference Guide"
-          >
-            <i className="fa-solid fa-question"></i>
-          </button>
-        )}
-      </div>
-
-      {/* Control Banner */}
-      <div
-        className="allocator-control-banner"
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '12px',
-          marginBottom: '16px',
-          background: 'var(--card-header-bg, #f1f5f9)',
-          padding: '12px 16px',
-          borderRadius: '10px',
-          border: '1px solid var(--border-color, #e2e8f0)',
-        }}
-      >
-        <div className="allocator-target-group">
-          <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary, #0f172a)' }}>
-            Target Term GPA
-          </label>
-          <div className="allocator-target-row">
-            <div className="allocator-input-wrapper">
-              <input
-                type="number"
-                step="0.01"
-                min="1.00"
-                max="3.00"
-                className="form-control form-control-sm allocator-gpa-input"
-                value={targetGpa}
-                onChange={(e) => setTargetGpa(parseFloat(e.target.value) || 1.75)}
-                aria-label="Target Term GPA"
-              />
-            </div>
-            <div className="allocator-preset-btns" role="group" aria-label="GPA Target Presets">
-              <button
-                type="button"
-                className={`btn btn-sm allocator-preset-btn ${targetGpa === 1.45 ? 'is-active' : ''}`}
-                onClick={() => setTargetGpa(1.45)}
-                title="President's Lister (≤ 1.45)"
-              >
-                PL (1.45)
-              </button>
-              <button
-                type="button"
-                className={`btn btn-sm allocator-preset-btn ${targetGpa === 1.75 ? 'is-active' : ''}`}
-                onClick={() => setTargetGpa(1.75)}
-                title="Dean's Lister (≤ 1.75)"
-              >
-                DL (1.75)
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {semesters.length > 0 && (
-          <div className="allocator-semester-group">
-            <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-primary, #0f172a)' }}>
-              Active Semester
-            </label>
-            <select
-              className="form-control form-control-sm"
-              aria-label="Active semester for target allocator"
-              value={selectedSemId}
-              onChange={(e) => setSelectedSemId(e.target.value)}
-              style={{ height: '36px', fontSize: '0.82rem', borderRadius: '8px' }}
-            >
-              {semesters.map((s) => (
-                <option key={s.id} value={s.id}>
-                  {s.title} · {s.subjects.length} courses
-                </option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {items.length === 0 ? (
-        <div className="sim-empty-card" style={{ marginBottom: '16px', textAlign: 'center' }}>
-          <div className="sim-empty-icon-wrap" style={{ margin: '0 auto 12px' }}>
-            <i className="fa-solid fa-book-open"></i>
-          </div>
-          <h4 className="sim-empty-title">
-            No courses in {activeSemester?.title || 'active semester'}
-          </h4>
-          <p className="sim-empty-desc" style={{ marginBottom: '16px' }}>
-            Enter course codes or names in the Calculator tab to allocate target grades.
-          </p>
-          <button
-            type="button"
-            className="btn btn-outline-primary btn-sm sim-empty-btn"
-            onClick={() => setActiveTab('calculator')}
-          >
-            <i className="fa-solid fa-arrow-right" style={{ marginRight: '6px' }}></i>
-            Add Courses in Calculator
-          </button>
-        </div>
-      ) : (
-        <>
-          {/* Calculation Ribbon */}
-          <div
-            className="allocator-calc-ribbon"
-            style={{
-              padding: '12px 16px',
-              borderRadius: '10px',
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '10px',
-              background:
-                calculation.status === 'impossible'
-                  ? 'rgba(239, 68, 68, 0.1)'
-                  : calculation.status === 'guaranteed'
-                  ? 'rgba(16, 185, 129, 0.1)'
-                  : 'rgba(59, 130, 246, 0.1)',
-              border: `1px solid ${
-                calculation.status === 'impossible'
-                  ? 'var(--color-danger, #ef4444)'
-                  : calculation.status === 'guaranteed'
-                  ? 'var(--color-success, #10b981)'
-                  : 'var(--bu-azure, #2563eb)'
-              }`,
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <i
-                className={`fa-solid ${
-                  calculation.status === 'impossible'
-                    ? 'fa-circle-xmark text-danger'
-                    : calculation.status === 'guaranteed'
-                    ? 'fa-circle-check text-success'
-                    : 'fa-circle-info text-primary'
-                }`}
-                style={{ fontSize: '1.25rem' }}
-              ></i>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--text-primary, #0f172a)' }}>
-                  {calculation.status === 'impossible' && 'Mathematically Unreachable'}
-                  {calculation.status === 'guaranteed' && 'Passing average meets this target'}
-                  {calculation.status === 'achievable' && 'Scenario target achievable'}
-                  {calculation.status === 'all_locked_met' && 'All Subjects Locked — Goal Met!'}
-                  {calculation.status === 'all_locked_missed' && 'All Subjects Locked — Goal Missed'}
-                </div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-secondary, #475569)' }}>
-                  {calculation.status === 'impossible' &&
-                    `Requires average of ${calculation.requiredGrade.toFixed(2)}, which exceeds BU maximum grade (1.00).`}
-                  {calculation.status === 'guaranteed' &&
-                    `Passing average (3.00) already achieves target GPA ${targetGpa.toFixed(2)}.`}
-                  {calculation.status === 'achievable' &&
-                    `Need average grade of ${calculation.requiredGrade.toFixed(2)} across ${calculation.unlockedUnits} unlocked units.`}
-                  {calculation.status === 'all_locked_met' &&
-                    `Current locked average of ${calculation.requiredGrade.toFixed(2)} meets your goal.`}
-                  {calculation.status === 'all_locked_missed' &&
-                    `Current locked average of ${calculation.requiredGrade.toFixed(2)} falls short.`}
-                </div>
-              </div>
-            </div>
-
-            {calculation.status === 'achievable' && (
-              <div style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--text-muted, #94a3b8)', fontWeight: 600 }}>
-                  Required Grade
-                </span>
-                <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--bu-azure, #2563eb)' }}>
-                  {calculation.requiredGrade.toFixed(2)}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Course Rows */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-            {items.map((item, index) => {
-              const isNeededGrade = !item.isLocked && calculation.status === 'achievable';
-              const displayedGrade = isNeededGrade
-                ? Math.max(1.0, Math.min(3.0, calculation.requiredGrade)).toFixed(2)
-                : item.grade.toFixed(2);
-
-              return (
-                <div
-                  key={item.id}
-                  className="allocator-course-row"
-                  style={{
-                    borderRadius: '8px',
-                    padding: '8px 12px',
-                    background: item.isLocked ? 'rgba(245, 158, 11, 0.07)' : 'var(--card-bg, #ffffff)',
-                    border: item.isLocked ? '1px solid rgba(245, 158, 11, 0.4)' : '1px solid var(--border-color, #e2e8f0)',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  {/* Row 1 Header Content */}
-                  <div className="allocator-row-header">
-                    <div className="allocator-course-badges">
-                      <span className="allocator-course-code">
-                        {item.code}
-                      </span>
-                      <span className="allocator-units-badge">
-                        {item.units}u
-                      </span>
-                    </div>
-
-                    {/* Desktop course description */}
-                    <span className="allocator-course-name desktop-only">
-                      {item.name}
-                    </span>
-
-                    {/* Right controls */}
-                    <div className="allocator-row-controls">
-                      {item.isLocked ? (
-                        <select
-                          className="form-control form-control-sm allocator-grade-select"
-                          aria-label={`Expected grade for ${item.code}`}
-                          value={item.grade.toFixed(2)}
-                          onChange={(e) => updateItemGrade(index, parseFloat(e.target.value))}
-                          style={{ width: '74px', fontWeight: 700, fontSize: '0.82rem', height: '30px' }}
-                        >
-                          {GRADE_OPTIONS.filter((g) => !isNaN(parseFloat(g.value))).map((g) => (
-                            <option key={g.value} value={parseFloat(g.value).toFixed(2)}>
-                              {parseFloat(g.value).toFixed(2)}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <span className="allocator-grade-pill">
-                          {displayedGrade}
-                        </span>
-                      )}
-
-                      {/* Tactile Lock Button */}
-                      <button
-                        type="button"
-                        className="allocator-lock-btn"
-                        onClick={() => toggleLock(index)}
-                        style={{
-                          width: '34px',
-                          height: '34px',
-                          borderRadius: '8px',
-                          border: `1px solid ${item.isLocked ? 'var(--bu-gold, #f59e0b)' : 'var(--border-color, #e2e8f0)'}`,
-                          background: item.isLocked ? 'rgba(245, 158, 11, 0.15)' : 'var(--card-header-bg, #f1f5f9)',
-                          color: item.isLocked ? 'var(--bu-gold, #f59e0b)' : 'var(--text-muted, #94a3b8)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontSize: '0.85rem',
-                          transition: 'all 0.15s ease',
-                          flexShrink: 0,
-                          position: 'relative',
-                        }}
-                        title={item.isLocked ? 'Locked (Click to unlock)' : 'Unlocked (Click to lock expected grade)'}
-                        aria-label={item.isLocked ? `Unlock ${item.code}` : `Lock ${item.code} grade`}
-                      >
-                        <i className={`fa-solid ${item.isLocked ? 'fa-lock' : 'fa-lock-open'}`}></i>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Row 2 on Mobile: Full Course Title */}
-                  <div className="allocator-course-name mobile-only">
-                    {item.name}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          {activeSemester && (
-            <div className="allocator-apply-container" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                className="btn btn-primary btn-sm allocator-apply-btn"
-                onClick={resetScenario}
-              >
-                <i className="fa-solid fa-check-double" style={{ marginRight: '6px' }}></i>
-                Reset course scenario
-              </button>
-            </div>
-          )}
-        </>
-      )}
+  const remove = (course: PlannedCourse, index: number) => {
+    const nearest = draft.courses[index + 1] ?? draft.courses[index - 1];
+    onRemove(course.id); reveal(nearest?.id ?? null, Math.max(0, Math.min(index, count - 2)));
+    setNotice(`Course ${index + 1} removed. Undo is available.`);
+  };
+  const undo = () => {
+    const id = onUndo();
+    if (id) { pendingFocus.current = { id, field: 'units' }; setNotice('Course restored.'); }
+  };
+  const importSelected = () => {
+    if (!selected || !importable.some(term => term.id === selected)) { setNotice('Choose a semester with ungraded courses.'); return; }
+    onImport(selected); setReplacePending(false); setIsImportOpen(false); setAnchor(0);
+  };
+  const requestImport = () => {
+    if (draft.sourceSemesterId && selected !== draft.sourceSemesterId && draft.courses.some(course => course.source)) setReplacePending(true);
+    else importSelected();
+  };
+  const goToUnfinished = () => {
+    const index = unfinished[0];
+    if (index !== undefined) reveal(draft.courses[index].id, index, unfinishedField(draft.courses[index], draft.question.kind === 'forecast') ?? 'units');
+  };
+  return <div className="plan-course-editor">
+    <div className="plan-course-toolbar"><div><h3>Future courses</h3><p className="plan-hint">{count} courses · {units} units · {assigned} assumed · {count - assigned} {draft.question.kind === 'goal' ? 'to solve' : 'unassigned'}</p></div><button type="button" onClick={add} ref={addRef}><Plus size={18} aria-hidden="true" /> Add course</button></div>
+    <p className="plan-hint" id="plan-course-grade-note">Type units and expected grades. BU course grades: 1.00–3.00 in 0.10 steps, or 4.00 and 5.00. {draft.question.kind === 'goal' ? 'Leave grades blank to solve their average.' : 'Enter a grade for each positive-unit course.'} Names are optional.</p>
+    <div className="plan-course-actions">{importable.length > 0 && <button type="button" aria-expanded={isImportOpen} aria-controls="plan-import-controls" onClick={() => setIsImportOpen(!isImportOpen)}><Download size={17} aria-hidden="true" /> Import from saved semester</button>}{canUndo && <button type="button" onClick={undo}><Undo2 size={17} aria-hidden="true" /> Undo removal</button>}</div>
+    {isImportOpen && <div className="plan-import" id="plan-import-controls"><label className="plan-field" htmlFor="plan-source"><span>Saved semester with ungraded courses</span><select id="plan-source" value={selected} onChange={event => { setSelected(event.target.value); setReplacePending(false); }}><option value="">Choose a semester</option>{importable.map(term => <option key={term.id} value={term.id}>{term.title}</option>)}</select></label><p className="plan-hint">Only blank-grade courses are imported. Numeric grades are already included; INC and DRP stay excluded.</p><button type="button" onClick={requestImport}>Import ungraded courses</button>{replacePending && <div className="plan-warning" role="group" aria-label="Confirm replacement of imported courses"><p>Replace imported assumptions with this semester’s ungraded courses? Manual courses stay.</p><button type="button" onClick={importSelected}>Replace imported courses</button><button type="button" onClick={() => setReplacePending(false)}>Keep current courses</button></div>}</div>}
+    {unfinished.length > 0 && <div className="plan-course-check"><span>{unfinished.length} courses need entries{hiddenUnfinished ? ` · ${hiddenUnfinished} on other pages` : ''}</span><button type="button" onClick={goToUnfinished}>Go to first unfinished course</button></div>}
+    <div className="plan-ledger-head" aria-hidden="true"><span>Course name (optional)</span><span>Units</span><span>Expected grade</span><span /></div>
+    <div className="plan-course-list">{!count && <p className="plan-course-empty">Add future courses to begin. Your saved academic record stays unchanged.</p>}
+      {draft.courses.slice(start, start + pageSize).map((course, offset) => {
+        const index = start + offset;
+        const missing = unfinishedField(course, draft.question.kind === 'forecast');
+        return <div className="plan-course" key={course.id} role="group" aria-label={`Planned course ${index + 1}`} onFocusCapture={() => setAnchor(index)}>
+          <label className="plan-field plan-course-name" htmlFor={`plan-name-${course.id}`}><span className="plan-sr-only">Course {index + 1} name (optional)</span><input id={`plan-name-${course.id}`} type="text" maxLength={500} placeholder={`Course ${index + 1}${course.source ? ' · imported' : ''}`} value={course.name} onChange={event => onUpdate(course.id, { name: event.target.value })} /></label>
+          <label className="plan-field plan-course-units" htmlFor={`plan-units-${course.id}`}><span><span className="plan-sr-only">Course {index + 1} </span>Units{course.source ? ' · imported' : ''}</span><input id={`plan-units-${course.id}`} type="text" inputMode="decimal" maxLength={500} placeholder="e.g. 3" value={course.units} readOnly={!!course.source} aria-invalid={missing === 'units' && !!course.units} onChange={event => onUpdate(course.id, { units: event.target.value })} /></label>
+          <label className="plan-field plan-course-grade" htmlFor={`plan-grade-${course.id}`}><span><span className="plan-sr-only">Course {index + 1} </span>Expected grade</span><input id={`plan-grade-${course.id}`} type="text" inputMode="decimal" maxLength={500} placeholder={draft.question.kind === 'goal' ? 'Blank = solve' : 'e.g. 1.50'} value={course.grade} aria-invalid={!!course.grade && missing === 'grade'} aria-describedby="plan-course-grade-note" onChange={event => onUpdate(course.id, { grade: event.target.value })} /></label>
+          <button type="button" className="plan-icon-button plan-remove" aria-label={`Remove planned course ${index + 1}`} onClick={() => remove(course, index)}><X size={18} aria-hidden="true" /></button>
+        </div>;
+      })}
     </div>
-  );
-};
+    {count > 0 && <div className="plan-pagination"><p className="plan-hint">Courses {start + 1}–{Math.min(count, start + pageSize)} of {count}<br />All {count} included in the calculation</p>{count > pageSize && <nav aria-label="Future course pages"><button type="button" aria-label="Previous course page" disabled={page === 0} onClick={() => setAnchor((page - 1) * pageSize)}><ChevronLeft size={18} aria-hidden="true" /></button><span aria-live="polite">{page + 1} / {pageCount}</span><button type="button" aria-label="Next course page" disabled={page + 1 === pageCount} onClick={() => setAnchor((page + 1) * pageSize)}><ChevronRight size={18} aria-hidden="true" /></button></nav>}</div>}
+    <p className="plan-import-notice plan-hint" role="status">{notice}</p>
+  </div>;
+}
