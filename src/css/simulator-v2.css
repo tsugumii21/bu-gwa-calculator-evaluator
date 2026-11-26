@@ -1,118 +1,278 @@
-/* Task 5: hypothetical planning uses the approved graphite/orange surfaces. */
-.planning-student{width:112px;height:84px;flex-shrink:0;color:var(--rd-text)}
-.planning-student-night{display:none}
-html[data-theme="dark"] .planning-student-day{display:none}
-html[data-theme="dark"] .planning-student-night{display:block}
-@media(max-width:768px){.planning-student{width:88px;height:66px}}
-#tab-simulator.v2-simulator{--sim-canvas:#f7f5ef;--sim-surface:#fff;--sim-text:#202124;--sim-muted:#565650;--sim-border:#85857e;--sim-accent:#f48242;--card-bg:var(--sim-surface);--card-header-bg:var(--sim-canvas);--text-primary:var(--sim-text);--text-secondary:var(--sim-muted);--text-muted:var(--sim-muted);--border-color:var(--sim-border);--bu-blue:var(--sim-text);--bu-azure:var(--sim-text);--bu-gold:var(--sim-text);--color-danger:#a92525;--color-success:#22613e;max-width:1280px;margin:auto;padding:32px;color:var(--sim-text)}
-html[data-theme="dark"] #tab-simulator.v2-simulator{--sim-canvas:#202124;--sim-surface:#2b2c2e;--sim-text:#f7f5ef;--sim-muted:#c3c1ba;--sim-border:#777973;--color-danger:#ffb4ab;--color-success:#a2d5b4}
-.v2-simulator .v2-sim-eyebrow{font:600 12px/1.5 Inter,sans-serif;letter-spacing:.08em;color:var(--sim-muted)}
-.v2-simulator h1{font:800 40px/1.1 Outfit,sans-serif;letter-spacing:-.03em;margin:8px 0 12px;overflow-wrap:anywhere}
-.v2-simulator .section-header{border:0;padding:0}.v2-simulator .section-desc{color:var(--sim-muted);line-height:1.6}
-#tab-simulator .v2-sim-result{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;text-align:left;border:1px solid var(--sim-border);border-top:3px solid var(--sim-accent);border-radius:12px;padding:24px;background:color-mix(in srgb,var(--sim-accent) 6%,var(--sim-surface));box-shadow:none;margin:24px 0 8px}
-#tab-simulator .proj-label{color:var(--sim-muted);font-size:12px;letter-spacing:.06em}.v2-simulator .proj-gwa{display:block;font:800 56px/1.2 Outfit,sans-serif;font-variant-numeric:tabular-nums;color:var(--sim-text)!important;-webkit-text-fill-color:var(--sim-text);background:none;margin:8px 0}
-#tab-simulator .proj-honor{color:var(--sim-text);background:transparent;padding:0;font-size:14px;line-height:1.5;white-space:normal}
-.v2-sim-result-context{align-self:center;border-left:1px solid var(--sim-border);padding-left:24px;font-size:14px}.v2-sim-result-context p{margin:12px 0 0;color:var(--sim-muted)}
-.v2-sim-badge{display:inline-block;border:1px solid var(--sim-border);border-radius:999px;padding:4px 12px;font-size:12px;color:var(--sim-text)}
-.v2-sim-disclaimer{font:400 12px/1.6 Inter,sans-serif;color:var(--sim-muted);margin:0 0 24px}.v2-sim-baseline-note{font-size:12px;color:var(--sim-muted);line-height:1.6;margin:0 0 24px}
-#tab-simulator .sim-grid{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:24px;align-items:start}
-#tab-simulator .sim-panel,#tab-simulator .sim-empty-card{background:var(--sim-surface);border:1px solid color-mix(in srgb,var(--sim-border) 55%,var(--sim-surface));box-shadow:none;border-radius:12px;padding:24px;min-width:0}
-#tab-simulator .panel-title{color:var(--sim-text);font:700 20px/1.3 Outfit,sans-serif;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
-#tab-simulator .sim-section-group{background:transparent;border:0;padding:0;margin:0 0 16px}.v2-simulator .target-finder{padding:0;border:0}
-#tab-simulator .form-control{background:var(--sim-canvas);color:var(--sim-text);border:1px solid var(--sim-border);border-radius:8px;min-height:48px;height:auto!important;max-width:100%;font-size:16px;box-shadow:none}
-.v2-simulator label{color:var(--sim-text)}.v2-simulator .readonly-input{opacity:1;color:var(--sim-muted)!important}
-#tab-simulator .read-only-badge{background:var(--sim-canvas);color:var(--sim-muted);border:1px solid var(--sim-border);font-size:11px;margin:0}
-#tab-simulator button{min-height:48px;min-width:48px;height:auto!important;max-width:100%;border:1px solid var(--sim-border);border-radius:8px;background:var(--sim-surface);color:var(--sim-text);box-shadow:none;transform:none;white-space:normal;transition:background-color 150ms ease}
-#tab-simulator button[aria-pressed="true"],#tab-simulator .is-active,#tab-simulator .chart-mode-btn.active{background:var(--sim-accent);color:#202124;border-color:transparent}
-#tab-simulator button:focus-visible,#tab-simulator input:focus-visible,#tab-simulator select:focus-visible{outline:2px solid var(--sim-text);outline-offset:3px}
-#tab-simulator .target-buttons{display:flex;flex-wrap:wrap;gap:8px}#tab-simulator .target-buttons button{flex:1 1 120px;padding:12px 8px;font-size:13px}
-#tab-simulator .target-result{background:var(--sim-canvas);border:0;border-left:3px solid var(--sim-accent);border-radius:0;padding:16px;margin-top:16px;line-height:1.6;color:var(--sim-text)}
-#tab-simulator .slider-badge{background:var(--sim-accent);color:#202124;border:0;padding:4px 12px;border-radius:8px}.v2-simulator input[type="range"]{accent-color:var(--sim-accent);min-height:48px;background:transparent}
-#tab-simulator input[type="range"]::-webkit-slider-thumb{background:var(--sim-accent);border-color:var(--sim-text)}
-#tab-simulator .slider-labels{color:var(--sim-muted);font-size:12px}.v2-simulator .sim-form-row{gap:16px}
-#tab-simulator .sim-empty-grid{gap:24px;margin-top:24px}.v2-simulator .sim-empty-icon-wrap{background:var(--sim-canvas);color:var(--sim-text)}
-#tab-simulator .allocator-control-banner{grid-template-columns:repeat(2,minmax(0,1fr))!important;background:var(--sim-canvas)!important}
-#tab-simulator .allocator-calc-ribbon{background:var(--sim-canvas)!important;border-color:var(--sim-border)!important}
-#tab-simulator .allocator-row-header{gap:12px}.v2-simulator .allocator-course-name{overflow-wrap:anywhere;min-width:0}#tab-simulator .allocator-grade-select{width:88px!important}
-@media(hover:hover){#tab-simulator button:hover{background:var(--sim-canvas)}#tab-simulator button[aria-pressed="true"]:hover{background:var(--sim-accent)}}
-@media(max-width:768px){#tab-simulator.v2-simulator{padding:24px 16px}.v2-simulator h1{font-size:30px}#tab-simulator .v2-sim-result,#tab-simulator .sim-grid,#tab-simulator .sim-empty-grid{grid-template-columns:minmax(0,1fr)}#tab-simulator .sim-panel,#tab-simulator .sim-empty-card,#tab-simulator .v2-sim-result{padding:16px}.v2-sim-result-context{border-left:0;border-top:1px solid var(--sim-border);padding:16px 0 0}.v2-simulator .proj-gwa{font-size:48px}#tab-simulator .allocator-control-banner{grid-template-columns:minmax(0,1fr)!important;padding:12px!important}#tab-simulator .sim-form-row{display:grid;grid-template-columns:minmax(0,1fr)}#tab-simulator .section-header>div{min-width:0}#tab-simulator .chart-mode-toggle{flex-wrap:wrap}#tab-simulator .allocator-target-row{flex-wrap:wrap}}
-@media(prefers-reduced-motion:reduce){#tab-simulator *{animation:none!important;transition:none!important}}
-/* Legacy mobile utilities use !important; constrain their overrides to this page. */
-#tab-simulator .btn{background:var(--sim-surface)!important;color:var(--sim-text)!important}
-#tab-simulator button[aria-pressed="true"],#tab-simulator .allocator-preset-btn.is-active,#tab-simulator .chart-mode-btn.active{background:var(--sim-accent)!important;color:#202124!important}
-#tab-simulator .sim-help-btn{width:48px!important;height:48px!important;min-width:48px!important;min-height:48px!important;max-width:48px!important;max-height:48px!important}
-#tab-simulator .target-buttons{display:flex!important;flex-wrap:wrap!important}
-#tab-simulator .target-buttons .btn{width:auto!important;white-space:normal!important;flex:1 1 120px!important;padding:12px 8px!important;font-size:13px!important}
-#tab-simulator .chart-mode-btn,#tab-simulator .sim-empty-btn{min-height:48px!important}
-#tab-simulator .sim-panel{gap:16px;padding:24px!important}
-#tab-simulator .sim-form-row .form-group{margin-bottom:0}
-#tab-simulator .text-primary,#tab-simulator .text-gold{color:var(--sim-text)!important}
-@media(max-width:768px){#tab-simulator .sim-panel{padding:16px!important}#tab-simulator .chart-mode-toggle{grid-template-columns:1fr!important}}
-.v2-sim-heading-tools{display:flex;align-items:center;gap:12px;margin-bottom:8px}
-#tab-simulator .section-header{align-items:center!important}
-#tab-simulator .section-header .planning-student{width:160px;height:120px;align-self:center}
-#tab-simulator .v2-sim-heading-tools .sim-help-btn{border-radius:50%!important}
-@media(max-width:768px){#tab-simulator .section-header{flex-wrap:wrap}#tab-simulator .section-header>div{flex:1 1 220px}#tab-simulator .section-header .planning-student{width:96px;height:72px;margin-left:auto}}
-/* Seated companion belongs to the headline, rather than the far edge of the page. */
-#tab-simulator .section-header .planning-student{--sim-seat:#e7e0d0;--sim-paper:#fff;width:200px;height:150px;align-self:end;margin:0}
-html[data-theme="dark"] #tab-simulator .section-header .planning-student{--sim-seat:#414244;--sim-paper:#2b2c2e}
-#tab-simulator .v2-sim-title-scene{display:flex;align-items:center;justify-content:flex-start;gap:24px;min-width:0}
-#tab-simulator .v2-sim-title-scene h1{flex:0 1 auto;margin:8px 0 12px}
-#tab-simulator .section-header>div{max-width:100%;flex:none}
-@media(max-width:768px){#tab-simulator .section-header>div{width:100%;flex:none}#tab-simulator .v2-sim-title-scene{gap:8px}#tab-simulator .v2-sim-title-scene h1{font-size:26px;line-height:1.15;flex:1;overflow-wrap:normal}#tab-simulator .section-header .planning-student{width:96px;height:100px;flex:0 0 96px;align-self:center;margin:0}}
-
-@media screen and (min-width: 1100px) and (min-height: 651px) {
-    #tab-simulator.v2-simulator { padding: 29px; }
-    #tab-simulator .v2-sim-title-scene { gap: 22px; }
-    #tab-simulator .v2-sim-title-scene h1 { font-size: 36px; }
-    #tab-simulator .section-header .planning-student { width: 180px; height: 124px; }
-    #tab-simulator .v2-sim-result { margin-top: 18px; padding: 20px 22px; gap: 22px; }
-    #tab-simulator .proj-gwa { font-size: 50px; }
-    #tab-simulator .v2-sim-result-context { padding-left: 22px; font-size: 13px; }
-    #tab-simulator .v2-sim-result-context p { margin-top: 10px; }
-    #tab-simulator .v2-sim-disclaimer { font-size: 11px; margin-bottom: 16px; }
-    #tab-simulator .sim-grid { gap: 22px; }
-    #tab-simulator .sim-panel { padding: 22px !important; }
-    #tab-simulator .panel-title { font-size: 18px; }
+/* One scenario workspace, preserving approved page width, palette and mascots. */
+.planning-student { width:112px;height:84px;flex-shrink:0;color:var(--rd-text); }
+.planning-student-night { display:none; }
+html[data-theme="dark"] .planning-student-day { display:none; }
+html[data-theme="dark"] .planning-student-night { display:block; }
+#tab-simulator.v2-simulator,.plan-dialog-overlay {
+  --sim-canvas:#f7f5ef;--sim-surface:#fff;--sim-text:#202124;--sim-muted:#565650;
+  --sim-border:#85857e;--sim-accent:#f48242;--sim-on-accent:#202124;--sim-danger:#a92525;--sim-success:#22613e;
+  --plan-line:color-mix(in srgb,var(--sim-border) 55%,var(--sim-surface));
+  --plan-tint:color-mix(in srgb,var(--sim-accent) 6%,var(--sim-surface));
+  --plan-radius:12px;--plan-control-radius:8px;--plan-touch:48px;
+  --plan-title-size:32px;--plan-section-size:22px;--plan-result-size:56px;
+  --plan-body-size:14px;--plan-helper-size:13px;--plan-control-size:16px;
+  --plan-sticky-gap:24px;--plan-ledger-units:80px;--plan-ledger-grade:152px;
 }
-
-@media screen and (min-width: 1100px) and (max-height: 650px) {
-    #tab-simulator.v2-simulator {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        align-items: start;
-        gap: 12px 24px;
-        padding-block: 12px;
-    }
-    #tab-simulator > * { grid-column: 1 / -1; }
-    #tab-simulator > .section-header {
-        grid-column: 1;
-        grid-row: 1;
-        margin-bottom: 0 !important;
-    }
-    #tab-simulator .v2-sim-heading-tools { margin-bottom: 0; }
-    #tab-simulator .v2-sim-title-scene { gap: 12px; }
-    #tab-simulator .v2-sim-title-scene h1 { font-size: 32px; margin: 0; }
-    #tab-simulator .section-header .planning-student { width: 104px; height: 78px; }
-    #tab-simulator .v2-sim-result {
-        grid-column: 2;
-        grid-row: 1;
-        gap: 12px;
-        padding: 12px;
-        margin: 0;
-    }
-    #tab-simulator .proj-gwa { font-size: 40px; margin: 4px 0; }
-    #tab-simulator .v2-sim-result-context { padding-left: 12px; }
-    #tab-simulator .v2-sim-result-context p { margin-top: 4px; }
-    #tab-simulator .v2-sim-disclaimer { grid-row: 2; margin: 0; }
-    #tab-simulator .sim-panel { padding: 16px !important; gap: 8px; }
-    #tab-simulator .sim-input-panel .panel-title { margin-bottom: 8px; }
-    #tab-simulator .sim-section-group { margin-bottom: 8px; }
-    #tab-simulator .v2-sim-baseline-note { order: 1; margin: 0; }
-    #tab-simulator .future-group {
-        display: grid;
-        grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
-        column-gap: 16px;
-    }
-    #tab-simulator .future-group > .panel-title { grid-column: 1 / -1; }
+html[data-theme="dark"] #tab-simulator.v2-simulator,html[data-theme="dark"] .plan-dialog-overlay {
+  --sim-canvas:#202124;--sim-surface:#2b2c2e;--sim-text:#f7f5ef;--sim-muted:#c3c1ba;
+  --sim-border:#777973;--sim-danger:#ffb4ab;--sim-success:#a2d5b4;
+}
+#tab-simulator.v2-simulator {
+  max-width:var(--workspace-frame);margin:auto;color:var(--sim-text);font:400 var(--plan-body-size)/1.6 var(--font-body);
+  --card-bg:var(--sim-surface);--card-header-bg:var(--sim-canvas);--border-color:var(--sim-border);
+  --text-primary:var(--sim-text);--text-secondary:var(--sim-muted);--text-muted:var(--sim-muted);
+}
+#tab-simulator :is(h1,h2,h3,p,dl,fieldset,ol,ul) { margin:0; }
+#tab-simulator :is(h1,h2,h3) { color:var(--sim-text);font-family:var(--font-display);letter-spacing:-.025em; }
+#tab-simulator h1 { font-size:var(--plan-title-size);line-height:1.15;font-weight:800; }
+#tab-simulator h2 { font-size:var(--plan-section-size);line-height:1.25;font-weight:700; }
+#tab-simulator h3 { font-size:18px;line-height:1.4; }
+#tab-simulator :is(button,input,select,a,summary):focus-visible,.plan-help-dialog :is(button,summary):focus-visible { outline:2px solid var(--sim-text);outline-offset:3px; }
+#tab-simulator button,.plan-help-dialog button {
+  min-height:var(--plan-touch)!important;min-width:var(--plan-touch);max-width:100%;height:auto!important;
+  display:inline-flex;align-items:center;justify-content:center;gap:var(--space-sm);padding:var(--space-sm) var(--space-md);
+  border:1px solid var(--sim-border);border-radius:var(--plan-control-radius);background:var(--sim-surface);color:var(--sim-text);
+  font:500 var(--plan-body-size)/1.4 var(--font-body);cursor:pointer;box-shadow:none;transform:none;white-space:normal;
+  transition:background-color var(--transition-fast);
+}
+#tab-simulator button[aria-pressed="true"],.plan-help-dialog button[aria-pressed="true"],.plan-help-dialog button.plan-primary,#tab-simulator button.plan-primary {
+  background:var(--sim-accent)!important;color:var(--sim-on-accent)!important;border-color:var(--sim-accent);
+}
+#tab-simulator .plan-icon-button,.plan-help-dialog .modal-close-btn { flex:0 0 var(--plan-touch);width:var(--plan-touch)!important;padding:var(--space-sm)!important; }
+#tab-simulator :is(input:not([type="range"]),select) {
+  width:100%;max-width:100%;min-width:0;min-height:var(--plan-touch);padding:var(--space-sm) var(--space-md);
+  border:1px solid var(--sim-border);border-radius:var(--plan-control-radius);background:var(--sim-canvas);color:var(--sim-text);
+  font:400 var(--plan-control-size)/1.5 var(--font-body);box-shadow:none;
+}
+#tab-simulator input::placeholder { color:var(--sim-muted);opacity:1; }
+#tab-simulator input[readonly] { color:var(--sim-muted);border-style:dashed; }
+#tab-simulator :is(dd,output,.plan-result-value,.plan-result-facts,.plan-history-table) { font-variant-numeric:tabular-nums; }
+#tab-simulator .plan-header { display:flex;align-items:center;justify-content:space-between;gap:var(--space-lg);margin-bottom:var(--space-lg); }
+#tab-simulator .plan-header p { margin-top:var(--space-sm);color:var(--sim-muted);font-size:var(--plan-control-size); }
+#tab-simulator .plan-header .planning-student { display:block;width:180px;height:124px;flex:0 0 180px; }
+#tab-simulator .plan-help-link { margin-top:var(--space-sm);background:transparent;border:0;text-decoration:underline;text-underline-offset:4px;padding-inline:0; }
+#tab-simulator .plan-toolbar { display:flex;align-items:end;justify-content:space-between;gap:var(--space-md);margin-bottom:var(--space-lg); }
+#tab-simulator .plan-reset { border-color:transparent;background:transparent;color:var(--sim-muted); }
+#tab-simulator .plan-choice { border:0;padding:0;min-width:0; }
+#tab-simulator .plan-choice legend { font-weight:600;margin-bottom:var(--space-sm);font-size:var(--plan-body-size); }
+#tab-simulator .plan-choice>div { display:flex;gap:var(--space-sm); }
+#tab-simulator .plan-choice button { flex:1;flex-direction:column;gap:var(--space-xs); }
+#tab-simulator .plan-choice small { font-size:var(--plan-helper-size); }
+#tab-simulator .plan-baseline { display:grid;gap:var(--space-md);border-block:1px solid var(--plan-line);padding-block:var(--space-lg);margin-bottom:var(--space-lg); }
+#tab-simulator .plan-baseline>div p,#tab-simulator .plan-baseline dt { color:var(--sim-muted);font-size:var(--plan-helper-size); }
+#tab-simulator .plan-baseline dl { display:flex;flex-wrap:wrap;gap:var(--space-md) var(--space-xl); }
+#tab-simulator .plan-baseline dd { margin:var(--space-xs) 0 0;font:700 26px/1.2 var(--font-display); }
+#tab-simulator summary { min-height:var(--plan-touch);cursor:pointer;padding-block:var(--space-sm);align-content:center;font-weight:600; }
+#tab-simulator .plan-baseline details { grid-column:1/-1;font-size:var(--plan-helper-size); }
+#tab-simulator details :is(p,ul)+:is(p,ul,button) { margin-top:var(--space-sm); }
+#tab-simulator details ul { padding-left:var(--space-lg); }
+#tab-simulator .plan-workspace { display:grid;gap:var(--space-lg);align-items:start; }
+#tab-simulator .plan-panel { min-width:0;background:var(--sim-surface);border:1px solid var(--plan-line);border-radius:var(--plan-radius);padding:var(--space-lg); }
+#tab-simulator .plan-input-panel { display:grid;gap:var(--space-lg); }
+#tab-simulator .plan-section-heading { display:flex;align-items:center;justify-content:space-between;gap:var(--space-md); }
+#tab-simulator :is(.plan-quick-inputs,.plan-goal-inputs,.plan-course-editor) { display:grid;gap:var(--space-md);min-width:0; }
+#tab-simulator .plan-field { display:grid;gap:var(--space-sm);min-width:0;font-weight:600; }
+#tab-simulator :is(.plan-field small,.plan-hint,.plan-disclaimer) { color:var(--sim-muted);font-size:var(--plan-helper-size);font-weight:400;line-height:1.6; }
+#tab-simulator .plan-slider { display:grid;gap:var(--space-sm); }
+#tab-simulator .plan-slider>span,#tab-simulator .plan-slider small { display:flex;justify-content:space-between;gap:var(--space-sm); }
+#tab-simulator .plan-slider>span { font-weight:600; }
+#tab-simulator .plan-slider small { color:var(--sim-muted);font-size:var(--plan-helper-size); }
+#tab-simulator input[type="range"] { width:100%;min-height:var(--plan-touch);accent-color:var(--sim-accent);padding:0;background:transparent; }
+#tab-simulator .plan-presets { display:flex;flex-wrap:wrap;gap:var(--space-sm); }
+#tab-simulator .plan-presets button { font-size:var(--plan-helper-size);padding:var(--space-sm); }
+#tab-simulator .plan-presets button span { font-weight:700; }
+#tab-simulator .plan-import { display:grid;gap:var(--space-md);padding:var(--space-md);border:1px dashed var(--sim-border);border-radius:var(--plan-control-radius);background:var(--sim-canvas); }
+#tab-simulator .plan-course-list { display:grid;gap:var(--space-md); }
+#tab-simulator .plan-course { position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr) var(--plan-touch);align-items:end;gap:var(--space-md);padding:var(--space-md);border:1px solid var(--plan-line);border-radius:var(--plan-control-radius);min-width:0; }
+#tab-simulator .plan-course legend { font-size:var(--plan-helper-size);font-weight:600;padding-inline:var(--space-xs); }
+#tab-simulator .plan-course-name { grid-column:1/-1; }
+#tab-simulator .plan-course-empty { color:var(--sim-muted);border-left:2px solid var(--sim-accent);padding-left:var(--space-md); }
+#tab-simulator .plan-result { border-top:3px solid var(--sim-accent);background:var(--plan-tint); }
+#tab-simulator .plan-result>.plan-hint { margin-top:var(--space-sm); }
+#tab-simulator .plan-live { padding-block:var(--space-lg); }
+#tab-simulator .plan-result-label { display:block;font-size:var(--plan-body-size);color:var(--sim-muted); }
+#tab-simulator .plan-result-value { display:block;font:800 var(--plan-result-size)/1.2 var(--font-display);letter-spacing:-.045em;margin-block:var(--space-sm);overflow-wrap:anywhere; }
+#tab-simulator .plan-result-value.plan-result-word { font-size:32px;letter-spacing:-.025em; }
+#tab-simulator .plan-result-empty { padding-block:var(--space-md); }
+#tab-simulator .plan-result-empty strong { display:block;font:700 26px/1.25 var(--font-display);margin-bottom:var(--space-sm); }
+#tab-simulator .plan-result-facts { display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:var(--space-md);padding-block:var(--space-md);border-block:1px solid var(--plan-line); }
+#tab-simulator .plan-result-facts dt { color:var(--sim-muted);font-size:var(--plan-helper-size); }
+#tab-simulator .plan-result-facts dd { margin:var(--space-xs) 0 0;font:700 22px/1.25 var(--font-display); }
+#tab-simulator .plan-change { display:flex;align-items:start;gap:var(--space-sm);margin-top:var(--space-md);font-size:var(--plan-helper-size); }
+#tab-simulator .plan-change svg { flex-shrink:0; }
+#tab-simulator .plan-evidence { margin-block:var(--space-lg); }
+#tab-simulator .plan-evidence ol { padding-left:var(--space-lg);margin-top:var(--space-md);display:grid;gap:var(--space-md); }
+#tab-simulator .plan-evidence p { margin-top:var(--space-xs);font-size:var(--plan-helper-size);overflow-wrap:anywhere; }
+#tab-simulator .plan-disclaimer { border-top:1px solid var(--plan-line);padding-top:var(--space-md); }
+#tab-simulator .plan-warning { padding:var(--space-md);margin-block:var(--space-md);border-left:3px solid var(--sim-accent);background:var(--plan-tint);font-size:var(--plan-helper-size); }
+#tab-simulator .plan-errors { padding-left:var(--space-lg);color:var(--sim-danger);margin-bottom:var(--space-md); }
+#tab-simulator .plan-result-jump { display:none;color:var(--sim-text);text-decoration:underline;text-underline-offset:4px;min-height:var(--plan-touch);align-content:center; }
+#tab-simulator .plan-history { margin-top:var(--space-xl);border-top:1px solid var(--plan-line);padding-top:var(--space-md); }
+#tab-simulator .plan-history>summary { font:700 var(--plan-section-size)/1.4 var(--font-display); }
+#tab-simulator .plan-history>summary span { margin-left:var(--space-md);font:400 var(--plan-helper-size)/1.5 var(--font-body);color:var(--sim-muted); }
+#tab-simulator .plan-history-chart { min-width:0;margin-top:var(--space-lg); }
+#tab-simulator .plan-history-toggle { display:flex;gap:var(--space-sm);flex-wrap:wrap; }
+#tab-simulator .plan-chart { display:block;width:100%;height:auto;margin-block:var(--space-md); }
+#tab-simulator .plan-chart line { stroke:var(--plan-line);stroke-dasharray:3 3; }
+#tab-simulator .plan-chart text { fill:var(--sim-muted);font:13px var(--font-body); }
+#tab-simulator .plan-chart .plan-history-line { stroke:var(--sim-accent);stroke-width:3;fill:none; }
+#tab-simulator .plan-chart circle { fill:var(--sim-accent);stroke:var(--sim-text);stroke-width:1.5; }
+#tab-simulator .plan-history-table { overflow:auto; }
+#tab-simulator .plan-history-table table { width:100%;border-collapse:collapse;min-width:540px;font-size:var(--plan-body-size); }
+#tab-simulator .plan-history-table :is(th,td) { padding:var(--space-md);text-align:left;border-bottom:1px solid var(--plan-line);background:transparent;color:var(--sim-text); }
+#tab-simulator .plan-history-table caption { text-align:left;color:var(--sim-muted);font-size:var(--plan-helper-size);padding-block:var(--space-sm); }
+.plan-dialog-overlay { display:flex; }
+.plan-dialog-overlay .plan-help-dialog { --dialog-width-limit:620px;padding:0;max-width:620px!important; }
+.plan-help-dialog .modal-header { display:flex;justify-content:space-between;align-items:start;gap:var(--space-md); }
+.plan-help-dialog .modal-header h2 { font:700 24px/1.2 var(--font-display); }
+.plan-help-dialog .modal-header p { color:var(--sim-muted);font-size:var(--plan-helper-size);margin-top:var(--space-sm); }
+.plan-help-dialog .modal-body { line-height:1.7;font-size:var(--plan-body-size); }
+.plan-help-dialog .modal-body :is(p,ol,h3)+:is(p,ol,div) { margin-top:var(--space-md); }
+.plan-help-dialog .modal-body h3 { font:700 20px/1.3 var(--font-display); }
+.plan-help-dialog .modal-body ol { padding-left:var(--space-lg); }
+.plan-help-dialog .modal-body li+li { margin-top:var(--space-sm); }
+.plan-help-dialog .modal-footer { display:flex;justify-content:flex-end;gap:var(--space-sm); }
+.plan-help-topics { display:flex;gap:var(--space-sm);flex-wrap:wrap;padding:var(--space-md) var(--space-lg);border-bottom:1px solid var(--dialog-border); }
+.plan-help-topics button { flex:1;font-size:var(--plan-helper-size); }
+.plan-help-formula { padding:var(--space-md);background:var(--sim-canvas);border-left:3px solid var(--sim-accent);font-variant-numeric:tabular-nums; }
+.plan-help-notice { color:var(--sim-muted);border-top:1px solid var(--plan-line);padding-top:var(--space-md); }
+@media screen and (min-width:769px) {
+  #tab-simulator.v2-simulator { padding:var(--space-lg) var(--workspace-gutter); }
+  #tab-simulator .plan-workspace { grid-template-columns:minmax(0,1.1fr) minmax(0,1fr); }
+  #tab-simulator .plan-baseline { grid-template-columns:minmax(0,1fr) auto;align-items:center; }
+}
+@media screen and (max-width:768px) {
+  #tab-simulator.v2-simulator { padding:var(--space-lg) var(--space-md);--plan-title-size:26px;--plan-section-size:20px;--plan-result-size:48px; }
+  #tab-simulator .plan-header { gap:var(--space-sm);align-items:start; }
+  #tab-simulator .plan-header .planning-student { width:96px;height:96px;flex-basis:96px; }
+  #tab-simulator .plan-header p { font-size:var(--plan-body-size); }
+  #tab-simulator .plan-toolbar { flex-wrap:wrap;gap:var(--space-sm); }
+  #tab-simulator .plan-toolbar .plan-choice { flex:1 1 100%; }
+  #tab-simulator .plan-reset { margin-left:auto; }
+  #tab-simulator .plan-panel { padding:var(--space-md); }
+  #tab-simulator .plan-choice button { padding:var(--space-sm);width:auto!important; }
+  #tab-simulator .plan-course { padding:var(--space-sm);gap:var(--space-sm); }
+  #tab-simulator .plan-field small { font-size:var(--plan-helper-size); }
+  #tab-simulator .plan-result-jump { display:block; }
+  #tab-simulator .plan-history>summary span { display:block;margin-left:0; }
+  #tab-simulator .plan-chart { min-width:540px; }
+  #tab-simulator .plan-history-chart { overflow-x:auto; }
+  .plan-help-dialog .plan-help-topics { padding:var(--space-sm) var(--space-md); }
+  .plan-help-dialog .plan-help-topics button { flex:1 1 auto; }
+  .plan-help-dialog .modal-footer { flex-wrap:wrap; }
+}
+@media (hover:hover) {
+  #tab-simulator button:not([aria-pressed="true"]):hover,.plan-help-dialog button:not([aria-pressed="true"]):hover { background:var(--sim-canvas); }
+}
+@media (prefers-reduced-motion:reduce) {
+  #tab-simulator *, .plan-help-dialog * { animation:none!important;transition:none!important;scroll-behavior:auto!important; }
+}
+/* Short-window polish: keep the working inputs within reach. */
+@media screen and (min-width:769px) {
+  #tab-simulator .plan-header { margin-bottom:var(--space-md); }
+  #tab-simulator .plan-header .planning-student { width:152px;height:100px;flex-basis:152px; }
+  #tab-simulator .plan-toolbar { margin-bottom:var(--space-md); }
+  #tab-simulator .plan-toolbar .plan-choice legend { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+  #tab-simulator .plan-toolbar .plan-choice { min-width:340px; }
+  #tab-simulator .plan-baseline { grid-template-columns:minmax(0,1fr) auto auto;gap:var(--space-md);padding-block:var(--space-md);margin-bottom:var(--space-md); }
+  #tab-simulator .plan-baseline details { grid-column:auto; }
+  #tab-simulator .plan-baseline details[open] { grid-column:1/-1; }
+}
+#tab-simulator input[aria-invalid="true"] { border-color:var(--sim-danger);border-width:2px; }
+body:has(#tab-simulator) .bueno-ai-floating-btn { width:56px;min-width:56px;height:56px;padding:0;justify-content:center; }
+body:has(#tab-simulator) .bueno-ai-floating-btn>span { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+#tab-simulator .plan-help-dialog .modal-body :is(p,ol,h3)+:is(p,ol,div) { margin-top:var(--space-md); }
+.plan-dialog-overlay .plan-help-dialog { box-sizing:border-box; }
+@media screen and (max-width:768px) {
+  #tab-simulator .plan-toolbar { display:grid;grid-template-columns:minmax(0,1fr) var(--plan-touch);align-items:end; }
+  #tab-simulator .plan-reset { width:var(--plan-touch);padding:var(--space-sm); }
+  #tab-simulator .plan-reset span { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+  .plan-dialog-overlay .plan-help-dialog { max-height:calc(min(85vh,85svh) - 2px)!important; }
+}
+#tab-simulator .plan-evidence details { font-size:var(--plan-helper-size);margin-top:var(--space-sm); }
+@media screen and (max-width:768px) {
+  #tab-simulator .plan-chart text { font-size:20px; }
+  #tab-simulator .plan-history-toggle { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));flex:1; }
+  #tab-simulator .plan-history-toggle button { font-size:var(--plan-helper-size);padding:var(--space-sm); }
+}
+/* Compact academic ledger: page bounds affect presentation, never scenario math. */
+#tab-simulator .plan-sr-only { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap; }
+#tab-simulator .plan-course-toolbar { display:flex;align-items:center;justify-content:space-between;gap:var(--space-sm); }
+#tab-simulator .plan-course-toolbar>div { min-width:0; }
+#tab-simulator .plan-course-toolbar>button { flex-shrink:0; }
+#tab-simulator .plan-course-actions { display:flex;flex-wrap:wrap;gap:var(--space-sm); }
+#tab-simulator .plan-course-actions:empty,#tab-simulator .plan-import-notice:empty { display:none; }
+#tab-simulator .plan-course-check { display:grid;gap:var(--space-xs);border-left:2px solid var(--sim-accent);padding-left:var(--space-md);font-size:var(--plan-helper-size); }
+#tab-simulator .plan-course-check button { justify-self:start;padding-inline:0;background:transparent;border-color:transparent;text-decoration:underline;text-underline-offset:3px; }
+#tab-simulator .plan-course-list { gap:0; }
+#tab-simulator .plan-course { border:0;border-bottom:1px solid var(--plan-line);border-radius:0;padding:var(--space-sm) 0;gap:var(--space-sm);align-items:center; }
+#tab-simulator .plan-pagination { display:flex;align-items:center;justify-content:space-between;gap:var(--space-sm); }
+#tab-simulator .plan-pagination nav { display:flex;align-items:center;gap:var(--space-sm);font-variant-numeric:tabular-nums; }
+#tab-simulator .plan-pagination nav button { padding:var(--space-sm); }
+#tab-simulator button:disabled { opacity:.5;cursor:not-allowed; }
+#tab-simulator .plan-mobile-brief { display:none; }
+#tab-simulator .plan-compact-formula { margin-block:var(--space-md);padding:var(--space-md);background:var(--sim-canvas);border-left:2px solid var(--sim-accent);font:400 var(--plan-helper-size)/1.7 var(--font-body);font-variant-numeric:tabular-nums;overflow-wrap:anywhere; }
+#tab-simulator .plan-result-compact { display:grid;gap:var(--space-sm); }
+#tab-simulator .plan-result-compact .plan-live { padding-block:var(--space-sm); }
+#tab-simulator .plan-result-compact .plan-change { margin-top:0; }
+#tab-simulator .plan-result-compact .plan-result-value { font-size:var(--plan-compact-result-size,44px); }
+#tab-simulator .plan-result-compact .plan-result-word { font-size:var(--plan-title-size); }
+#tab-simulator .plan-result-compact .plan-disclaimer { margin-top:var(--space-sm); }
+#tab-simulator .plan-result-compact .plan-compact-formula { margin-block:0;padding:var(--space-sm) var(--space-md); }
+#tab-simulator .plan-result-compact .plan-result-facts { padding-block:var(--space-sm); }
+#tab-simulator .plan-result-compact>.plan-hint { margin-top:0; }
+#tab-simulator .plan-evidence-dialog .plan-term-toggle { justify-content:space-between; }
+#tab-simulator .plan-record-trigger { text-align:left; }
+.plan-evidence-dialog .plan-record-totals { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-md);padding-bottom:var(--space-md);font-variant-numeric:tabular-nums; }
+.plan-evidence-dialog .plan-record-totals dt,.plan-evidence-dialog .plan-record-row dt { font-size:var(--plan-helper-size);color:var(--sim-muted); }
+.plan-evidence-dialog .plan-record-totals dd { margin:0;font:700 var(--plan-section-size)/1.5 var(--font-display); }
+.plan-evidence-dialog .plan-record-terms { margin-top:var(--space-lg); }
+.plan-evidence-dialog .plan-term-toggle { width:100%;display:flex;align-items:center;justify-content:space-between;text-align:left;gap:var(--space-sm);padding:var(--space-md);border-radius:0;border-width:0 0 1px; }
+.plan-evidence-dialog .plan-term-toggle>span { min-width:0;overflow-wrap:anywhere; }
+.plan-evidence-dialog .plan-term-toggle small { flex-shrink:0;font-size:var(--plan-helper-size);font-weight:400; }
+.plan-evidence-dialog .plan-record-rows { padding:0 var(--space-md);background:var(--sim-canvas); }
+.plan-evidence-dialog .plan-record-row { padding:var(--space-md) 0;border-bottom:1px solid var(--plan-line);overflow-wrap:anywhere; }
+.plan-evidence-dialog .plan-record-row strong { font-size:var(--plan-body-size); }
+.plan-evidence-dialog .plan-record-row dl { display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-sm);font-variant-numeric:tabular-nums; }
+.plan-evidence-dialog .plan-record-row dd { margin:0; }
+.plan-evidence-dialog .plan-exclusion { color:var(--sim-muted);font-size:var(--plan-helper-size); }
+.plan-evidence-dialog .plan-evidence { margin:0; }
+.plan-evidence-dialog .modal-body { overflow-wrap:anywhere; }
+.plan-evidence-dialog .modal-body .plan-help-notice { margin-top:var(--space-lg); }
+@media screen and (min-width:769px) {
+  #tab-simulator .plan-workspace:has(.plan-course-editor) { grid-template-columns:minmax(0,1fr); }
+  #tab-simulator .plan-ledger-head,#tab-simulator .plan-course { display:grid;grid-template-columns:minmax(0,1fr) var(--plan-ledger-units) var(--plan-ledger-grade) var(--plan-touch);gap:var(--space-sm); }
+  #tab-simulator .plan-ledger-head { font-size:var(--plan-helper-size);font-weight:600;margin-bottom:calc(-1 * var(--space-sm)); }
+  #tab-simulator .plan-course-name { grid-column:auto; }
+  #tab-simulator .plan-course-units>span,#tab-simulator .plan-course-grade>span { position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%); }
+  #tab-simulator .plan-course input,#tab-simulator .plan-course select { padding-inline:var(--space-sm); }
+  #tab-simulator .plan-result[data-fits-viewport="true"] { position:sticky;top:var(--plan-sticky-gap); }
+}
+@media screen and (min-width:1100px) {
+  #tab-simulator .plan-workspace:has(.plan-course-editor) { grid-template-columns:minmax(0,1.5fr) minmax(0,1fr); }
+}
+@media screen and (max-width:768px) {
+  #tab-simulator .plan-ledger-head { display:none; }
+  #tab-simulator .plan-course { grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) var(--plan-touch);gap:var(--space-sm);padding-block:var(--space-md); }
+  #tab-simulator .plan-course-name { grid-column:1/3;grid-row:1; }
+  #tab-simulator .plan-remove { grid-column:3;grid-row:1; }
+  #tab-simulator .plan-course-units { grid-column:1;grid-row:2; }
+  #tab-simulator .plan-course-grade { grid-column:2/4;grid-row:2; }
+  #tab-simulator .plan-course :is(input,select) { padding-inline:var(--space-sm); }
+  #tab-simulator .plan-course :is(label,button) { width:100%; }
+  #tab-simulator .plan-course-toolbar { align-items:start; }
+  #tab-simulator .plan-course-toolbar>button { width:auto; }
+  #tab-simulator .plan-course-toolbar h3 { font-size:var(--plan-section-size); }
+  #tab-simulator .plan-pagination { flex-wrap:wrap; }
+  #tab-simulator .plan-pagination nav { margin-left:auto; }
+  #tab-simulator .plan-pagination nav button { width:var(--plan-touch); }
+  #tab-simulator .plan-mobile-brief { display:flex;justify-content:space-between;align-items:center;gap:var(--space-sm);padding:var(--space-md);border-block:1px solid var(--plan-line);background:var(--plan-tint); }
+  #tab-simulator .plan-mobile-brief span { display:block;font-size:var(--plan-helper-size);color:var(--sim-muted); }
+  #tab-simulator .plan-mobile-brief strong { font:700 var(--plan-section-size)/1.4 var(--font-display);font-variant-numeric:tabular-nums; }
+  #tab-simulator .plan-mobile-brief a { flex-shrink:0;min-height:var(--plan-touch);align-content:center;color:var(--sim-text);font-size:var(--plan-helper-size); }
+  #tab-simulator .plan-result { position:static; }
+  .plan-evidence-dialog .plan-term-toggle { align-items:start;flex-direction:column; }
+  .plan-evidence-dialog .modal-footer { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-sm); }
+  .plan-evidence-dialog .modal-footer>button:only-child { grid-column:1/-1; }
+  .plan-evidence-dialog .modal-header { padding:var(--space-md)!important; }
 }
