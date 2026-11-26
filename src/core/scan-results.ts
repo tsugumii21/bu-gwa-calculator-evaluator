@@ -1,5 +1,5 @@
 import type { Subject } from '../types';
-import { ScanFailure, type ScanCandidate } from '../types/scan';
+import { ScanFailure, type ScanCandidate, type ScanImageResult } from '../types/scan';
 import { isValidBUGrade } from './constants';
 
 /** Returns the next issue that must be resolved before importing staged observations. */
@@ -8,11 +8,16 @@ export function scanImportError(rows: ScanCandidate[]): string | null {
   for (const [index, row] of rows.entries()) {
     const prefix = `Course ${index + 1}: `;
     if (row.conflicts && Object.keys(row.conflicts).length) return prefix + 'resolve the conflicting source values.';
-    if (!row.code.trim() || !row.name.trim()) return prefix + 'enter the code and description.';
+    if (!row.code.trim() || !row.name.trim()) return prefix + 'enter the course code and course name.';
     if (row.units === null || !Number.isFinite(row.units) || row.units < 0) return prefix + 'enter valid units.';
     if (row.grade && !isValidBUGrade(row.grade)) return prefix + 'enter a valid BU grade, INC, DRP, or leave pending.';
   }
   return null;
+}
+
+/** Flags suspicious names for source comparison without guessing a replacement grade. */
+export function courseNameWarning(name: string): string | null {
+  return /^\d+(?:\.\d+)?$/.test(name.trim()) ? 'Course name looks numeric. Compare it with the source image.' : null;
 }
 
 /** Converts only resolved candidates into the existing saved-record contract. */
@@ -23,6 +28,15 @@ export function reviewedSubjects(rows: ScanCandidate[]): Subject[] {
 }
 
 const key = (text: string) => text.toUpperCase().replace(/\s+/g, '').trim();
+
+/** Replaces retried evidence while preserving completed sources and unrelated review edits. */
+export function replaceRetriedCandidates(rows: ScanCandidate[], previous: ScanImageResult[], incoming: ScanImageResult[], retryIds: string[]): ScanCandidate[] {
+  const affected = rows.filter(row => row.sourceIds.some(id => retryIds.includes(id)));
+  const retained = rows.filter(row => !affected.includes(row));
+  const restored = previous.filter(result => !retryIds.includes(result.sourceId)).flatMap(result => result.candidates)
+    .filter(candidate => affected.some(row => key(row.code) === key(candidate.code) && row.sourceIds.some(id => candidate.sourceIds.includes(id))));
+  return mergeScanCandidates([...retained, ...restored, ...incoming.flatMap(result => result.candidates)]);
+}
 
 const comparableGrade = (grade: string) => isValidBUGrade(grade) && Number.isFinite(Number(grade))
   ? String(Number(grade)) : key(grade);
