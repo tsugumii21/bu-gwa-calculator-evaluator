@@ -39,3 +39,9 @@ Implemented under explicit approval of [Design Council plan24](../redesign/v2/24
 - [Light summary](assets/2026-11-26-latin-summary-light.jpg), [dark summary](assets/2026-11-26-latin-summary-dark.jpg)
 - [Dark explanation](assets/2026-11-26-latin-help-dark.jpg), [mobile explanation](assets/2026-11-26-latin-help-mobile.jpg)
 - [Mobile long-range result](assets/2026-11-26-latin-result-mobile.jpg), [record dialog](assets/2026-11-26-latin-record-dark.jpg)
+
+## Resume checkpoint — 2026-11-28
+- Confirmed implementation already exists in local commit24b083a; no tracked application changes were pending. Existing unrelated untracked files were preserved.
+- Fresh npm test:253tests/18suites pass. Fresh production build passes with the existing lottie-web eval warning; lint has0errors/1existing OCR-test unused import warning.
+- Completed the previously interrupted Obsidian context/decision/bug/session-log update. No application changes, new commit or push in this resume.
+- Chrome observations/captures above remain the2026-11-26 verification; no fresh browser inspection or live-server availability claim is made for this resume.
